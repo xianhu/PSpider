@@ -4,39 +4,73 @@
 test.py by xianhu
 """
 
-import sys
-import spider
+import re
+import random
 import logging
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s\t%(levelname)s\t%(message)s")
+import datetime
+import spider
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
+
+
+# 继承并重写Parser类
+class MyParser(spider.Parser):
+    """
+    class of MyParser
+    """
+
+    def htm_parse(self, priority, url, keys, deep, critical, parse_repeat, content):
+        """
+        overwrite htm_parse
+        """
+        # parse content (cur_code, cur_url, cur_info, cur_html)
+        cur_code, cur_url, cur_info, cur_html = content
+
+        # get url_list and save_list
+        url_list = []
+        if (self.max_deep < 0) or (deep < self.max_deep):
+            a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]+?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
+            url_list = [(_url, keys, critical, priority+1) for _url in [spider.get_url_legal(href, url) for href in a_list]]
+        title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
+        save_list = [spider.Item(url, title.group("title"), datetime.datetime.now()), ] if title else []
+
+        # test cpu task
+        count = 0
+        for i in range(1000):
+            for j in range(1000):
+                count += ((i*j) / 1000)
+
+        # test parsing error
+        if random.randint(0, 5) == 3:
+            parse_repeat += (1 / 0)
+
+        # return code, url_list, save_list
+        return 1, url_list, save_list
 
 
 def test_spider(mysql, spider_type):
     """
     test spider
     """
-    # 定义fetcher, parser和saver, 你也可以重写这三个类
+    # 定义fetcher, parser和saver, 你也可以重写这三个类中的任何一个
     fetcher = spider.Fetcher(normal_max_repeat=3, normal_sleep_time=0, critical_max_repeat=5, critical_sleep_time=5)
-    parser = spider.Parser(max_deep=1, max_repeat=3)
+    # parser = spider.Parser(max_deep=1, max_repeat=2)
+    parser = MyParser(max_deep=1, max_repeat=2)
+
+    # 定义Url过滤
+    black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download", )
+    white_patterns = ("^http[s]{0,1}://(www\.){0,1}(wandoujia|(zhushou\.360)|duba_\d)\.(com|cn)", )
 
     if not mysql:
-        saver = spider.Saver(save_pipe=sys.stdout)
+        saver = spider.Saver(save_pipe=open("out.txt", "w", encoding="utf-8"))
 
         # UrlFilter, 使用Set, 适合Url数量不多的情况
-        url_filter = spider.UrlFilter(
-            black_patterns=(spider.CONFIG_URLPATTERN_FILES, r"/binding$"),
-            white_patterns=("^http[s]{0,1}://(www\.){0,1}(wandoujia|(zhushou\.360)|duba_\d)\.(com|cn)", ),
-            capacity=None
-        )
+        url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
     else:
         saver = spider.SaverMysql(host="localhost", user="root", passwd="123456", database="default")
         saver.change_sqlstr("insert into t_test(url, title, getdate) values (%s, %s, %s);")
 
         # UrlFilter, 使用BloomFilter, 适合Url数量巨大的情况
-        url_filter = spider.UrlFilter(
-            black_patterns=(spider.CONFIG_URLPATTERN_FILES, r"/binding$"),
-            white_patterns=("^http[s]{0,1}://(www\.){0,1}(wandoujia|(zhushou\.360)|duba_\d)\.(com|cn)", ),
-            capacity=1000
-        )
+        url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=10000)
 
     # 确定使用ThreadPool还是ProcessPool
     if spider_type == "thread":
@@ -46,25 +80,24 @@ def test_spider(mysql, spider_type):
 
     parser_num = 1 if spider_type == "thread" else 3
 
-    # 首先抓取一次豌豆荚的应用页面,抓取完成之后不停止monitor
+    # 首先抓取一次豌豆荚页面,抓取完成之后不停止monitor
     web_spider.set_start_url("http://www.wandoujia.com/apps", ("wandoujia",), priority=0, deep=0, critical=False)
-    web_spider.start_work_and_wait_done(fetcher_num=5, parser_num=parser_num, is_over=False)
+    web_spider.start_work_and_wait_done(fetcher_num=10, parser_num=parser_num, is_over=False)
 
-    # 然后抓取360应用商店的应用页面,并试验critical参数的作用,抓取完成之后停止monitor
+    # 然后抓取360应用商店页面,并试验critical参数的作用,抓取完成之后停止monitor
     web_spider.set_start_url("http://zhushou.360.cn/", ("360app",), priority=0, deep=0, critical=False)
     for i in range(5):
         web_spider.set_start_url("https://www.duba_%d.com/" % i, ("critical",), priority=0, deep=0, critical=True)
-    web_spider.start_work_and_wait_done(fetcher_num=5, parser_num=parser_num, is_over=True)
-
+    web_spider.start_work_and_wait_done(fetcher_num=10, parser_num=parser_num, is_over=True)
     return
 
 
 if __name__ == '__main__':
     # 测试多线程抓取
-    # test_spider(mysql=False, spider_type="thread")
-    test_spider(mysql=True, spider_type="thread")
+    test_spider(mysql=False, spider_type="thread")
+    # test_spider(mysql=True, spider_type="thread")
 
     # 测试多线程/多进程混合抓取
-    # test_spider(mysql=False, spider_type="process")
-    test_spider(mysql=True, spider_type="process")
+    test_spider(mysql=False, spider_type="process")
+    # test_spider(mysql=True, spider_type="process")
     exit()
