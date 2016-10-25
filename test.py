@@ -31,7 +31,7 @@ class MyParser(spider.Parser):
             a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]+?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
             url_list = [(_url, keys, critical, priority+1) for _url in [spider.get_url_legal(href, url) for href in a_list]]
         title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
-        save_list = [spider.Item(url, title.group("title"), datetime.datetime.now()), ] if title else []
+        save_list = [(url, title.group("title"), datetime.datetime.now()), ] if title else []
 
         # test cpu task
         count = 0
@@ -47,30 +47,19 @@ class MyParser(spider.Parser):
         return 1, url_list, save_list
 
 
-def test_spider(mysql, spider_type):
+def test_spider(spider_type):
     """
     test spider
     """
-    # 定义fetcher, parser和saver, 你也可以重写这三个类中的任何一个
+    # 定义fetcher,parser和saver, 你也可以重写这三个类中的任何一个
     fetcher = spider.Fetcher(normal_max_repeat=3, normal_sleep_time=0, critical_max_repeat=5, critical_sleep_time=5)
-    # parser = spider.Parser(max_deep=1, max_repeat=2)
     parser = MyParser(max_deep=1, max_repeat=2)
+    saver = spider.Saver(file_name="out_%s.txt" % spider_type)
 
-    # 定义Url过滤
+    # 定义Url过滤, UrlFilter使用Set, 适合Url数量不多的情况
     black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download", )
     white_patterns = ("^http[s]{0,1}://(www\.){0,1}(wandoujia|(zhushou\.360)|duba_\d)\.(com|cn)", )
-
-    if not mysql:
-        saver = spider.Saver(save_pipe=open("out.txt", "w", encoding="utf-8"))
-
-        # UrlFilter, 使用Set, 适合Url数量不多的情况
-        url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
-    else:
-        saver = spider.SaverMysql(host="localhost", user="root", passwd="123456", database="default")
-        saver.change_sqlstr("insert into t_test(url, title, getdate) values (%s, %s, %s);")
-
-        # UrlFilter, 使用BloomFilter, 适合Url数量巨大的情况
-        url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=10000)
+    url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
 
     # 确定使用ThreadPool还是ProcessPool
     if spider_type == "thread":
@@ -92,12 +81,11 @@ def test_spider(mysql, spider_type):
     return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 测试多线程抓取
-    test_spider(mysql=False, spider_type="thread")
-    # test_spider(mysql=True, spider_type="thread")
+    test_spider(spider_type="thread")
 
     # 测试多线程/多进程混合抓取
-    test_spider(mysql=False, spider_type="process")
-    # test_spider(mysql=True, spider_type="process")
+    test_spider(spider_type="process")
+
     exit()

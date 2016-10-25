@@ -61,7 +61,7 @@ class BaseConcur(object):
         """
         procedure of each thread or process, return True to continue, False to stop
         """
-        raise NotImplementedError
+        assert False, "you must rewrite work function in subclass of %s" % self.__class__.__name__
 
 
 class BaseThread(BaseConcur, threading.Thread):
@@ -77,12 +77,6 @@ class BaseThread(BaseConcur, threading.Thread):
         BaseConcur.__init__(self, name, worker, pool)
         return
 
-    def work(self):
-        """
-        procedure of a thread, return True to continue, False to stop
-        """
-        raise NotImplementedError
-
 
 class BaseProcess(BaseConcur, multiprocessing.Process):
     """
@@ -96,12 +90,6 @@ class BaseProcess(BaseConcur, multiprocessing.Process):
         multiprocessing.Process.__init__(self, name=name)
         BaseConcur.__init__(self, name, worker, pool)
         return
-
-    def work(self):
-        """
-        procedure of a process, return True to continue, False to stop
-        """
-        raise NotImplementedError
 
 
 class BasePool(object):
@@ -196,13 +184,13 @@ class BasePool(object):
         """
         task_content = None
         if task_name == TPEnum.URL_FETCH:
-            task_content = self.fetch_queue.get(block=True, timeout=10)
+            task_content = self.fetch_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
         elif task_name == TPEnum.HTM_PARSE:
-            task_content = self.parse_queue.get(block=True, timeout=10)
+            task_content = self.parse_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
         elif task_name == TPEnum.ITEM_SAVE:
-            task_content = self.save_queue.get(block=True, timeout=10)
+            task_content = self.save_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, -1)
         else:
             logging.error("%s get_a_task error: parameter[%s] is invalid", self.__class__.__name__, task_name)

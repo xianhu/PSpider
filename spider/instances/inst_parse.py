@@ -10,27 +10,6 @@ import datetime
 from ..utilities import get_url_legal, params_chack
 
 
-class Item(object):
-    """
-    class of Item, as an example of item
-    """
-
-    def __init__(self, url, title, getdate):
-        """
-        constructor
-        """
-        self.url = url
-        self.title = title
-        self.getdate = getdate
-        return
-
-    def get_list(self):
-        """
-        get a list based on variables of this class
-        """
-        return [self.url, self.title, self.getdate]
-
-
 class Parser(object):
     """
     class of Parser, must include function working() and htm_parse()
@@ -74,7 +53,7 @@ class Parser(object):
         :return (code, url_list, save_list): code can be -1(failed), 0(repeat), 1(success); [(url, keys, critical, priority), ...], [item, ...]
         """
         # parse content (cur_code, cur_url, cur_info, cur_html)
-        cur_code, cur_url, cur_info, cur_html = content
+        *_, cur_html = content
 
         # get url_list and save_list
         url_list = []
@@ -82,7 +61,7 @@ class Parser(object):
             a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]+?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
             url_list = [(_url, keys, critical, priority+1) for _url in [get_url_legal(href, url) for href in a_list]]
         title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
-        save_list = [Item(url, title.group("title"), datetime.datetime.now()), ] if title else []
+        save_list = [(url, title.group("title"), datetime.datetime.now()), ] if title else []
 
         # return code, url_list, save_list
         return 1, url_list, save_list
