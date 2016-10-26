@@ -28,11 +28,11 @@ def get_html_content(response, charset=None):
     """
     get html content from a response, charset can be None, "utf-8", "gb2312" and "gbk", etc
     """
-    # get info and content
+    # get info(response headers) and content
     info = response.info()
     content = response.read()
 
-    # decompress the content by info
+    # decompress the content by info: Content_Encoding also can be content-encoding, ignore case
     content_encoding = info.get("Content-Encoding", failobj="").lower()
     content = zlib.decompress(content, zlib.MAX_WBITS | 16) if (content_encoding.find("gzip") >= 0) else (
         zlib.decompress(content, zlib.MAX_WBITS) if (content_encoding.find("zlib") >= 0) else (
