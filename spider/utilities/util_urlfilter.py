@@ -16,7 +16,7 @@ class UrlFilter(object):
 
     def __init__(self, black_patterns=(CONFIG_URLPATTERN_ALL,), white_patterns=("^http",), capacity=None):
         """
-        constructor
+        constructor, use variable of BloomFilter if capacity else variable of set
         """
         self.re_black_list = [re.compile(_pattern, flags=re.IGNORECASE) for _pattern in black_patterns]
         self.re_white_list = [re.compile(_pattern, flags=re.IGNORECASE) for _pattern in white_patterns]

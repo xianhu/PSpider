@@ -27,7 +27,14 @@ class Parser(object):
     def working(self, priority, url, keys, deep, critical, parse_repeat, content):
         """
         working function, must "try, except" and call self.htm_parse(), don't change parameters and returns
-        :return (code, url_list, save_list): code can be -1(failed), 0(repeat), 1(success); [(url, keys, critical, priority), ...], [item, ...]
+        :param priority: the priority of this url, which can be used in this function
+        :param keys: some information of this url, which can be used in this function
+        :param deep: the deep of this url, which can be used in this function
+        :param critical: the critical flag of this url, which can be used in this function
+        :param parse_repeat: the parse repeat time of this url, if parse_repeat > self.max_repeat, return code will be -1
+        :param content: the content of this url, which needs to be parsed, content is a tuple or list
+        :return (code, url_list, save_list): code can be -1(failed), 0(repeat), 1(success)
+        :return (code, url_list, save_list): url_list is [(url, keys, critical, priority), ...], save_list is [item, ...]
         """
         logging.debug("Parser start: priority=%s, keys=%s, deep=%s, critical=%s, parse_repeat=%s, url=%s",
                       priority, keys, deep, critical, parse_repeat, url)
@@ -49,8 +56,7 @@ class Parser(object):
 
     def htm_parse(self, priority, url, keys, deep, critical, parse_repeat, content):
         """
-        parse the content of a url, you can rewrite this function
-        :return (code, url_list, save_list): code can be -1(failed), 0(repeat), 1(success); [(url, keys, critical, priority), ...], [item, ...]
+        parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
         # parse content (cur_code, cur_url, cur_info, cur_html)
         *_, cur_html = content

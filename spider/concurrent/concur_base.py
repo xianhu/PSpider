@@ -127,6 +127,8 @@ class BasePool(object):
     def set_start_url(self, url, keys, priority=0, deep=0, critical=False):
         """
         set start url based on "keys", "priority", "deep" and "critical", fetch_repeat and parse_repeat must be 0
+        :param keys: you can add some information to this url, and pass that to fetcher, parser or saver
+        :param critical: the critical flag of this url, default False to identity that this url is normal, else this url is critical
         """
         logging.warning("%s set_start_url: keys=%s, priority=%s, deep=%s, critical=%s, url=%s",
                         self.__class__.__name__, keys, priority, deep, critical, url)

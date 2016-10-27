@@ -34,7 +34,11 @@ class Fetcher(object):
     def working(self, url, keys, critical, fetch_repeat):
         """
         working function,  must "try, expect" and call self.url_fetch(), don't change parameters and returns
-        :return (code, content): code can be -1(failed), 0(repeat), 1(success), content is a list or tuple
+        :param url: the url which needs to be fetched
+        :param keys: some information of this url, which can be used in this function
+        :param critical: the critical flag of this url, which can be used in this function
+        :param fetch_repeat: the fetch repeat time of this url, if fetch_repeat > self.*_max_repeat, return code will be -1
+        :return (code, content): code can be -1(failed), 0(repeat), 1(success), content must be a list or tuple
         """
         logging.debug("Fetcher start: keys=%s, critical=%s, fetch_repeat=%s, url=%s", keys, critical, fetch_repeat, url)
 
@@ -54,8 +58,7 @@ class Fetcher(object):
 
     def url_fetch(self, url, keys, critical, fetch_repeat):
         """
-        fetch the content of a url, you can rewrite this function
-        :return (code, content): code can be -1(failed), 0(repeat), 1(success), content is a list or tuple
+        fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
         # get response based on headers
         headers = make_headers(user_agent="all", referer=make_referer_url(url), accept_encoding="gzip")

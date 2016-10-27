@@ -27,6 +27,8 @@ class Saver(object):
     def working(self, url, keys, item):
         """
         working function, must "try, except" and call self.item_save(), don't change parameters and returns
+        :param keys: some information of this url, which can be used in this function
+        :param item: the item of this url which needs to be saved
         :return result: True or False
         """
         logging.debug("Saver start: keys=%s, url=%s", keys, url)
@@ -43,8 +45,7 @@ class Saver(object):
 
     def item_save(self, url, keys, item):
         """
-        save the item of a url
-        :return result: True or False
+        save the item of a url, you can rewrite this function, parameters and return refer to self.working()
         """
         self.save_pipe.write("\t".join([url, str(keys), "\t".join([str(i) for i in item])]) + "\n")
         self.save_pipe.flush()

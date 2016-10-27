@@ -14,13 +14,10 @@ logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%
 
 # 继承并重写Parser类
 class MyParser(spider.Parser):
-    """
-    class of MyParser
-    """
 
     def htm_parse(self, priority, url, keys, deep, critical, parse_repeat, content):
         """
-        overwrite htm_parse
+        重写函数htm_parse()
         """
         # parse content (cur_code, cur_url, cur_info, cur_html)
         cur_code, cur_url, cur_info, cur_html = content
@@ -58,7 +55,7 @@ def test_spider(spider_type):
 
     # 定义Url过滤, UrlFilter使用Set, 适合Url数量不多的情况
     black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download", )
-    white_patterns = ("^http[s]{0,1}://(www\.){0,1}(wandoujia|(zhushou\.360)|duba_\d)\.(com|cn)", )
+    white_patterns = ("^http[s]{0,1}://(www\.){0,1}(wandoujia|(zhushou\.360))\.(com|cn)", )
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
 
     # 确定使用ThreadPool还是ProcessPool
@@ -73,10 +70,8 @@ def test_spider(spider_type):
     web_spider.set_start_url("http://www.wandoujia.com/apps", ("wandoujia",), priority=0, deep=0, critical=False)
     web_spider.start_work_and_wait_done(fetcher_num=10, parser_num=parser_num, is_over=False)
 
-    # 然后抓取360应用商店页面,并试验critical参数的作用,抓取完成之后停止monitor
+    # 然后抓取360应用商店页面,抓取完成之后停止monitor
     web_spider.set_start_url("http://zhushou.360.cn/", ("360app",), priority=0, deep=0, critical=False)
-    for i in range(5):
-        web_spider.set_start_url("https://www.duba_%d.com/" % i, ("critical",), priority=0, deep=0, critical=True)
     web_spider.start_work_and_wait_done(fetcher_num=10, parser_num=parser_num, is_over=True)
     return
 
