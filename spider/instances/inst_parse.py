@@ -7,7 +7,7 @@ inst_parse.py by xianhu
 import re
 import logging
 import datetime
-from ..utilities import get_url_legal, params_chack
+from ..utilities import get_url_legal, params_chack, return_check
 
 
 class Parser(object):
@@ -26,12 +26,12 @@ class Parser(object):
     @params_chack(object, int, str, object, int, bool, int, (list, tuple))
     def working(self, priority, url, keys, deep, critical, parse_repeat, content):
         """
-        working function, must "try, except" and call self.htm_parse(), don't change parameters and returns
+        working function, must "try, except" and call self.htm_parse(), don't change parameters and return
         :param priority: the priority of this url, which can be used in this function
         :param keys: some information of this url, which can be used in this function
         :param deep: the deep of this url, which can be used in this function
         :param critical: the critical flag of this url, which can be used in this function
-        :param parse_repeat: the parse repeat time of this url, if parse_repeat > self.max_repeat, return code will be -1
+        :param parse_repeat: the parse repeat time of this url, if parse_repeat > self.max_repeat, return code = -1
         :param content: the content of this url, which needs to be parsed, content is a tuple or list
         :return (code, url_list, save_list): code can be -1(failed), 0(repeat), 1(success)
         :return (code, url_list, save_list): url_list is [(url, keys, critical, priority), ...], save_list is [item, ...]
@@ -54,12 +54,14 @@ class Parser(object):
         logging.debug("Parser end: code=%s, len(url_list)=%s, len(save_list)=%s, url=%s", code, len(url_list), len(save_list), url)
         return code, url_list, save_list
 
+    @return_check(int, list, list)
     def htm_parse(self, priority, url, keys, deep, critical, parse_repeat, content):
         """
         parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
         # parse content (cur_code, cur_url, cur_info, cur_html)
         *_, cur_html = content
+        cur_html = cur_html.decode("utf-8")
 
         # get url_list and save_list
         url_list = []

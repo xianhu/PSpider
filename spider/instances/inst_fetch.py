@@ -9,7 +9,7 @@ import random
 import logging
 import urllib.error
 import urllib.request
-from ..utilities import get_html_content, make_headers, make_referer_url, params_chack
+from ..utilities import make_headers, make_referer_url, params_chack, return_check, get_resp_unzip
 
 
 class Fetcher(object):
@@ -33,11 +33,11 @@ class Fetcher(object):
     @params_chack(object, str, object, bool, int)
     def working(self, url, keys, critical, fetch_repeat):
         """
-        working function,  must "try, expect" and call self.url_fetch(), don't change parameters and returns
+        working function,  must "try, expect" and call self.url_fetch(), don't change parameters and return
         :param url: the url which needs to be fetched
         :param keys: some information of this url, which can be used in this function
         :param critical: the critical flag of this url, which can be used in this function
-        :param fetch_repeat: the fetch repeat time of this url, if fetch_repeat > self.*_max_repeat, return code will be -1
+        :param fetch_repeat: the fetch repeat time of this url, if fetch_repeat > self.*_max_repeat, return code = -1
         :return (code, content): code can be -1(failed), 0(repeat), 1(success), content must be a list or tuple
         """
         logging.debug("Fetcher start: keys=%s, critical=%s, fetch_repeat=%s, url=%s", keys, critical, fetch_repeat, url)
@@ -56,6 +56,7 @@ class Fetcher(object):
         logging.debug("Fetcher end: code=%s, url=%s", code, url)
         return code, content
 
+    @return_check(int, (tuple, list))
     def url_fetch(self, url, keys, critical, fetch_repeat):
         """
         fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
@@ -66,7 +67,7 @@ class Fetcher(object):
 
         # get content (cur_code, cur_url, cur_info, cur_html)
         cur_code, cur_url, cur_info = response.getcode(), response.geturl(), response.info()
-        content = (cur_code, cur_url, cur_info, get_html_content(response, charset=None))
+        content = (cur_code, cur_url, cur_info, get_resp_unzip(response))
         if cur_url != url:
             logging.debug("Fetcher redirection: keys=%s, critical=%s, fetch_repeat=%s, %s,%s", keys, critical, fetch_repeat, cur_url, url)
 

@@ -35,8 +35,8 @@ class BaseConcur(object):
         """
         constructor
         """
-        self.name = name        # name of each thread or process
-        self.worker = worker    # worker of each thread or process
+        self.name = name        # the name of each thread or process
+        self.worker = worker    # the worker of each thread or process
         self.pool = pool        # thread_pool or process_pool
         return
 

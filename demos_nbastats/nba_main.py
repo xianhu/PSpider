@@ -21,7 +21,7 @@ class NBAFetcher(spider.Fetcher):
         headers = spider.make_headers(user_agent="all", accept_encoding="gzip")
         response = self.opener.urlopen(urllib.request.Request(url, headers=headers), timeout=10)
 
-        content = (spider.get_html_content(response, charset="utf-8"), )
+        content = (spider.get_resp_unzip(response).decode("utf-8"), )
         return 1, content
 
 

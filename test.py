@@ -20,7 +20,8 @@ class MyParser(spider.Parser):
         重写函数htm_parse()
         """
         # parse content (cur_code, cur_url, cur_info, cur_html)
-        cur_code, cur_url, cur_info, cur_html = content
+        *_, cur_html = content
+        cur_html = cur_html.decode("utf-8")
 
         # get url_list and save_list
         url_list = []
@@ -50,7 +51,8 @@ def test_spider(spider_type):
     """
     # 定义fetcher,parser和saver, 你也可以重写这三个类中的任何一个
     fetcher = spider.Fetcher(normal_max_repeat=3, normal_sleep_time=0, critical_max_repeat=5, critical_sleep_time=5)
-    parser = MyParser(max_deep=1, max_repeat=2)
+    parser = spider.Parser(max_deep=1, max_repeat=2)
+    # parser = MyParser(max_deep=1, max_repeat=2)
     saver = spider.Saver(file_name="out_%s.txt" % spider_type)
 
     # 定义Url过滤, UrlFilter使用Set, 适合Url数量不多的情况

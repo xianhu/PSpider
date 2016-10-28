@@ -11,10 +11,9 @@ import operator
 import functools
 import html.parser
 import urllib.parse
-import chardet.universaldetector
 
 __all__ = [
-    "get_html_content",
+    "get_resp_unzip",
     "get_json_data",
     "get_string_num",
     "get_string_split",
@@ -24,9 +23,9 @@ __all__ = [
 ]
 
 
-def get_html_content(response, charset=None):
+def get_resp_unzip(response):
     """
-    get html content from a response, charset can be None, "utf-8", "gb2312" and "gbk", etc
+    get unzip response content of a response
     """
     # get info(response headers) and content
     info = response.info()
@@ -40,28 +39,13 @@ def get_html_content(response, charset=None):
         )
     )
 
-    # find the charset by info
-    content_charset = info.get_content_charset(failobj="").lower()
-    if content_charset:
-        charset = content_charset
-
-    # find the charset by chardet
-    if not charset:
-        detector = chardet.universaldetector.UniversalDetector()
-        for line in content.split(b"\n"):
-            detector.feed(line)
-            if detector.done:
-                break
-        detector.close()
-        charset = detector.result["encoding"]
-
-    # decode the content
-    return content.decode(charset, errors="ignore")
+    # return content
+    return content
 
 
 def get_json_data(string, pattern=None, annotation_pattern=None, begin_pattern=None):
     """
-    get json data from a string, using pattern to extract
+    get json data from a string, using pattern to extract json string
     :param annotation_pattern: define annotation regex pattern to remove annotation
     :param begin_pattern: define begin regex pattern string to add " to the key of json
     """
@@ -143,7 +127,7 @@ def get_string_strip(string):
 
 def get_url_legal(url, base_url, encoding=None):
     """
-    get legal url from a url, based on base_url, and url_frags.fragment=""
+    get legal url from a url, based on base_url, and set url_frags.fragment = ""
     """
     url_join = urllib.parse.urljoin(base_url, url, allow_fragments=True)
     url_legal = urllib.parse.quote(url_join, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)

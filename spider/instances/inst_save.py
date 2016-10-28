@@ -6,7 +6,7 @@ inst_save.py by xianhu
 
 import sys
 import logging
-from ..utilities import params_chack
+from ..utilities import params_chack, return_check
 
 
 class Saver(object):
@@ -26,9 +26,9 @@ class Saver(object):
     @params_chack(object, str, object, object)
     def working(self, url, keys, item):
         """
-        working function, must "try, except" and call self.item_save(), don't change parameters and returns
+        working function, must "try, except" and call self.item_save(), don't change parameters and return
         :param keys: some information of this url, which can be used in this function
-        :param item: the item of this url which needs to be saved
+        :param item: the item of this url, which needs to be saved
         :return result: True or False
         """
         logging.debug("Saver start: keys=%s, url=%s", keys, url)
@@ -43,6 +43,7 @@ class Saver(object):
         logging.debug("Saver end: result=%s, url=%s", result, url)
         return result
 
+    @return_check(bool)
     def item_save(self, url, keys, item):
         """
         save the item of a url, you can rewrite this function, parameters and return refer to self.working()

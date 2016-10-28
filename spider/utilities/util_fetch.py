@@ -24,7 +24,7 @@ __all__ = [
 
 def make_cookie(name, value, domain, port=None, path=None, expires=None):
     """
-    make cookie based on "name", "value" and "domain", etc. domain like ".baidu.com" or "baidu.com"
+    make cookie based on "name", "value" and "domain", etc. domain must like ".baidu.com" or "baidu.com"
     :key: cookiejar.set_cookie(cookie)
     """
     # check parameters
@@ -125,8 +125,8 @@ def make_post_data(post_dict, boundary=None):
 
 def make_referer_url(url, path=False):
     """
-    make referer url for requesting, params="", query="" and fragment=""
-    :param path: whether referer_url include path
+    make referer url for requesting, set params = "", query = "" and fragment = ""
+    :param path: default False, whether referer_url include path
     """
     url_frags = urllib.parse.urlparse(url, allow_fragments=True)
     url_path = url_frags.path if path else "/"

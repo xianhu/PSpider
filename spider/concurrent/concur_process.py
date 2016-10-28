@@ -21,7 +21,7 @@ class ProcessPool(BasePool):
         """
         BasePool.__init__(self, fetcher, parser, saver, url_filter=url_filter)
 
-        # use Manager to share memory
+        # use multiprocessing.Manager to share memory
         self.manager = multiprocessing.Manager()
 
         # "overwirte" variables of base class
