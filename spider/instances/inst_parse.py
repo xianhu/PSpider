@@ -5,6 +5,7 @@ inst_parse.py by xianhu
 """
 
 import re
+import random
 import logging
 import datetime
 from ..utilities import get_url_legal, params_chack, return_check
@@ -21,6 +22,7 @@ class Parser(object):
         """
         self.max_deep = max_deep        # default: 0, if -1, spider will not stop until all urls are fetched
         self.max_repeat = max_repeat    # default: 3, maximum repeat time for parsing content
+        self.log_str_format = "priority=%s, keys=%s, deep=%s, critical=%s, parse_repeat=%s, url=%s"
         return
 
     @params_chack(object, int, str, object, int, bool, int, (list, tuple))
@@ -33,23 +35,20 @@ class Parser(object):
         :param critical: the critical flag of this url, which can be used in this function
         :param parse_repeat: the parse repeat time of this url, if parse_repeat > self.max_repeat, return code = -1
         :param content: the content of this url, which needs to be parsed, content is a tuple or list
-        :return (code, url_list, save_list): code can be -1(failed), 0(repeat), 1(success)
+        :return (code, url_list, save_list): code can be -1(parse failed), 0(need repeat), 1(parse success)
         :return (code, url_list, save_list): url_list is [(url, keys, critical, priority), ...], save_list is [item, ...]
         """
-        logging.debug("Parser start: priority=%s, keys=%s, deep=%s, critical=%s, parse_repeat=%s, url=%s",
-                      priority, keys, deep, critical, parse_repeat, url)
+        logging.debug("Parser start: %s", self.log_str_format % (priority, keys, deep, critical, parse_repeat, url))
 
         try:
             code, url_list, save_list = self.htm_parse(priority, url, keys, deep, critical, parse_repeat, content)
         except Exception as excep:
             if parse_repeat >= self.max_repeat:
                 code, url_list, save_list = -1, [], []
-                logging.error("Parser error: %s, priority=%s, keys=%s, deep=%s, critical=%s, parse_repeat=%s, url=%s",
-                              excep, priority, keys, deep, critical, parse_repeat, url)
+                logging.error("Parser error: %s, %s", excep, self.log_str_format % (priority, keys, deep, critical, parse_repeat, url))
             else:
                 code, url_list, save_list = 0, [], []
-                logging.debug("Parser repeat: %s, priority=%s, keys=%s, deep=%s, critical=%s, parse_repeat=%s, url=%s",
-                              excep, priority, keys, deep, critical, parse_repeat, url)
+                logging.debug("Parser repeat: %s, %s", excep, self.log_str_format % (priority, keys, deep, critical, parse_repeat, url))
 
         logging.debug("Parser end: code=%s, len(url_list)=%s, len(save_list)=%s, url=%s", code, len(url_list), len(save_list), url)
         return code, url_list, save_list
@@ -70,6 +69,16 @@ class Parser(object):
             url_list = [(_url, keys, critical, priority+1) for _url in [get_url_legal(href, url) for href in a_list]]
         title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
         save_list = [(url, title.group("title"), datetime.datetime.now()), ] if title else []
+
+        # test cpu task
+        count = 0
+        for i in range(1000):
+            for j in range(1000):
+                count += ((i*j) / 1000)
+
+        # test parsing error
+        if random.randint(0, 5) == 3:
+            parse_repeat += (1 / 0)
 
         # return code, url_list, save_list
         return 1, url_list, save_list

@@ -4,45 +4,9 @@
 test.py by xianhu
 """
 
-import re
-import random
 import logging
-import datetime
 import spider
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
-
-
-# 继承并重写Parser类
-class MyParser(spider.Parser):
-
-    def htm_parse(self, priority, url, keys, deep, critical, parse_repeat, content):
-        """
-        重写函数htm_parse()
-        """
-        # parse content (cur_code, cur_url, cur_info, cur_html)
-        *_, cur_html = content
-        cur_html = cur_html.decode("utf-8")
-
-        # get url_list and save_list
-        url_list = []
-        if (self.max_deep < 0) or (deep < self.max_deep):
-            a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]+?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
-            url_list = [(_url, keys, critical, priority+1) for _url in [spider.get_url_legal(href, url) for href in a_list]]
-        title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
-        save_list = [(url, title.group("title"), datetime.datetime.now()), ] if title else []
-
-        # test cpu task
-        count = 0
-        for i in range(1000):
-            for j in range(1000):
-                count += ((i*j) / 1000)
-
-        # test parsing error
-        if random.randint(0, 5) == 3:
-            parse_repeat += (1 / 0)
-
-        # return code, url_list, save_list
-        return 1, url_list, save_list
 
 
 def test_spider(spider_type):
@@ -52,7 +16,6 @@ def test_spider(spider_type):
     # 定义fetcher,parser和saver, 你也可以重写这三个类中的任何一个
     fetcher = spider.Fetcher(normal_max_repeat=3, normal_sleep_time=0, critical_max_repeat=5, critical_sleep_time=5)
     parser = spider.Parser(max_deep=1, max_repeat=2)
-    # parser = MyParser(max_deep=1, max_repeat=2)
     saver = spider.Saver(file_name="out_%s.txt" % spider_type)
 
     # 定义Url过滤, UrlFilter使用Set, 适合Url数量不多的情况

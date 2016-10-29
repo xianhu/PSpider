@@ -19,7 +19,6 @@ def params_chack(*types, **kwtypes):
     def _decoration(func):
         @functools.wraps(func)
         def _inner(*args, **kwargs):
-            # check the parameters
             result = [isinstance(_param, _type) for _param, _type in zip(args, types)]
             assert all(result), "params_chack: invalid parameters in function " + func.__name__
             result = [isinstance(kwargs[_param], kwtypes[_param]) for _param in kwargs if _param in kwtypes]

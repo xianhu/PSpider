@@ -38,7 +38,7 @@ class Fetcher(object):
         :param keys: some information of this url, which can be used in this function
         :param critical: the critical flag of this url, which can be used in this function
         :param fetch_repeat: the fetch repeat time of this url, if fetch_repeat > self.*_max_repeat, return code = -1
-        :return (code, content): code can be -1(failed), 0(repeat), 1(success), content must be a list or tuple
+        :return (code, content): code can be -1(fetch failed), 0(need repeat), 1(fetch success), content must be a list or tuple
         """
         logging.debug("Fetcher start: keys=%s, critical=%s, fetch_repeat=%s, url=%s", keys, critical, fetch_repeat, url)
 
