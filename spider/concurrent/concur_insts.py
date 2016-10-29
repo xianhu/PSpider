@@ -118,7 +118,7 @@ def work_monitor(self):
     cur_parse_num = self.pool.number_dict[TPEnum.HTM_PARSE]
     cur_save_num = self.pool.number_dict[TPEnum.ITEM_SAVE]
 
-    info = "%s status: running_tasks=%s;" % (self.pool.__class__.__name__, self.pool.number_dict[TPEnum.TASKS_RUNNING])
+    info = "%s status: running_tasks=%s;" % (self.pool.pool_name, self.pool.number_dict[TPEnum.TASKS_RUNNING])
     info += " fetch=(%d, %d, %d/(%ds));" % \
             (self.pool.number_dict[TPEnum.URL_NOT_FETCH], cur_fetch_num, cur_fetch_num-self.last_fetch_num, self.sleep_time)
     info += " parse=(%d, %d, %d/(%ds));" % \

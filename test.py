@@ -24,11 +24,7 @@ def test_spider(spider_type):
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
 
     # 确定使用ThreadPool还是ProcessPool
-    if spider_type == "thread":
-        web_spider = spider.WebSpiderT(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
-    else:
-        web_spider = spider.WebSpiderP(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
-
+    web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5, pool_type=spider_type)
     parser_num = 1 if spider_type == "thread" else 3
 
     # 首先抓取一次豌豆荚页面,抓取完成之后不停止monitor
