@@ -95,7 +95,7 @@ if __name__ == "__main__":
     saver = NBASaver(file_name_total="nba_total.txt", file_name_pergame="nba_pergame.txt")
 
     # 初始化爬虫, 并传入初始Url
-    nba_spider = spider.WebSpiderP(fetcher, parser, saver, url_filter=None)
+    nba_spider = spider.WebSpider(fetcher, parser, saver, url_filter=None)
     nba_spider.set_start_url(url_player_index, ("index",), critical=True)
 
     # 开启10个线程抓取数据

@@ -74,7 +74,7 @@ class ConcurPool(object):
         self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys, deep, critical, 0, 0))
         return
 
-    def start_work_and_wait_done(self, fetcher_num, parser_num, is_over=True):
+    def start_work_and_wait_done(self, fetcher_num=10, parser_num=1, is_over=True):
         """
         start this pool, and wait for finishing
         :param is_over: whether to stop monitor when this pool stop, default True
