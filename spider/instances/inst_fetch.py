@@ -9,7 +9,7 @@ import random
 import logging
 import urllib.error
 import urllib.request
-from ..utilities import make_headers, make_referer_url, params_chack, return_check, get_resp_unzip
+from ..utilities import make_random_useragent, params_chack, return_check, get_resp_unzip
 
 
 class Fetcher(object):
@@ -37,7 +37,7 @@ class Fetcher(object):
         :param url: the url which needs to be fetched
         :param keys: some information of this url, which can be used in this function
         :param critical: the critical flag of this url, which can be used in this function
-        :param fetch_repeat: the fetch repeat time of this url, if fetch_repeat > self.*_max_repeat, return code = -1
+        :param fetch_repeat: the fetch repeat time of this url, if fetch_repeat >= self.*_max_repeat, return code = -1
         :return (code, content): code can be -1(fetch failed), 0(need repeat), 1(fetch success), content must be a list or tuple
         """
         logging.debug("Fetcher start: keys=%s, critical=%s, fetch_repeat=%s, url=%s", keys, critical, fetch_repeat, url)
@@ -62,7 +62,10 @@ class Fetcher(object):
         fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
         # get response based on headers
-        headers = make_headers(user_agent="all", referer=make_referer_url(url), accept_encoding="gzip")
+        headers = {
+            "User-Agent": make_random_useragent(),
+            "Accept-Encoding": "gzip",
+        }
         response = self.opener.urlopen(urllib.request.Request(url, data=None, headers=headers), timeout=10)
 
         # get content (cur_code, cur_url, cur_info, cur_html)

@@ -33,7 +33,7 @@ class Parser(object):
         :param keys: some information of this url, which can be used in this function
         :param deep: the deep of this url, which can be used in this function
         :param critical: the critical flag of this url, which can be used in this function
-        :param parse_repeat: the parse repeat time of this url, if parse_repeat > self.max_repeat, return code = -1
+        :param parse_repeat: the parse repeat time of this url, if parse_repeat >= self.max_repeat, return code = -1
         :param content: the content of this url, which needs to be parsed, content is a tuple or list
         :return (code, url_list, save_list): code can be -1(parse failed), 0(need repeat), 1(parse success)
         :return (code, url_list, save_list): url_list is [(url, keys, critical, priority), ...], save_list is [item, ...]

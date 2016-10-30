@@ -9,7 +9,6 @@ __all__ = [
     "CONFIG_URLPATTERN_FILES",
     "CONFIG_URLPATTERN_IMAGE",
     "CONFIG_URLPATTERN_VIDEO",
-    "CONFIG_HEADERS_MAP",
     "CONFIG_USERAGENT_PC",
     "CONFIG_USERAGENT_PHONE",
     "CONFIG_USERAGENT_ALL",
@@ -28,62 +27,6 @@ CONFIG_URLPATTERN_FILES = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg
 CONFIG_URLPATTERN_IMAGE = r"\.(jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff)$"
 
 CONFIG_URLPATTERN_VIDEO = r"\.(mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$"
-
-
-# define request headers map, include cookie: Cookie
-CONFIG_HEADERS_MAP = {
-    "accept": "Accept",
-    "accept_charset": "Accept-Charset",
-    "accept_encoding": "Accept-Encoding",
-    "accept_language": "Accept-Language",
-    "accept_ranges": "Accept-Ranges",
-    "age": "Age",
-    "allow": "Allow",
-    "authorization": "Authorization",
-    "cache_control": "Cache-Control",
-    "connection": "Connection",
-    "content_encoding": "Content-Encoding",
-    "content_language": "Content-Language",
-    "content_length": "Content-Length",
-    "content_location": "Content-Location",
-    "content_md5": "Content-MD5",
-    "content_range": "Content-Range",
-    "content_type": "Content-Type",
-    "cookie": "Cookie",
-    "date": "Date",
-    "etag": "ETag",
-    "expect": "Expect",
-    "expires": "Expires",
-    "from": "From",
-    "host": "Host",
-    "if_match": "If-Match",
-    "if_modified_since": "If-Modified-Since",
-    "if_none_match": "If-None-Match",
-    "if_range": "If-Range",
-    "if_unmodified_since": "If-Unmodified-Since",
-    "last_modified": "Last-Modified",
-    "location": "Location",
-    "max_forwards": "Max-Forwards",
-    "pragma": "Pragma",
-    "proxy_authenticate": "Proxy-Authenticate",
-    "proxy_authorization": "Proxy-Authorization",
-    "range": "Range",
-    "referer": "Referer",
-    "retry_after": "Retry-After",
-    "server": "Server",
-    "te": "TE",
-    "trailer": "Trailer",
-    "transfer_encoding": "Transfer-Encoding",
-    "upgrade": "Upgrade",
-    "user_agent": "User-Agent",
-    "vary": "Vary",
-    "via": "Via",
-    "warning": "Warning",
-    "www_authenticate": "WWW-Authenticate",
-    "origin": "Origin",
-    "upgrade_insecure_requests": "Upgrade-Insecure-Requests",
-    "x_forwarded_for": "X_FORWARDED_FOR",
-}
 
 
 # define user_agents, include useragent_pc, useragent_phone and useragent_all
@@ -279,3 +222,16 @@ CONFIG_USERAGENT_PHONE = [
 ]
 
 CONFIG_USERAGENT_ALL = CONFIG_USERAGENT_PC + CONFIG_USERAGENT_PHONE
+
+
+# request headers
+CONFIG_HEADERS = {
+    "Accept", "Accept-Charset", "Accept-Encoding", "Accept-Language", "Accept-Ranges",
+    "Age", "Allow", "Authorization", "Cache-Control", "Connection",
+    "Content-Encoding", "Content-Language", "Content-Length", "Content-Location", "Content-MD5", "Content-Range", "Content-Type",
+    "Cookie", "Date", "ETag", "Expect", "Expires", "From", "Host",
+    "If-Match", "If-Modified-Since", "If-None-Match", "If-Range", "If-Unmodified-Since",
+    "Last-Modified", "Location", "Max-Forwards", "Pragma", "Proxy-Authenticate", "Proxy-Authorization", "Range", "Referer", "Retry-After",
+    "Server", "TE", "Trailer", "Transfer-Encoding", "Upgrade", "User-Agent", "Vary", "Via",
+    "Warning", "WWW-Authenticate", "Origin", "Upgrade-Insecure-Requests", "X_FORWARDED_FOR"
+}

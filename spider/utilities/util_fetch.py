@@ -9,16 +9,15 @@ import random
 import urllib.parse
 import urllib.request
 import http.cookiejar
-from .util_config import CONFIG_HEADERS_MAP, CONFIG_USERAGENT_PC, CONFIG_USERAGENT_PHONE, CONFIG_USERAGENT_ALL
+from .util_config import CONFIG_USERAGENT_PC, CONFIG_USERAGENT_PHONE, CONFIG_USERAGENT_ALL
 
 __all__ = [
     "make_cookie",
     "make_cookies_maps",
     "make_cookies_string",
     "make_cookiejar_opener",
-    "make_headers",
     "make_post_data",
-    "make_referer_url",
+    "make_random_useragent",
 ]
 
 
@@ -83,19 +82,6 @@ def make_cookiejar_opener(is_cookie=True, proxies=None):
     return cookie_jar, opener
 
 
-def make_headers(user_agent="pc", **kwargs):
-    """
-    make dictionary headers for requesting, user_agent: "pc", "phone", "all" or a ua_string
-    :key: headers["Cookie"] = cookies_string
-    """
-    kwargs["user_agent"] = random.choice(CONFIG_USERAGENT_ALL) if user_agent == "all" else (
-        random.choice(CONFIG_USERAGENT_PC) if user_agent == "pc" else (
-            random.choice(CONFIG_USERAGENT_PHONE) if user_agent == "phone" else user_agent
-        )
-    )
-    return {CONFIG_HEADERS_MAP[key]: kwargs[key] for key in kwargs if key in CONFIG_HEADERS_MAP}
-
-
 def make_post_data(post_dict, boundary=None):
     """
     make post_data based on post_dict, post_dict: {name: value, ...}
@@ -123,11 +109,9 @@ def make_post_data(post_dict, boundary=None):
     return b'\r\n'.join(post_data)
 
 
-def make_referer_url(url, path=False):
+def make_random_useragent(ua_type="pc"):
     """
-    make referer url for requesting, set params = "", query = "" and fragment = ""
-    :param path: default False, whether referer_url include path
+    make a random user_agent based on ua_type, ua_type can be "pc", "phone" or "all"
     """
-    url_frags = urllib.parse.urlparse(url, allow_fragments=True)
-    url_path = url_frags.path if path else "/"
-    return urllib.parse.urlunparse((url_frags.scheme, url_frags.netloc, url_path, "", "", ""))
+    assert ua_type in ("pc", "phone", "all"), "make_random_useragent: ua_type is invalid"
+    return random.choice(CONFIG_USERAGENT_PC if ua_type == "pc" else (CONFIG_USERAGENT_PHONE if ua_type == "phone" else CONFIG_USERAGENT_ALL))

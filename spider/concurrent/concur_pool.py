@@ -21,7 +21,7 @@ class ConcurPool(object):
         """
         constructor
         """
-        assert pool_type in ("thread", "process"), "pool_type must be 'thread' or 'process'"
+        assert pool_type in ("thread", "process"), "ConcurPool: pool_type must be 'thread' or 'process'"
         self.pool_name = "ThreadPool" if pool_type == "thread" else "ProcessPool"
         self.pool_type = pool_type          # default: "thread", must be "thread" or "process", to identify pool type
 
@@ -67,7 +67,7 @@ class ConcurPool(object):
     def set_start_url(self, url, keys, priority=0, deep=0, critical=False):
         """
         set start url based on "keys", "priority", "deep" and "critical", fetch_repeat and parse_repeat must be 0
-        :param keys: you can add some information to this url, and pass that to fetcher, parser or saver
+        :param keys: some information of this url, and will be passed to fetcher, parser or saver
         :param critical: the critical flag of this url, default False to identity that this url is normal, else this url is critical
         """
         logging.warning("%s set_start_url: keys=%s, priority=%s, deep=%s, critical=%s, url=%s", self.pool_name, keys, priority, deep, critical, url)

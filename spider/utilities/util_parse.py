@@ -128,6 +128,7 @@ def get_string_strip(string):
 def get_url_legal(url, base_url, encoding=None):
     """
     get legal url from a url, based on base_url, and set url_frags.fragment = ""
+    :key: http://stats.nba.com/player/#!/201566/?p=russell-westbrook
     """
     url_join = urllib.parse.urljoin(base_url, url, allow_fragments=True)
     url_legal = urllib.parse.quote(url_join, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
