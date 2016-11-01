@@ -7,9 +7,8 @@ inst_fetch.py by xianhu
 import time
 import random
 import logging
-import urllib.error
-import urllib.request
-from ..utilities import make_random_useragent, params_chack, return_check, get_resp_unzip
+import requests
+from ..utilities import make_random_useragent, params_chack, return_check
 
 
 class Fetcher(object):
@@ -25,9 +24,6 @@ class Fetcher(object):
         self.normal_sleep_time = normal_sleep_time          # default: 3, sleeping time after a fetching for normal url
         self.critical_max_repeat = critical_max_repeat      # default: 10, maximum repeat time for critical url
         self.critical_sleep_time = critical_sleep_time      # default: 10, sleeping time after a fetching for critical url
-
-        self.cookiejar = None                               # default: None, cookiejar for each fetcher
-        self.opener = urllib.request                        # default: urllib.request, opener for each fetcher
         return
 
     @params_chack(object, str, object, bool, int)
@@ -66,13 +62,12 @@ class Fetcher(object):
             "User-Agent": make_random_useragent(),
             "Accept-Encoding": "gzip",
         }
-        response = self.opener.urlopen(urllib.request.Request(url, data=None, headers=headers), timeout=10)
+        response = requests.get(url, params=None, data=None, headers=headers, cookies=None, timeout=(3.05, 10))
+        if response.history:
+            logging.debug("Fetcher redirect: keys=%s, critical=%s, fetch_repeat=%s, url=%s", keys, critical, fetch_repeat, url)
 
-        # get content (cur_code, cur_url, cur_info, cur_html)
-        cur_code, cur_url, cur_info = response.getcode(), response.geturl(), response.info()
-        content = (cur_code, cur_url, cur_info, get_resp_unzip(response))
-        if cur_url != url:
-            logging.debug("Fetcher redirection: keys=%s, critical=%s, fetch_repeat=%s, %s,%s", keys, critical, fetch_repeat, cur_url, url)
+        # get content(cur_code, cur_url, cur_html)
+        content = (response.status_code, response.url, response.text)
 
         # return code, conten
         return 1, content

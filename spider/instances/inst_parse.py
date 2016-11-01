@@ -53,14 +53,13 @@ class Parser(object):
         logging.debug("Parser end: code=%s, len(url_list)=%s, len(save_list)=%s, url=%s", code, len(url_list), len(save_list), url)
         return code, url_list, save_list
 
-    @return_check(int, list, list)
+    @return_check(int, (tuple, list), (tuple, list))
     def htm_parse(self, priority, url, keys, deep, critical, parse_repeat, content):
         """
         parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
-        # parse content (cur_code, cur_url, cur_info, cur_html)
+        # parse content(cur_code, cur_url, cur_html)
         *_, cur_html = content
-        cur_html = cur_html.decode("utf-8")
 
         # get url_list and save_list
         url_list = []

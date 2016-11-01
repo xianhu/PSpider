@@ -4,8 +4,8 @@
 test.py by xianhu
 """
 
-import logging
 import spider
+import logging
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
 
 
@@ -41,7 +41,6 @@ if __name__ == "__main__":
     # 测试多线程抓取
     test_spider(spider_type="thread")
 
-    # 测试多线程/多进程混合抓取
-    test_spider(spider_type="process")
-
+    # 测试多线程/多进程混合抓取, 在Windows上可能有问题
+    # test_spider(spider_type="process")
     exit()

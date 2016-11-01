@@ -5,75 +5,17 @@ util_parse.py by xianhu
 """
 
 import re
-import zlib
-import json
 import operator
 import functools
-import html.parser
 import urllib.parse
 
 __all__ = [
-    "get_resp_unzip",
-    "get_json_data",
     "get_string_num",
     "get_string_split",
     "get_string_strip",
     "get_url_legal",
     "get_url_params",
 ]
-
-
-def get_resp_unzip(response):
-    """
-    get unzip response content of a response
-    """
-    # get info(response headers) and content
-    info = response.info()
-    content = response.read()
-
-    # decompress the content by info: Content_Encoding also can be content-encoding, ignore case
-    content_encoding = info.get("Content-Encoding", failobj="").lower()
-    content = zlib.decompress(content, zlib.MAX_WBITS | 16) if (content_encoding.find("gzip") >= 0) else (
-        zlib.decompress(content, zlib.MAX_WBITS) if (content_encoding.find("zlib") >= 0) else (
-            zlib.decompress(content, -zlib.MAX_WBITS) if (content_encoding.find("deflate") >= 0) else content
-        )
-    )
-
-    # return content
-    return content
-
-
-def get_json_data(string, pattern=None, annotation_pattern=None, begin_pattern=None):
-    """
-    get json data from a string, using pattern to extract json string
-    :param annotation_pattern: define annotation regex pattern to remove annotation
-    :param begin_pattern: define begin regex pattern string to add " to the key of json
-    """
-    # get string_re
-    string_re = re.search(pattern if pattern else r"(?P<item>\{[\w\W]*?\})", string, flags=re.IGNORECASE)
-    if not string_re:
-        return None
-
-    # get string_json
-    string_json = string_re.group(1).strip()
-
-    # remove annotation: r"(/\*[\w\W]*?\*/)|(//[\w\W]*?)\n"
-    if annotation_pattern:
-        string_json = re.sub(annotation_pattern, "\n", string_json, flags=re.IGNORECASE)
-    string_json = html.parser.unescape(string_json.replace("'", '"'))
-
-    # try and except the exception
-    try:
-        result = json.loads(string_json)
-    except json.JSONDecodeError:
-        # change key to "key"
-        regex = r"%s(?P<key>\w+?)(?P<temp>\s*:)" % (begin_pattern if begin_pattern else r"[(^{),\s]")
-        for key, temp in re.findall(regex, string_json, flags=re.IGNORECASE):
-            string_json = string_json.replace(key+temp, '"%s":' % key.strip())
-        result = json.loads(string_json)
-
-    # return json object
-    return result
 
 
 def get_string_num(string, base=None):

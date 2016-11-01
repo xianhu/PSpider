@@ -1,8 +1,7 @@
 # _*_ coding: utf-8 _*_
 
-import json
 import spider
-import urllib.request
+import requests
 
 # NBA球员索引URL
 url_player_index = "http://stats.nba.com/stats/commonallplayers?IsOnlyCurrentSeason=1&LeagueID=00&Season=2016-17"
@@ -18,11 +17,9 @@ class NBAFetcher(spider.Fetcher):
         """
         这里只需要重写url_fetch函数,参数含义及返回结果见框架
         """
-        headers = spider.make_headers(user_agent="all", accept_encoding="gzip")
-        response = self.opener.urlopen(urllib.request.Request(url, headers=headers), timeout=10)
-
-        content = (spider.get_resp_unzip(response).decode("utf-8"), )
-        return 1, content
+        headers = {"User-Agent": spider.make_random_useragent("pc"), "Accept-Encoding": "gzip"}
+        response = requests.get(url, headers=headers, timeout=10)
+        return 1, (response.json(), )
 
 
 # 定义解析过程
@@ -35,7 +32,7 @@ class NBAParser(spider.Parser):
         url_list, saver_list = [], []
         if keys[0] == "index":
             # 解析索引页
-            content_json = json.loads(content[0])
+            content_json = content[0]
 
             # 解析所有的球员
             for item in content_json["resultSets"][0]["rowSet"]:
@@ -44,11 +41,10 @@ class NBAParser(spider.Parser):
                 url_list.append((url_player_stats % (item[0], "PerGame"), ("PerGame", item[2]), True, 0))
         else:
             # 解析球员数据页
-            content_json = json.loads(content[0])
+            content_json = content[0]
 
             # 解析球员数据
             saver_list = content_json["resultSets"][0]["rowSet"]
-
         return 1, url_list, saver_list
 
 
