@@ -27,11 +27,11 @@ def test_spider(spider_type):
     web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5, pool_type=spider_type)
     parser_num = 1 if spider_type == "thread" else 3
 
-    # 首先抓取一次豌豆荚页面,抓取完成之后不停止monitor
+    # 首先抓取一次豌豆荚页面, 抓取完成之后不停止monitor
     web_spider.set_start_url("http://www.wandoujia.com/apps", ("wandoujia",), priority=0, deep=0, critical=False)
     web_spider.start_work_and_wait_done(fetcher_num=10, parser_num=parser_num, is_over=False)
 
-    # 然后抓取360应用商店页面,抓取完成之后停止monitor
+    # 然后抓取360应用商店页面, 抓取完成之后停止monitor
     web_spider.set_start_url("http://zhushou.360.cn/", ("360app",), priority=0, deep=0, critical=False)
     web_spider.start_work_and_wait_done(fetcher_num=10, parser_num=parser_num, is_over=True)
     return

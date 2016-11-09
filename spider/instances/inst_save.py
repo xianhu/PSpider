@@ -20,6 +20,7 @@ class Saver(object):
         """
         self.save_num = 0               # initial: 0, count of items which have been saved successfully
         self.file_name = file_name      # default: None, output file or sys.stdout(if file_name is None)
+
         self.save_pipe = open(file_name, "w", encoding="utf-8") if file_name else sys.stdout
         return
 

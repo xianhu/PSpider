@@ -21,7 +21,7 @@ class ConcurPool(object):
         """
         constructor
         """
-        assert pool_type in ("thread", "process"), "ConcurPool: pool_type must be 'thread' or 'process'"
+        assert pool_type in ("thread", "process"), "ConcurPool: parameter pool_type must be 'thread' or 'process'"
         self.pool_name = "ThreadPool" if pool_type == "thread" else "ProcessPool"
         self.pool_type = pool_type          # default: "thread", must be "thread" or "process", to identify pool type
 
@@ -68,7 +68,7 @@ class ConcurPool(object):
         """
         set start url based on "keys", "priority", "deep" and "critical", fetch_repeat and parse_repeat must be 0
         :param keys: some information of this url, and will be passed to fetcher, parser or saver
-        :param critical: the critical flag of this url, default False to identity that this url is normal, else this url is critical
+        :param critical: the critical flag of this url, default False to identity that this url is normal, else is critical
         """
         logging.warning("%s set_start_url: keys=%s, priority=%s, deep=%s, critical=%s, url=%s", self.pool_name, keys, priority, deep, critical, url)
         self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys, deep, critical, 0, 0))
@@ -123,13 +123,10 @@ class ConcurPool(object):
 
     def update_number_dict(self, key, value):
         """
-        update self.number_dict of this pool. if value is 0, set self.number_dict[key] to value
+        update self.number_dict of this pool
         """
         self.lock.acquire()
-        if value == 0:
-            self.number_dict[key] = value
-        else:
-            self.number_dict[key] += value
+        self.number_dict[key] += value
         self.lock.release()
         return
 

@@ -22,6 +22,7 @@ class Parser(object):
         """
         self.max_deep = max_deep        # default: 0, if -1, spider will not stop until all urls are fetched
         self.max_repeat = max_repeat    # default: 3, maximum repeat time for parsing content
+
         self.log_str_format = "priority=%s, keys=%s, deep=%s, critical=%s, parse_repeat=%s, url=%s"
         return
 
