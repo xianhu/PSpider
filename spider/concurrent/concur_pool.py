@@ -17,13 +17,13 @@ class ConcurPool(object):
     class of ConcurPool, can be instanced to thread_pool or process_pool
     """
 
-    def __init__(self, fetcher, parser, saver, url_filter=None, monitor_sleep_time=5, pool_type="thread"):
+    def __init__(self, fetcher, parser, saver, url_filter=None, pool_type="thread", monitor_sleep_time=5):
         """
         constructor
         """
         assert pool_type in ("thread", "process"), "ConcurPool: parameter pool_type must be 'thread' or 'process'"
-        self.pool_name = "ThreadPool" if pool_type == "thread" else "ProcessPool"
         self.pool_type = pool_type          # default: "thread", must be "thread" or "process", to identify pool type
+        self.pool_name = "ThreadPool" if pool_type == "thread" else "ProcessPool"
 
         self.inst_fetcher = fetcher         # fetcher instance, for fetch thread or process
         self.inst_parser = parser           # parser instance, for parse thread or process
@@ -47,6 +47,7 @@ class ConcurPool(object):
             self.fetch_queue = queue.PriorityQueue()                # (priority, url, keys, deep, critical, fetch_repeat, parse_repeat)
             self.parse_queue = queue.PriorityQueue()                # (priority, url, keys, deep, critical, fetch_repeat, parse_repeat, content)
             self.save_queue = queue.Queue()                         # (url, keys, item), item can be any type object
+
             self.lock = threading.Lock()                            # the lock which self.number_dict needs
         else:
             self.fetch_queue = multiprocessing.JoinableQueue()      # (priority, url, keys, deep, critical, fetch_repeat, parse_repeat)
@@ -67,7 +68,7 @@ class ConcurPool(object):
     def set_start_url(self, url, keys, priority=0, deep=0, critical=False):
         """
         set start url based on "keys", "priority", "deep" and "critical", fetch_repeat and parse_repeat must be 0
-        :param keys: some information of this url, and will be passed to fetcher, parser or saver
+        :param keys: some information of this url, and will be passed to fetcher, parser and saver
         :param critical: the critical flag of this url, default False to identity that this url is normal, else is critical
         """
         logging.warning("%s set_start_url: keys=%s, priority=%s, deep=%s, critical=%s, url=%s", self.pool_name, keys, priority, deep, critical, url)
@@ -123,7 +124,7 @@ class ConcurPool(object):
 
     def update_number_dict(self, key, value):
         """
-        update self.number_dict of this pool
+        update number_dict of this pool
         """
         self.lock.acquire()
         self.number_dict[key] += value

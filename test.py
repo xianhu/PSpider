@@ -24,7 +24,7 @@ def test_spider(spider_type):
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
 
     # 确定使用ThreadPool还是ProcessPool
-    web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5, pool_type=spider_type)
+    web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, pool_type=spider_type, monitor_sleep_time=5)
     parser_num = 1 if spider_type == "thread" else 3
 
     # 首先抓取一次豌豆荚页面, 抓取完成之后不停止monitor
@@ -42,5 +42,5 @@ if __name__ == "__main__":
     test_spider(spider_type="thread")
 
     # 测试多线程/多进程混合抓取, 在Windows上可能有问题
-    # test_spider(spider_type="process")
+    test_spider(spider_type="process")
     exit()

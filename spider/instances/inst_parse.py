@@ -16,12 +16,12 @@ class Parser(object):
     class of Parser, must include function working() and htm_parse()
     """
 
-    def __init__(self, max_deep=0, max_repeat=3):
+    def __init__(self, max_deep=0, max_repeat=0):
         """
         constructor
         """
         self.max_deep = max_deep        # default: 0, if -1, spider will not stop until all urls are fetched
-        self.max_repeat = max_repeat    # default: 3, maximum repeat time for parsing content
+        self.max_repeat = max_repeat    # default: 0, maximum repeat time for parsing content
 
         self.log_str_format = "priority=%s, keys=%s, deep=%s, critical=%s, parse_repeat=%s, url=%s"
         return
@@ -60,25 +60,21 @@ class Parser(object):
         parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
         # parse content(cur_code, cur_url, cur_html)
-        *_, cur_html = content
+        cur_code, cur_url, cur_html = content
 
         # get url_list and save_list
         url_list = []
         if (self.max_deep < 0) or (deep < self.max_deep):
-            a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]+?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
+            a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
             url_list = [(_url, keys, critical, priority+1) for _url in [get_url_legal(href, url) for href in a_list]]
         title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
         save_list = [(url, title.group("title"), datetime.datetime.now()), ] if title else []
 
         # test cpu task
-        count = 0
-        for i in range(1000):
-            for j in range(1000):
-                count += ((i*j) / 1000)
+        sum([(i*j)/1000 for i in range(1000) for j in range(1000)])
 
         # test parsing error
-        if random.randint(0, 5) == 3:
-            parse_repeat += (1 / 0)
+        code = (1/0) if random.randint(0, 5) == 3 else 1
 
         # return code, url_list, save_list
-        return 1, url_list, save_list
+        return code, url_list, save_list

@@ -17,9 +17,9 @@ class TPEnum(enum.Enum):
     """
     TASKS_RUNNING = "tasks_running"     # flag of tasks_running
 
-    URL_FETCH = "url_fetch"             # flag of url_fetch
-    HTM_PARSE = "htm_parse"             # flag of htm_parse
-    ITEM_SAVE = "item_save"             # flag of item_save
+    URL_FETCH = "url_fetch"             # flag of url_fetched
+    HTM_PARSE = "htm_parse"             # flag of htm_parsed
+    ITEM_SAVE = "item_save"             # flag of item_saved
 
     URL_NOT_FETCH = "url_not_fetch"     # flag of url_not_fetch
     HTM_NOT_PARSE = "htm_not_parse"     # flag of htm_not_parse
@@ -35,9 +35,9 @@ class BaseConcur(object):
         """
         constructor
         """
-        self.name = name        # the name of each thread or process
-        self.worker = worker    # the worker of each thread or process
-        self.pool = pool        # the thread_pool or process_pool
+        self.name = name                # the name of each thread or process
+        self.worker = worker            # the worker of each thread or process
+        self.pool = pool                # the thread_pool or process_pool
         return
 
     def run(self):
