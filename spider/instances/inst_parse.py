@@ -31,6 +31,7 @@ class Parser(object):
         """
         working function, must "try, except" and call self.htm_parse(), don't change parameters and return
         :param priority: the priority of this url, which can be used in this function
+        :param url: the url, whose content needs to be parsed
         :param keys: some information of this url, which can be used in this function
         :param deep: the deep of this url, which can be used in this function
         :param critical: the critical flag of this url, which can be used in this function

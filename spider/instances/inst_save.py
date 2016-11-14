@@ -26,6 +26,7 @@ class Saver(object):
     def working(self, url, keys, item):
         """
         working function, must "try, except" and call self.item_save(), don't change parameters and return
+        :param url: the url, whose item needs to be saved
         :param keys: some information of this url, which can be used in this function
         :param item: the item of this url, which needs to be saved
         :return result: True or False

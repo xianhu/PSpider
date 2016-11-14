@@ -29,8 +29,8 @@ class Fetcher(object):
     @params_chack(object, str, object, bool, int)
     def working(self, url, keys, critical, fetch_repeat):
         """
-        working function,  must "try, expect" and call self.url_fetch(), don't change parameters and return
-        :param url: the url which needs to be fetched
+        working function, must "try, expect" and call self.url_fetch(), don't change parameters and return
+        :param url: the url, which needs to be fetched
         :param keys: some information of this url, which can be used in this function
         :param critical: the critical flag of this url, which can be used in this function
         :param fetch_repeat: the fetch repeat time of this url, if fetch_repeat >= self.*_max_repeat, return code = -1

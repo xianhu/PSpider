@@ -68,7 +68,10 @@ class ConcurPool(object):
     def set_start_url(self, url, keys, priority=0, deep=0, critical=False):
         """
         set start url based on "keys", "priority", "deep" and "critical", fetch_repeat and parse_repeat must be 0
+        :param url: the url, which needs to be fetched in this spider
         :param keys: some information of this url, and will be passed to fetcher, parser and saver
+        :param priority: the priority of this url, spider fetches url according to url's priority
+        :param deep: the deep of this url, when deep > max_deep, stop fetching, default 0
         :param critical: the critical flag of this url, default False to identity that this url is normal, else is critical
         """
         logging.warning("%s set_start_url: keys=%s, priority=%s, deep=%s, critical=%s, url=%s", self.pool_name, keys, priority, deep, critical, url)
@@ -78,6 +81,8 @@ class ConcurPool(object):
     def start_work_and_wait_done(self, fetcher_num=10, parser_num=1, is_over=True):
         """
         start this pool, and wait for finishing
+        :param fetcher_num: the number of fetching thread
+        :param parser_num: the number of parsing thread or parsing process
         :param is_over: whether to stop monitor when this pool stop, default True
         """
         logging.warning("%s start: fetcher_num=%s, parser_num=%s, is_over=%s", self.pool_name, fetcher_num, parser_num, is_over)
