@@ -20,13 +20,12 @@ Python3下极为简洁的爬虫框架, 简单介绍点[这里](https://zhuanlan.
 4. 2016-10-29, 合并"多线程"和"多进程"池文件, 简化框架
 5. 2016-11-01, 使用requests替代urllib, 简化框架
 6. 2016-11-08, 删除部分无用函数/类等, 简化框架
-7. 2016-11-17, 更新pybloom至pybloom-live, 可直接利用pip安装
+7. 2016-11-13, 更新pybloom至pybloom-live, 可直接利用pip安装
+8. 2016-11-17, 添加Dockerfile文件和requirements.txt文件
 
 #### 下一步计划
 1. 利用Redis改为分布式爬虫
 
 #### 问题汇总
-- 安装时提示: Could not find suitable distribution for Requirement.parse('pybloom>=2.0.0')
-    - bloomfilter需要手动安装, 源代码地址在setup文件中, 从GitHub下载后安装即可
 
 ### 欢迎大家在"Issues"中提出问题或者建议,也可以fork后提交"Pull requests"

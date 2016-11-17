@@ -1,0 +1,5 @@
+beautifulsoup4
+pybloom_live
+PyMySQL
+requests
+virtualenv
