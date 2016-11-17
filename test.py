@@ -21,7 +21,7 @@ def test_spider(spider_type):
     # 定义Url过滤, UrlFilter使用Set, 适合Url数量不多的情况
     black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download", )
     white_patterns = ("^http[s]{0,1}://(www\.){0,1}(wandoujia|(zhushou\.360))\.(com|cn)", )
-    url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
+    url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=1000)
 
     # 确定使用ThreadPool还是ProcessPool
     web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, pool_type=spider_type, monitor_sleep_time=5)

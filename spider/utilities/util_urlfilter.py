@@ -5,7 +5,7 @@ util_urlfilter.py by xianhu
 """
 
 import re
-import pybloom
+import pybloom_live
 from .util_config import CONFIG_URLPATTERN_ALL
 
 
@@ -22,7 +22,7 @@ class UrlFilter(object):
         self.re_white_list = [re.compile(_pattern, flags=re.IGNORECASE) for _pattern in white_patterns]
 
         self.url_set = set() if not capacity else None
-        self.bloom_filter = pybloom.ScalableBloomFilter(capacity, error_rate=0.001) if capacity else None
+        self.bloom_filter = pybloom_live.ScalableBloomFilter(capacity, error_rate=0.001) if capacity else None
         return
 
     def update(self):

@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="spider",
-    version="1.4.4",
+    version="1.4.5",
     author="xianhu",
     keywords=["spider", "crawler"],
     packages=find_packages(exclude=("test", "test.*", "demos_*")),
@@ -16,7 +16,7 @@ setup(
         "": ["*.conf"],         # include all *.conf files
     },
     install_requires=[
-        "pybloom>=2.0.0",       # pybloom, install from github(https://github.com/jaybaird/python-bloomfilter)
+        "pybloom_live>=2.1.0",  # pybloom-live, fork from pybloom
         "requests>=2.10.0",     # requests, http for humans
     ]
 )
