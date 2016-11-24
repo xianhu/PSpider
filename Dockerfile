@@ -36,4 +36,8 @@ RUN pip3 install --upgrade pip
 RUN pip3 install -r Dockerfile_requirements.txt
 RUN rm -rf /root/*
 
+WORKDIR /root/
+RUN echo "alias python=python3" >> /root/.bashrc
+RUN source /root/.bashrc
+
 CMD /bin/bash
