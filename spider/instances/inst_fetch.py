@@ -58,10 +58,7 @@ class Fetcher(object):
         fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
         # get response based on headers
-        headers = {
-            "User-Agent": make_random_useragent(),
-            "Accept-Encoding": "gzip",
-        }
+        headers = {"User-Agent": make_random_useragent(), "Accept-Encoding": "gzip"}
         response = requests.get(url, params=None, data=None, headers=headers, cookies=None, timeout=(3.05, 10))
         if response.history:
             logging.debug("Fetcher redirect: keys=%s, critical=%s, fetch_repeat=%s, url=%s", keys, critical, fetch_repeat, url)
