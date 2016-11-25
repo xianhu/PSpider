@@ -26,7 +26,7 @@ class Parser(object):
         self.log_str_format = "priority=%s, keys=%s, deep=%s, critical=%s, parse_repeat=%s, url=%s"
         return
 
-    @params_chack(object, int, str, object, int, bool, int, (list, tuple))
+    @params_chack(object, int, str, object, int, bool, int, object)
     def working(self, priority, url, keys, deep, critical, parse_repeat, content):
         """
         working function, must "try, except" and call self.htm_parse(), don't change parameters and return
@@ -36,7 +36,7 @@ class Parser(object):
         :param deep: the deep of this url, which can be used in this function
         :param critical: the critical flag of this url, which can be used in this function
         :param parse_repeat: the parse repeat time of this url, if parse_repeat >= self.max_repeat, return code = -1
-        :param content: the content of this url, which needs to be parsed, content is a tuple or list
+        :param content: the content of this url, which needs to be parsed, content is transfered from Fetcher
         :return (code, url_list, save_list): code can be -1(parse failed), 0(need repeat), 1(parse success)
         :return (code, url_list, save_list): url_list is [(url, keys, critical, priority), ...], save_list is [item, ...]
         """
