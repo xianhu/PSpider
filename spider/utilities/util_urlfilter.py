@@ -29,7 +29,7 @@ class UrlFilter(object):
         """
         update this urlfilter, you can rewrite this function if necessary
         """
-        raise NotImplementedError
+        assert False, "you must rewrite update function in class of %s" % self.__class__.__name__
 
     def check(self, url):
         """
