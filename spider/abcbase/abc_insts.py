@@ -6,7 +6,7 @@ abc_insts.py by xianhu
 
 import time
 import logging
-from .abc_base import BaseThread, BaseProcess, TPEnum
+from .abc_base import TPEnum, BaseThread
 
 
 # ===============================================================================================================================
@@ -35,7 +35,6 @@ def work_fetch(self):
     return True
 
 FetchThread = type("FetchThread", (BaseThread,), dict(work=work_fetch))
-FetchProcess = type("FetchProcess", (BaseProcess,), dict(work=work_fetch))
 
 
 # ===============================================================================================================================
@@ -67,7 +66,6 @@ def work_parse(self):
     return True
 
 ParseThread = type("ParseThread", (BaseThread,), dict(work=work_parse))
-ParseProcess = type("ParseProcess", (BaseProcess,), dict(work=work_parse))
 
 
 # ===============================================================================================================================
@@ -90,7 +88,6 @@ def work_save(self):
     return True
 
 SaveThread = type("SaveThread", (BaseThread,), dict(work=work_save))
-SaveProcess = type("SaveProcess", (BaseProcess,), dict(work=work_save))
 
 
 # ===============================================================================================================================
@@ -111,27 +108,31 @@ def init_monitor_thread(self, name, pool, sleep_time=5):
 
 def work_monitor(self):
     """
-    monitor the pool, auto running, and return True to continue, False to stop
+    monitor the pool, auto running and return True to continue, False to stop
     """
     time.sleep(self.sleep_time)
+
     cur_fetch_num = self.pool.number_dict[TPEnum.URL_FETCH]
     cur_parse_num = self.pool.number_dict[TPEnum.HTM_PARSE]
     cur_save_num = self.pool.number_dict[TPEnum.ITEM_SAVE]
 
-    info = "%s status: running_tasks=%s;" % (self.pool.pool_name, self.pool.number_dict[TPEnum.TASKS_RUNNING])
+    info = "%s status: running_tasks=%s;" % (self.pool.__class__.__name__, self.pool.number_dict[TPEnum.TASKS_RUNNING])
+
     info += " fetch=(%d, %d, %d/(%ds));" % \
             (self.pool.number_dict[TPEnum.URL_NOT_FETCH], cur_fetch_num, cur_fetch_num-self.last_fetch_num, self.sleep_time)
+    self.last_fetch_num = cur_fetch_num
+
     info += " parse=(%d, %d, %d/(%ds));" % \
             (self.pool.number_dict[TPEnum.HTM_NOT_PARSE], cur_parse_num, cur_parse_num-self.last_parse_num, self.sleep_time)
+    self.last_parse_num = cur_parse_num
+
     info += " save=(%d, %d, %d/(%ds));" % \
             (self.pool.number_dict[TPEnum.ITEM_NOT_SAVE], cur_save_num, cur_save_num-self.last_save_num, self.sleep_time)
-    info += " total_seconds=%d" % (time.time() - self.init_time)
-    logging.warning(info)
-
-    self.last_fetch_num = cur_fetch_num
-    self.last_parse_num = cur_parse_num
     self.last_save_num = cur_save_num
 
+    info += " total_seconds=%d" % (time.time() - self.init_time)
+
+    logging.warning(info)
     return False if self.pool.monitor_stop else True
 
 MonitorThread = type("MonitorThread", (BaseThread,), dict(__init__=init_monitor_thread, work=work_monitor))

@@ -53,7 +53,7 @@ def get_string_split(string, split_chars=(" ", "\t", ","), is_remove_empty=False
     """
     get string list by splitting string based on split_chars, len(split_chars) must >= 2
     """
-    assert len(split_chars) >= 2, "get_string_split: len(split_chars) must >= 2"
+    assert len(split_chars) >= 2, "get_string_split: parameter split_chars[%s] is invalid, the length of it must >= 2" % split_chars
     string_list = string.split(split_chars[0])
     for char in split_chars[1:]:
         string_list = functools.reduce(operator.add, [item.split(char) for item in string_list], [])

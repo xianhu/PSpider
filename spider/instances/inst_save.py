@@ -14,32 +14,28 @@ class Saver(object):
     class of Saver, must include function working() and item_save()
     """
 
-    def __init__(self, file_name=None):
+    def __init__(self, save_pipe=sys.stdout):
         """
         constructor
         """
-        self.file_name = file_name      # default: None, output file or sys.stdout(if file_name is None)
-        self.save_pipe = open(file_name, "w", encoding="utf-8") if file_name else sys.stdout
+        self.save_pipe = save_pipe      # default: sys.stdout, also can be a file handler
         return
 
     @params_chack(object, str, object, object)
     def working(self, url, keys, item):
         """
         working function, must "try, except" and call self.item_save(), don't change parameters and return
-        :param url: the url, whose item needs to be saved
-        :param keys: some information of this url, which can be used in this function
-        :param item: the item of this url, which needs to be saved
         :return result: True or False
         """
-        logging.debug("Saver start: keys=%s, url=%s", keys, url)
+        logging.debug("%s start: keys=%s, url=%s", self.__class__.__name__, keys, url)
 
         try:
             result = self.item_save(url, keys, item)
         except Exception as excep:
             result = False
-            logging.error("Saver error: %s, keys=%s, url=%s", excep, keys, url)
+            logging.error("%s error: %s, keys=%s, url=%s", self.__class__.__name__, excep, keys, url)
 
-        logging.debug("Saver end: result=%s, url=%s", result, url)
+        logging.debug("%s end: result=%s, url=%s", self.__class__.__name__, result, url)
         return result
 
     @return_check(bool)

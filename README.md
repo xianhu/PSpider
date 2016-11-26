@@ -1,12 +1,12 @@
 # PSpider
 
-Python3下极为简洁的爬虫框架, A simple spider frame written by Python    
-简单介绍点[这里](https://zhuanlan.zhihu.com/p/23017812), 实例点[这里](https://zhuanlan.zhihu.com/p/23250032)
+Python3下极为简洁的爬虫框架, A simple spider frame written by Python
 
-#### 包含以下三个大模块 (three modules)
+#### 包含以下模块 (include modules)
 1. utilities module: 定义爬虫需要的工具类/工具函数等
 2. instances module: 定义抓取过程中的fetcher/parser/saver类
-3. concurrent module: 定义多线程/多进程爬取策略, 并保证数据同步
+3. abcbase module: 定义多线程、分布式等策略的基础类、函数等
+4. concurrent module: 定义多线程爬取策略, 并保证数据同步
 
 #### 其他文件 (other files)
 1. setup.py为安装文件, 可将该框架安装到系统环境中
@@ -24,11 +24,16 @@ Python3下极为简洁的爬虫框架, A simple spider frame written by Python
 6. 2016-11-08, 删除部分无用函数/类等, 简化框架
 7. 2016-11-13, 更新pybloom至pybloom-live, 可直接利用pip安装
 8. 2016-11-17, 添加Dockerfile文件和requirements.txt文件
+9. 2016-11-27, 删除多进程策略, 此策略在Mac上可以, 但在Windows上有问题
 
 #### 下一步计划 (next plan)
 1. 利用Redis改为分布式爬虫
 
 #### 问题汇总
+1. 运行报错: Broken pipe    
+1.1 老版本会出现这个问题, 主要是由于多线程、多进程同时存在造成的, 更新至最新版本即可
+2. 运行报错: No module named 'spider' 或者 'spider don't have attribute WebSpider'    
+2.1 该框架目前无法直接利用pip进行安装, 需要下载源文件后, 利用'python setup.py install'进行安装
 
 ### 欢迎大家在"Issues"中提出问题或者建议,也可以fork后提交"Pull requests"
 ### If you have any questions or advices, you can commit "Issues" or "Pull requests"
