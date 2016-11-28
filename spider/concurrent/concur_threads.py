@@ -8,7 +8,7 @@ import queue
 import logging
 import threading
 from ..abcbase import TPEnum
-from ..abcbase import FetchThread, ParseThread, SaveThread, MonitorThread
+from .concur_insts import FetchThread, ParseThread, SaveThread, MonitorThread
 
 
 class ThreadPool(object):

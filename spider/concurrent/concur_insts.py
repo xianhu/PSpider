@@ -1,12 +1,12 @@
 # _*_ coding: utf-8 _*_
 
 """
-abc_insts.py by xianhu
+concur_insts.py by xianhu
 """
 
 import time
 import logging
-from .abc_base import TPEnum, BaseThread
+from ..abcbase import TPEnum, BaseThread
 
 
 # ===============================================================================================================================
