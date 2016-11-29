@@ -14,6 +14,7 @@ Python3下极为简洁的爬虫框架, A simple spider frame written by Python
 3. pylint.conf是代码检查需要的配置文件
 4. demos_yundama封装了yundama接口, 方便调用
 5. demos_nbastats抓取NBA官网上的所有球员数据, 并以此作为案例介绍框架的使用方法
+6. demos_doubanmovies抓取全部豆瓣电影数据, 也可作为框架使用案例
 
 #### 更新日志 (update logs)
 1. 2016-10-20之前, 各种更改结构/功能/类/函数等
@@ -25,6 +26,7 @@ Python3下极为简洁的爬虫框架, A simple spider frame written by Python
 7. 2016-11-13, 更新pybloom至pybloom-live, 可直接利用pip安装
 8. 2016-11-17, 添加Dockerfile文件和requirements.txt文件
 9. 2016-11-27, 删除多进程策略, 此策略在Mac上可以, 但在Windows上有问题
+10. 2016-11-29, 添加豆瓣电影爬虫, 单机半小时爬取全部电影数据
 
 #### 下一步计划 (next plan)
 1. 利用Redis改为分布式爬虫
