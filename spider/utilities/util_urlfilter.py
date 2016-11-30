@@ -25,11 +25,18 @@ class UrlFilter(object):
         self.bloom_filter = pybloom_live.ScalableBloomFilter(capacity, error_rate=0.001) if capacity else None
         return
 
-    def update(self):
+    def update(self, url_list):
         """
-        update this urlfilter, you can rewrite this function if necessary
+        update this urlfilter using url_list
         """
-        assert False, "you must rewrite update function in %s" % self.__class__.__name__
+        if self.url_set is not None:
+            self.url_set.update(url_list)
+        elif self.bloom_filter is not None:
+            for url in url_list:
+                self.bloom_filter.add(url)
+        else:
+            pass
+        return
 
     def check(self, url):
         """
@@ -45,10 +52,10 @@ class UrlFilter(object):
         for re_white in self.re_white_list:
             if re_white.search(url):
                 if self.url_set is not None:
-                    result = False if url in self.url_set else True
+                    result = (not (url in self.url_set))
                     self.url_set.add(url)
                 elif self.bloom_filter is not None:
-                    # bloom filter, "add": if key already exists, return True, else return False
+                    # "add": if key already exists, return True, else return False
                     result = (not self.bloom_filter.add(url))
                 else:
                     pass

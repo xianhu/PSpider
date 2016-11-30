@@ -22,6 +22,7 @@ def test_spider():
     black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download", )
     white_patterns = ("^http[s]{0,1}://(www\.){0,1}(wandoujia|(zhushou\.360))\.(com|cn)", )
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=1000)
+    url_filter.update([])
 
     # 初始化WebSpider
     web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)

@@ -6,6 +6,7 @@ test_demos.py by xianhu
 
 import re
 import spider
+import pymysql
 import logging
 import requests
 from bs4 import BeautifulSoup
@@ -42,16 +43,28 @@ def get_douban_movies():
     soup = BeautifulSoup(resp.text, "html5lib")
     a_list = soup.find_all("a", href=re.compile(r"^/tag/", flags=re.IGNORECASE))
     all_urls.update([(a_soup.get_text(), "https://movie.douban.com" + a_soup.get("href")) for a_soup in a_list])
+    logging.warning("all urls: %s", len(all_urls))
+
+    # 查询已有数据
+    conn = pymysql.connect(host="59.110.49.40", user="root", password="mimaMIMA123456", db="db_my", charset="utf8")
+    cursor = conn.cursor()
+    cursor.execute("select m_url from t_doubanmovies;")
+
+    bloomfilter = spider.UrlFilter()
+    bloomfilter.update([item[0] for item in cursor.fetchall()])
+    logging.warning("update bloomfilter success: %s", cursor.rowcount)
+
+    cursor.close()
+    conn.close()
 
     # 构造爬虫
-    dou_spider = spider.WebSpider(MovieFetcher(), MovieParser(max_deep=-1, max_repeat=1), MovieSaver(open("doubanmovie.txt", "w")), spider.UrlFilter())
-    # dou_spider.set_start_url("https://movie.douban.com/tag/新海诚",  ("index", "test"), priority=0, critical=False)
+    dou_spider = spider.WebSpider(MovieFetcher(), MovieParser(max_deep=-1, max_repeat=1), MovieSaver(), bloomfilter)
     for tag, url in all_urls:
         dou_spider.set_start_url(url, ("index", tag), priority=1, critical=True)
-        pass
     dou_spider.start_work_and_wait_done(fetcher_num=20)
     return
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
     get_douban_movies()
