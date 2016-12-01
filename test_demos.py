@@ -46,7 +46,7 @@ def get_douban_movies():
     logging.warning("all urls: %s", len(all_urls))
 
     # 查询已有数据
-    conn = pymysql.connect(host="59.110.49.40", user="root", password="mimaMIMA123456", db="db_my", charset="utf8")
+    conn = pymysql.connect(host="xx.xx.xx.xx", user="root", password="", db="db_my", charset="utf8")
     cursor = conn.cursor()
     cursor.execute("select m_url from t_doubanmovies;")
 

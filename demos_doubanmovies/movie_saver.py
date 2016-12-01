@@ -8,7 +8,7 @@ class MovieSaver(spider.Saver):
 
     def __init__(self):
         spider.Saver.__init__(self)
-        self.conn = pymysql.connect(host="59.110.49.40", user="root", password="mimaMIMA123456", db="db_my", charset="utf8")
+        self.conn = pymysql.connect(host="xx.xx.xx.xx", user="root", password="", db="db_my", charset="utf8")
         self.cursor = self.conn.cursor()
         self.conn.autocommit(1)
         return
