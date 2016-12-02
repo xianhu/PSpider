@@ -6,7 +6,7 @@ test.py by xianhu
 
 import spider
 import logging
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s\t%(levelname)s\t%(message)s")
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
 
 
 def test_spider():

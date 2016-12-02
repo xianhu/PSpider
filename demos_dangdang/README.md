@@ -13,4 +13,4 @@
 ### 文件说明
 
 - `demos_dangdang` :  存放 `fetcher`, `parser`, `saver` 的三个类
-- `dangdang_book.py`: 分两步抓取链接以及详细信息
+- `dangdang_book.py`: 分两步抓取链接以及详细信息（合并到test_demos.py中）
