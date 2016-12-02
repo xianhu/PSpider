@@ -15,7 +15,7 @@ class BookFetcher(spider.Fetcher):
 
     def __init__(self):
         spider.Fetcher.__init__(self, normal_max_repeat=3, normal_sleep_time=0, critical_max_repeat=3, critical_sleep_time=0)
-        self.driver = webdriver.PhantomJS()
+        self.driver = webdriver.PhantomJS(service_args=['--load-images=no'])
         self.driver.set_window_size(1120, 2000)
         return
 
