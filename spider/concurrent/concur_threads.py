@@ -63,7 +63,7 @@ class ThreadPool(object):
         """
         logging.warning("%s start: fetcher_num=%s, is_over=%s", self.__class__.__name__, fetcher_num, is_over)
 
-        threads_list = [FetchThread("fetcher-%d" % i, self.inst_fetcher, self) for i in range(fetcher_num)] + \
+        threads_list = [FetchThread("fetcher-%d" % i, self.inst_fetcher[i], self) for i in range(fetcher_num)] + \
                        [ParseThread("parser", self.inst_parser, self)] + \
                        [SaveThread("saver", self.inst_saver, self)]
 

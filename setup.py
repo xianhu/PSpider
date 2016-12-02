@@ -18,5 +18,6 @@ setup(
     install_requires=[
         "pybloom_live>=2.1.0",  # pybloom-live, fork from pybloom
         "requests>=2.10.0",     # requests, http for humans
+        "selenium>=2.3.0",
     ]
 )
