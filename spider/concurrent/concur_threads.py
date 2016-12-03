@@ -21,7 +21,7 @@ class ThreadPool(object):
         """
         constructor
         """
-        self.inst_fetcher = fetcher                 # fetcher instance for fetch thread
+        self.inst_fetcher = fetcher                 # fetcher instance or a fetcher instance list, for fetch thread
         self.inst_parser = parser                   # parser instance for parse thread
         self.inst_saver = saver                     # saver instance for save thread
         self.url_filter = url_filter                # default: None also can be UrlFilter()
@@ -61,13 +61,17 @@ class ThreadPool(object):
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):
         """
         start this thread_pool, and wait for finishing
+        :param fetcher_num: not useful if self.inst_fetcher is a list or tuple
+        :param is_over: whether to stop monitor thread, default True
         """
         logging.warning("%s start: fetcher_num=%s, is_over=%s", self.__class__.__name__, fetcher_num, is_over)
 
-        threads_list = [FetchThread("fetcher-%d" % i, copy.deepcopy(self.inst_fetcher), self) for i in range(fetcher_num)] + \
-                       [ParseThread("parser", self.inst_parser, self)] + \
-                       [SaveThread("saver", self.inst_saver, self)]
+        if isinstance(self.inst_fetcher, (list, tuple)):
+            fetcher_list = [FetchThread("fetcher-%d" % i, fetcher, self) for i, fetcher in enumerate(self.inst_fetcher)]
+        else:
+            fetcher_list = [FetchThread("fetcher-%d" % i, copy.deepcopy(self.inst_fetcher), self) for i in range(fetcher_num)]
 
+        threads_list = fetcher_list + [ParseThread("parser", self.inst_parser, self), SaveThread("saver", self.inst_saver, self)]
         for thread in threads_list:
             thread.setDaemon(True)
             thread.start()
