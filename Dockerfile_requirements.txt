@@ -3,6 +3,7 @@ pylint
 beautifulsoup4
 pybloom_live
 requests
+aiohttp
 html5lib
 elasticsearch
 PyMySQL
