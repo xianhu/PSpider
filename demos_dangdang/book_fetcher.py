@@ -19,12 +19,17 @@ class BookFetcher(spider.Fetcher):
         self.driver.set_window_size(1120, 2000)
         return
 
-    def clear_session(self):
-        self.driver.delete_all_cookies()
-        return
-
     def driver_quit(self):
         self.driver.quit()
+        return
+
+    def driver_restart(self):
+        try:
+            self.driver_quit()
+        except:
+            pass
+        self.driver = webdriver.PhantomJS(service_args=['--load-images=no'])
+        self.driver.set_window_size(1120, 2000)
         return
 
     def url_fetch(self, url, keys, critical, fetch_repeat):
@@ -38,11 +43,11 @@ class BookFetcher(spider.Fetcher):
                 WebDriverWait(self.driver, 60).until(element_present)
         except:
             logging.warning("Unexpected error: %s", sys.exc_info()[0])
-            #self.clear_session()
-            return 0, ""
+            self.driver_restart()
+            return -1, None
         response = self.driver.page_source
         if not response:
             logging.warning("not response %s", response)
-            return 0, ""
+            return -1, None
         logging.warning("fetch done!")
         return 1, response
