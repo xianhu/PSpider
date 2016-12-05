@@ -11,7 +11,7 @@ from ..utilities import params_chack, return_check
 
 class Saver(object):
     """
-    class of Saver, must include function working() and item_save()
+    class of Saver, must include function working()
     """
 
     def __init__(self, save_pipe=sys.stdout):

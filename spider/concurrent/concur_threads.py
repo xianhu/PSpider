@@ -67,7 +67,7 @@ class ThreadPool(object):
         logging.warning("%s start: fetcher_num=%s, is_over=%s", self.__class__.__name__, fetcher_num, is_over)
 
         if isinstance(self.inst_fetcher, (list, tuple)):
-            fetcher_list = [FetchThread("fetcher-%d" % i, fetcher, self) for i, fetcher in enumerate(self.inst_fetcher)]
+            fetcher_list = [FetchThread("fetcher-%d" % i, fetcher, self) for (i, fetcher) in enumerate(self.inst_fetcher)]
         else:
             fetcher_list = [FetchThread("fetcher-%d" % i, copy.deepcopy(self.inst_fetcher), self) for i in range(fetcher_num)]
 

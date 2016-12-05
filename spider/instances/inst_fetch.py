@@ -13,7 +13,7 @@ from ..utilities import make_random_useragent, params_chack, return_check
 
 class Fetcher(object):
     """
-    class of Fetcher, must include function working() and url_fetch()
+    class of Fetcher, must include function working()
     """
 
     def __init__(self, normal_max_repeat=3, normal_sleep_time=3, critical_max_repeat=10, critical_sleep_time=10):

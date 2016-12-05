@@ -13,7 +13,7 @@ from ..utilities import get_url_legal, params_chack, return_check
 
 class Parser(object):
     """
-    class of Parser, must include function working() and htm_parse()
+    class of Parser, must include function working()
     """
 
     def __init__(self, max_deep=0, max_repeat=0):
