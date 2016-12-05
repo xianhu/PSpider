@@ -16,42 +16,38 @@ class Fetcher(object):
     class of Fetcher, must include function working()
     """
 
-    def __init__(self, normal_max_repeat=3, normal_sleep_time=3, critical_max_repeat=10, critical_sleep_time=10):
+    def __init__(self, max_repeat=3, sleep_time=0):
         """
         constructor
         """
-        self.normal_max_repeat = normal_max_repeat          # default: 3, maximum repeat time for normal url
-        self.normal_sleep_time = normal_sleep_time          # default: 3, sleeping time after a fetching for normal url
-        self.critical_max_repeat = critical_max_repeat      # default: 10, maximum repeat time for critical url
-        self.critical_sleep_time = critical_sleep_time      # default: 10, sleeping time after a fetching for critical url
-
-        self.log_str_format = "keys=%s, critical=%s, fetch_repeat=%s, url=%s"
+        self.max_repeat = max_repeat    # default: 3, maximum repeat fetching time for a url
+        self.sleep_time = sleep_time    # default: 0, sleeping time after a fetching for a url
         return
 
-    @params_chack(object, str, object, bool, int)
-    def working(self, url, keys, critical, fetch_repeat):
+    @params_chack(object, str, object, int)
+    def working(self, url, keys, repeat):
         """
-        working function, must "try, expect" and call self.url_fetch(), don't change parameters and return
+        working function, must "try, expect" and don't change parameters and return
         :return (code, content): code can be -1(fetch failed), 0(need repeat), 1(fetch success), content can be anything
         """
-        logging.debug("%s start: %s", self.__class__.__name__, self.log_str_format % (keys, critical, fetch_repeat, url))
+        logging.debug("%s start: keys=%s, repeat=%s, url=%s", self.__class__.__name__, keys, repeat, url)
 
-        time.sleep(random.randint(0, self.normal_sleep_time if (not critical) else self.critical_sleep_time))
+        time.sleep(random.randint(0, self.sleep_time))
         try:
-            code, content = self.url_fetch(url, keys, critical, fetch_repeat)
+            code, content = self.url_fetch(url, keys, repeat)
         except Exception as excep:
-            if ((not critical) and (fetch_repeat >= self.normal_max_repeat)) or (critical and (fetch_repeat >= self.critical_max_repeat)):
+            if repeat >= self.max_repeat:
                 code, content = -1, None
-                logging.error("%s error: %s, %s", self.__class__.__name__, excep, self.log_str_format % (keys, critical, fetch_repeat, url))
+                logging.error("%s error: %s, keys=%s, repeat=%s, url=%s", self.__class__.__name__, excep, keys, repeat, url)
             else:
                 code, content = 0, None
-                logging.debug("%s repeat: %s, %s", self.__class__.__name__, excep, self.log_str_format % (keys, critical, fetch_repeat, url))
+                logging.debug("%s repeat: %s, keys=%s, repeat=%s, url=%s", self.__class__.__name__, excep, keys, repeat, url)
 
         logging.debug("%s end: code=%s, url=%s", self.__class__.__name__, code, url)
         return code, content
 
     @return_check(int, object)
-    def url_fetch(self, url, keys, critical, fetch_repeat):
+    def url_fetch(self, url, keys, repeat):
         """
         fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
@@ -59,7 +55,7 @@ class Fetcher(object):
         headers = {"User-Agent": make_random_useragent(), "Accept-Encoding": "gzip"}
         response = requests.get(url, params=None, data=None, headers=headers, cookies=None, timeout=(3.05, 10))
         if response.history:
-            logging.debug("%s redirect: %s", self.__class__.__name__, self.log_str_format % (keys, critical, fetch_repeat, url))
+            logging.debug("%s redirect: keys=%s, repeat=%s, url=%s", self.__class__.__name__, keys, repeat, url)
 
         # get content(cur_code, cur_url, cur_html)
         content = (response.status_code, response.url, response.text)

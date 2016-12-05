@@ -24,7 +24,7 @@ class Saver(object):
     @params_chack(object, str, object, object)
     def working(self, url, keys, item):
         """
-        working function, must "try, except" and call self.item_save(), don't change parameters and return
+        working function, must "try, except" and don't change parameters and return
         :return result: True or False
         """
         logging.debug("%s start: keys=%s, url=%s", self.__class__.__name__, keys, url)
@@ -43,6 +43,6 @@ class Saver(object):
         """
         save the item of a url, you can rewrite this function, parameters and return refer to self.working()
         """
-        self.save_pipe.write("\t".join([url, str(keys), "\t".join([str(i) for i in item])]) + "\n")
+        self.save_pipe.write("\t".join([str(i) for i in item]) + "\n")
         self.save_pipe.flush()
         return True

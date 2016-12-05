@@ -32,10 +32,11 @@ Python3下极为简洁的爬虫框架, A simple spider frame written by Python
 9. 2016-11-27, 删除多进程策略, 此策略在Mac上可以, 但在Windows上有问题
 10. 2016-11-29, 添加豆瓣电影爬虫, 单机半小时爬取全部电影数据
 11. 2016-12-03, 修改Fetcher全为一个的Bug, 在此感谢@Foristkirito
+12. 2016-12-07, 添加异步爬虫框架代码, 并更改spider的代码文件结构
 
 #### 下一步计划 (next plan)
 1. 利用Redis改为分布式爬虫
-2. 利用aiohttp改为协程抓取
+2. ~~利用aiohttp改为协程抓取~~
 3. 完善说明文档
 
 #### 问题汇总

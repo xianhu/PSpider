@@ -38,9 +38,9 @@ class UrlFilter(object):
             pass
         return
 
-    def check(self, url):
+    def check_and_add(self, url):
         """
-        check the url to make sure that the url hasn't been fetched
+        check the url to make sure that the url hasn't been fetched, and add url to urlfilter
         """
         # regex filter: black pattern, if match one return False
         for re_black in self.re_black_list:
