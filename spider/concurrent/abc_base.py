@@ -120,3 +120,15 @@ class BasePool(object):
         add a task based on task_name, if queue is full, blocking the queue
         """
         raise NotImplementedError
+
+    def get_a_task(self, task_name):
+        """
+        get a task based on task_name, if queue is empty, raise queue.Empty
+        """
+        raise NotImplementedError
+
+    def finish_a_task(self, task_name):
+        """
+        finish a task based on task_name, call queue.task_done()
+        """
+        raise NotImplementedError

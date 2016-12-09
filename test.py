@@ -16,7 +16,7 @@ def test_spider():
     # 定义fetcher, parser和saver, 你也可以重写这三个类中的任何一个
     fetcher = spider.Fetcher(max_repeat=3, sleep_time=0)
     parser = spider.Parser(max_deep=1)
-    saver = spider.Saver(save_pipe=open("out_spider.txt", "w"))
+    saver = spider.Saver(save_pipe=open("out_spider_thread.txt", "w"))
 
     # 定义Url过滤, UrlFilter使用Set, 适合Url数量不多的情况
     black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download", )
@@ -29,11 +29,11 @@ def test_spider():
 
     # 首先抓取一次豌豆荚页面, 抓取完成之后不停止monitor
     web_spider.set_start_url("http://www.wandoujia.com/apps")
-    web_spider.start_work_and_wait_done(fetcher_num=3, is_over=False)
+    web_spider.start_work_and_wait_done(fetcher_num=10, is_over=False)
 
     # 然后抓取360应用商店页面, 抓取完成之后停止monitor
     web_spider.set_start_url("http://zhushou.360.cn/", ("360app",), priority=0, deep=0)
-    web_spider.start_work_and_wait_done(fetcher_num=3, is_over=True)
+    web_spider.start_work_and_wait_done(fetcher_num=10, is_over=True)
     return
 
 
@@ -41,13 +41,18 @@ def test_spider_async():
     """
     test spider with asyncio
     """
-    web_spider_async = spider.WebSpiderAsync(url_filter=spider.UrlFilter())
+    # 初始化WebSpiderAsync
+    web_spider_async = spider.WebSpiderAsync(max_repeat=3, sleep_time=0, max_deep=1, save_pipe=open("out_spider_async.txt", "w"), url_filter=spider.UrlFilter())
+
+    # 添加种子Url
     web_spider_async.set_start_url("http://zhushou.360.cn/")
-    web_spider_async.start_work_and_wait_done()
+
+    # 开始抓取任务并等待其结束
+    web_spider_async.start_work_and_wait_done(fetcher_num=10)
     return
 
 
 if __name__ == "__main__":
-    # test_spider()
+    test_spider()
     test_spider_async()
     exit()
