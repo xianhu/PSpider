@@ -26,19 +26,19 @@ class Parser(object):
     def working(self, priority, url, keys, deep, content):
         """
         working function, must "try, except" and don't change parameters and return
-        :return (code, url_list, save_list): code can be -1(parse failed), 1(parse success)
-        :return (code, url_list, save_list): url_list is [(url, keys, priority), ...], save_list is [item, ...]
+        :return (parse_result, url_list, save_list): parse_result can be -1(parse failed), 1(parse success)
+        :return (parse_result, url_list, save_list): url_list is [(url, keys, priority), ...], save_list is [item, ...]
         """
         logging.debug("%s start: priority=%s, keys=%s, deep=%s, url=%s", self.__class__.__name__, priority, keys, deep, url)
 
         try:
-            code, url_list, save_list = self.htm_parse(priority, url, keys, deep, content)
+            parse_result, url_list, save_list = self.htm_parse(priority, url, keys, deep, content)
         except Exception as excep:
-            code, url_list, save_list = -1, [], []
+            parse_result, url_list, save_list = -1, [], []
             logging.error("%s error: %s, priority=%s, keys=%s, deep=%s, url=%s", self.__class__.__name__, excep, priority, keys, deep, url)
 
-        logging.debug("%s end: code=%s, len(url_list)=%s, len(save_list)=%s, url=%s", self.__class__.__name__, code, len(url_list), len(save_list), url)
-        return code, url_list, save_list
+        logging.debug("%s end: parse_result=%s, len(url_list)=%s, len(save_list)=%s, url=%s", self.__class__.__name__, parse_result, len(url_list), len(save_list), url)
+        return parse_result, url_list, save_list
 
     @return_check(int, (tuple, list), (tuple, list))
     def htm_parse(self, priority, url, keys, deep, content):
@@ -60,5 +60,5 @@ class Parser(object):
         title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
         save_list = [(url, title.group("title"), datetime.datetime.now()), ] if title else []
 
-        # return code, url_list, save_list
+        # return parse_result, url_list, save_list
         return 1, url_list, save_list

@@ -19,16 +19,16 @@ def work_fetch(self):
 
     # ----2
     try:
-        code, content = self.worker.working(url, keys, repeat)
+        fetch_result, content = self.worker.working(url, keys, repeat)
     except Exception as excep:
-        code, content = -1, None
+        fetch_result, content = -1, None
         logging.error("%s.worker.working() error: %s", self.__class__.__name__, excep)
 
     # ----3
-    if code > 0:
+    if fetch_result > 0:
         self.pool.update_number_dict(TPEnum.URL_FETCH, +1)
         self.pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
-    elif code == 0:
+    elif fetch_result == 0:
         self.pool.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
     else:
         pass
@@ -50,13 +50,13 @@ def work_parse(self):
 
     # ----2
     try:
-        code, url_list, save_list = self.worker.working(priority, url, keys, deep, content)
+        parse_result, url_list, save_list = self.worker.working(priority, url, keys, deep, content)
     except Exception as excep:
-        code, url_list, save_list = -1, [], []
+        parse_result, url_list, save_list = -1, [], []
         logging.error("%s.worker.working() error: %s", self.__class__.__name__, excep)
 
     # ----3
-    if code > 0:
+    if parse_result > 0:
         self.pool.update_number_dict(TPEnum.HTM_PARSE, +1)
         for _url, _keys, _priority in url_list:
             self.pool.add_a_task(TPEnum.URL_FETCH, (_priority, _url, _keys, deep+1, 0))
@@ -80,13 +80,13 @@ def work_save(self):
 
     # ----2
     try:
-        result = self.worker.working(url, keys, item)
+        save_result = self.worker.working(url, keys, item)
     except Exception as excep:
-        result = False
+        save_result = False
         logging.error("%s.worker.working() error: %s", self.__class__.__name__, excep)
 
     # ----3
-    if result:
+    if save_result:
         self.pool.update_number_dict(TPEnum.ITEM_SAVE, +1)
 
     # ----4

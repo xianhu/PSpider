@@ -46,6 +46,7 @@ def test_spider_async():
     web_spider_async.start_work_and_wait_done()
     return
 
+
 if __name__ == "__main__":
     # test_spider()
     test_spider_async()

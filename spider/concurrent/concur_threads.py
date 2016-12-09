@@ -71,7 +71,7 @@ class ThreadPool(BasePool):
 
     def update_number_dict(self, key, value):
         """
-        update number_dict of this pool
+        update self.number_dict of this pool
         """
         self.lock.acquire()
         self.number_dict[key] += value
@@ -95,6 +95,7 @@ class ThreadPool(BasePool):
             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, +1)
         else:
             logging.error("%s add_a_task error: parameter task_name[%s] is invalid", self.__class__.__name__, task_name)
+            exit()
         return
 
     def get_a_task(self, task_name):
@@ -113,6 +114,7 @@ class ThreadPool(BasePool):
             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, -1)
         else:
             logging.error("%s get_a_task error: parameter task_name[%s] is invalid", self.__class__.__name__, task_name)
+            exit()
         self.update_number_dict(TPEnum.TASKS_RUNNING, +1)
         return task_content
 
@@ -128,6 +130,7 @@ class ThreadPool(BasePool):
             self.save_queue.task_done()
         else:
             logging.error("%s finish_a_task error: parameter task_name[%s] is invalid", self.__class__.__name__, task_name)
+            exit()
         self.update_number_dict(TPEnum.TASKS_RUNNING, -1)
         return
     # ================================================================================================================================

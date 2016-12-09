@@ -111,7 +111,7 @@ class BasePool(object):
 
     def update_number_dict(self, key, value):
         """
-        update number_dict of this pool
+        update self.number_dict of this pool
         """
         raise NotImplementedError
 

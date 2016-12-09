@@ -28,23 +28,23 @@ class Fetcher(object):
     def working(self, url, keys, repeat):
         """
         working function, must "try, expect" and don't change parameters and return
-        :return (code, content): code can be -1(fetch failed), 0(need repeat), 1(fetch success), content can be anything
+        :return (fetch_result, content): fetch_result can be -1(fetch failed), 0(need repeat), 1(fetch success), content can be anything
         """
         logging.debug("%s start: keys=%s, repeat=%s, url=%s", self.__class__.__name__, keys, repeat, url)
 
         time.sleep(random.randint(0, self.sleep_time))
         try:
-            code, content = self.url_fetch(url, keys, repeat)
+            fetch_result, content = self.url_fetch(url, keys, repeat)
         except Exception as excep:
             if repeat >= self.max_repeat:
-                code, content = -1, None
+                fetch_result, content = -1, None
                 logging.error("%s error: %s, keys=%s, repeat=%s, url=%s", self.__class__.__name__, excep, keys, repeat, url)
             else:
-                code, content = 0, None
+                fetch_result, content = 0, None
                 logging.debug("%s repeat: %s, keys=%s, repeat=%s, url=%s", self.__class__.__name__, excep, keys, repeat, url)
 
-        logging.debug("%s end: code=%s, url=%s", self.__class__.__name__, code, url)
-        return code, content
+        logging.debug("%s end: fetch_result=%s, url=%s", self.__class__.__name__, fetch_result, url)
+        return fetch_result, content
 
     @return_check(int, object)
     def url_fetch(self, url, keys, repeat):
@@ -60,5 +60,5 @@ class Fetcher(object):
         # get content(cur_code, cur_url, cur_html)
         content = (response.status_code, response.url, response.text)
 
-        # return code, conten
+        # return fetch_result, content
         return 1, content

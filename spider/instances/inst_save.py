@@ -25,18 +25,18 @@ class Saver(object):
     def working(self, url, keys, item):
         """
         working function, must "try, except" and don't change parameters and return
-        :return result: True or False
+        :return save_result: True or False
         """
         logging.debug("%s start: keys=%s, url=%s", self.__class__.__name__, keys, url)
 
         try:
-            result = self.item_save(url, keys, item)
+            save_result = self.item_save(url, keys, item)
         except Exception as excep:
-            result = False
+            save_result = False
             logging.error("%s error: %s, keys=%s, url=%s", self.__class__.__name__, excep, keys, url)
 
-        logging.debug("%s end: result=%s, url=%s", self.__class__.__name__, result, url)
-        return result
+        logging.debug("%s end: save_result=%s, url=%s", self.__class__.__name__, save_result, url)
+        return save_result
 
     @return_check(bool)
     def item_save(self, url, keys, item):
