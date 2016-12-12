@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 class MovieFetcher(spider.Fetcher):
 
     def __init__(self):
-        spider.Fetcher.__init__(self, normal_max_repeat=3, normal_sleep_time=0, critical_max_repeat=3, critical_sleep_time=0)
+        spider.Fetcher.__init__(self, max_repeat=3, sleep_time=0)
 
         self.session = requests.Session()
         self.session.mount('https://', requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100))
@@ -32,7 +32,7 @@ class MovieFetcher(spider.Fetcher):
         }
         return
 
-    def url_fetch(self, url, keys, critical, fetch_repeat):
+    def url_fetch(self, url, keys, repeat):
         resp = self.session.get(url, allow_redirects=False, verify=False, timeout=5)
         if resp.status_code == 200:
             return 1, resp.text

@@ -10,7 +10,7 @@ import pymysql
 import logging
 import requests
 from bs4 import BeautifulSoup
-from demos_doubanmovies import MovieFetcher, MovieParser, MovieSaver
+from demos_doubanmovies import MovieFetcher, MovieParser
 from demos_dangdang import BookFetcher, BookParser, BookSaver
 
 
@@ -46,22 +46,10 @@ def get_douban_movies():
     all_urls.update([(a_soup.get_text(), "https://movie.douban.com" + a_soup.get("href")) for a_soup in a_list])
     logging.warning("all urls: %s", len(all_urls))
 
-    # 查询已有数据
-    conn = pymysql.connect(host="xx.xx.xx.xx", user="root", password="", db="db_my", charset="utf8")
-    cursor = conn.cursor()
-    cursor.execute("select m_url from t_doubanmovies;")
-
-    bloomfilter = spider.UrlFilter()
-    bloomfilter.update([item[0] for item in cursor.fetchall()])
-    logging.warning("update bloomfilter success: %s", cursor.rowcount)
-
-    cursor.close()
-    conn.close()
-
     # 构造爬虫
-    dou_spider = spider.WebSpider(MovieFetcher(), MovieParser(max_deep=-1, max_repeat=1), MovieSaver(), bloomfilter)
+    dou_spider = spider.WebSpider(MovieFetcher(), MovieParser(max_deep=-1), spider.Saver(), spider.UrlFilter())
     for tag, url in all_urls:
-        dou_spider.set_start_url(url, ("index", tag), priority=1, critical=True)
+        dou_spider.set_start_url(url, ("index", tag), priority=1)
     dou_spider.start_work_and_wait_done(fetcher_num=20)
     return
 
@@ -193,7 +181,7 @@ def get_dangdang_books():
     for url_prefix in url_prefix_list:
         for i in range(100):
             url = url_prefix.format(i)
-            dang_spider.set_start_url(url, ("lists",), priority=1, critical=True)
+            dang_spider.set_start_url(url, ("lists",), priority=1)
     dang_spider.start_work_and_wait_done(fetcher_num=fetcher_number)
 
     # 开始抓取所有的详细信息
@@ -205,7 +193,7 @@ def get_dangdang_books():
     url_list = [item[0] for item in cursor.fetchall()]
 
     for url in url_list:
-        dang_spider.set_start_url(url, ("detail",), priority=1, critical=True)
+        dang_spider.set_start_url(url, ("detail",), priority=1)
 
     dang_spider.start_work_and_wait_done(fetcher_num=fetcher_number)
     for f_er in fetcher_list:

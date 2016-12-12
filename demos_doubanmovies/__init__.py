@@ -6,4 +6,3 @@
 
 from .movie_fetcher import MovieFetcher
 from .movie_parser import MovieParser
-from .movie_saver import MovieSaver

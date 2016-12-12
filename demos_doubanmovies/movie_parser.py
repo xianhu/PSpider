@@ -6,19 +6,21 @@ from bs4 import BeautifulSoup
 
 class MovieParser(spider.Parser):
 
-    def htm_parse(self, priority, url, keys, deep, critical, parse_repeat, content):
+    def htm_parse(self, priority, url, keys, deep, content):
         url_list, save_list = [], []
         soup = BeautifulSoup(content, "html5lib")
 
         if keys[0] == "index":
+            # 获取列表页中所有的电影页面Url
             div_movies = soup.find_all("a", class_="nbg", title=True)
-            url_list.extend([(item.get("href"), ("detail", keys[1]), False, 0) for item in div_movies])
+            url_list.extend([(item.get("href"), ("detail", keys[1]), 0) for item in div_movies])
 
+            # 获取列表页的下一页
             next_page = soup.find("span", class_="next")
             if next_page:
                 next_page_a = next_page.find("a")
                 if next_page_a:
-                    url_list.append((next_page_a.get("href"), ("index", keys[1]), True, 1))
+                    url_list.append((next_page_a.get("href"), ("index", keys[1]), 1))
         else:
             content = soup.find("div", id="content")
 

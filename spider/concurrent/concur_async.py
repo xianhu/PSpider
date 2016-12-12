@@ -6,11 +6,12 @@ concur_async.py by xianhu
 
 import re
 import sys
-import asyncio
+import time
 import aiohttp
+import asyncio
 import logging
 import datetime
-from .abc_base import TPEnum, BasePool
+from ..abcbase import TPEnum, BasePool
 from ..utilities import get_url_legal, make_random_useragent
 
 
@@ -32,6 +33,7 @@ class BaseAsyncPool(BasePool):
 
         self.loop = loop or asyncio.get_event_loop()            # event_loop from parameter or call get_event_loop()
         self.queue = asyncio.PriorityQueue(loop=self.loop)      # (priority, url, keys, deep, repeat)
+        self.start_time = None              # start time of this pool
         return
 
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):
@@ -41,6 +43,7 @@ class BaseAsyncPool(BasePool):
         :param is_over: not useful in this class
         """
         try:
+            self.start_time = time.time()
             self.loop.run_until_complete(self._start(fetcher_num=fetcher_num))
         except KeyboardInterrupt as excep:
             logging.warning("%s KeyboardInterrupt: %s", self.__class__.__name__, excep)
@@ -52,7 +55,7 @@ class BaseAsyncPool(BasePool):
 
     async def _start(self, fetcher_num):
         """
-        start this pool, and wait for finishing
+        start tasks, and wait for finishing
         """
         tasks_list = [asyncio.Task(self.work(index), loop=self.loop) for index in range(fetcher_num)]
         await self.queue.join()
@@ -110,6 +113,7 @@ class BaseAsyncPool(BasePool):
         info += " parse=(%d, %d);" % (self.number_dict[TPEnum.HTM_NOT_PARSE], self.number_dict[TPEnum.HTM_PARSE])
         info += " save=(%d, %d);" % (self.number_dict[TPEnum.ITEM_NOT_SAVE], self.number_dict[TPEnum.ITEM_SAVE])
 
+        info += " total_seconds=%d" % (time.time() - self.start_time)
         logging.warning(info)
         return
 
@@ -129,6 +133,7 @@ class AsyncPool(BaseAsyncPool):
         session = aiohttp.ClientSession(loop=self.loop, headers=headers)
         try:
             while True:
+                # get a task
                 priority, url, keys, deep, repeat = await self.get_a_task(task_name=TPEnum.URL_FETCH)
 
                 # fetch the content of a url ================================================================
@@ -162,15 +167,17 @@ class AsyncPool(BaseAsyncPool):
                 else:
                     pass
 
+                # finish a task
                 self.finish_a_task(task_name=TPEnum.URL_FETCH)
 
                 # print the information of this pool
                 if self.number_dict[TPEnum.URL_FETCH] % 100 == 0:
                     self.print_status()
         except asyncio.CancelledError:
-            logging.warning("Worker[%s] end", index)
+            pass
 
         session.close()
+        logging.warning("Worker[%s] end", index)
         return
 
     async def fetch(self, session, url, keys, repeat):

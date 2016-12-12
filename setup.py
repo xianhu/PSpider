@@ -8,10 +8,10 @@ from setuptools import setup, find_packages
 
 setup(
     name="spider",
-    version="1.8.3",
+    version="1.9.0",
     author="xianhu",
     keywords=["spider", "crawler"],
-    packages=find_packages(exclude=("test", "test.*", "demos_*")),
+    packages=find_packages(exclude=("otherfiles", "test", "test.*", "demos_*")),
     package_data={
         "": ["*.conf"],         # include all *.conf files
     },

@@ -1,7 +1,8 @@
 # Dockerfile by xianhu: build a docker image for spider or flask
 # usage: docker build -t user/centos:v05 .
 
-FROM daocloud.io/library/centos:6.8
+FROM centos:6.8
+
 MAINTAINER xianhu <qixianhu@qq.com>
 
 # change system environments
@@ -51,4 +52,4 @@ RUN rm -rf /root/*
 RUN echo "alias python=python3" >> /root/.bashrc
 RUN source /root/.bashrc
 
-CMD [/bin/bash]
+CMD /bin/bash
