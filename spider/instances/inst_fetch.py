@@ -8,7 +8,7 @@ import time
 import random
 import logging
 import requests
-from ..utilities import make_random_useragent, params_chack, return_check
+from ..utilities import make_random_useragent
 
 
 class Fetcher(object):
@@ -24,8 +24,7 @@ class Fetcher(object):
         self.sleep_time = sleep_time    # default: 0, sleeping time after a fetching for a url
         return
 
-    @params_chack(object, str, object, int)
-    def working(self, url, keys, repeat):
+    def working(self, url: str, keys: object, repeat: int) -> (int, object):
         """
         working function, must "try, expect" and don't change parameters and return
         :return (fetch_result, content): fetch_result can be -1(fetch failed), 0(need repeat), 1(fetch success), content can be anything
@@ -46,8 +45,7 @@ class Fetcher(object):
         logging.debug("%s end: fetch_result=%s, url=%s", self.__class__.__name__, fetch_result, url)
         return fetch_result, content
 
-    @return_check(int, object)
-    def url_fetch(self, url, keys, repeat):
+    def url_fetch(self, url: str, keys: object, repeat: int) -> (int, object):
         """
         fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """

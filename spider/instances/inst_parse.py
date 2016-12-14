@@ -7,7 +7,7 @@ inst_parse.py by xianhu
 import re
 import logging
 import datetime
-from ..utilities import get_url_legal, params_chack, return_check
+from ..utilities import get_url_legal
 
 
 class Parser(object):
@@ -22,8 +22,7 @@ class Parser(object):
         self.max_deep = max_deep    # default: 0, if -1, spider will not stop until all urls are fetched
         return
 
-    @params_chack(object, int, str, object, int, object)
-    def working(self, priority, url, keys, deep, content):
+    def working(self, priority: int, url: str, keys: object, deep: int, content: object) -> (int, list, list):
         """
         working function, must "try, except" and don't change parameters and return
         :return (parse_result, url_list, save_list): parse_result can be -1(parse failed), 1(parse success)
@@ -40,8 +39,7 @@ class Parser(object):
         logging.debug("%s end: parse_result=%s, len(url_list)=%s, len(save_list)=%s, url=%s", self.__class__.__name__, parse_result, len(url_list), len(save_list), url)
         return parse_result, url_list, save_list
 
-    @return_check(int, (tuple, list), (tuple, list))
-    def htm_parse(self, priority, url, keys, deep, content):
+    def htm_parse(self, priority: int, url: str, keys: object, deep: int, content: object) -> (int, list, list):
         """
         parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """

@@ -33,6 +33,7 @@ class BaseAsyncPool(BasePool):
 
         self.loop = loop or asyncio.get_event_loop()            # event_loop from parameter or call get_event_loop()
         self.queue = asyncio.PriorityQueue(loop=self.loop)      # (priority, url, keys, deep, repeat)
+
         self.start_time = None              # start time of this pool
         return
 
@@ -139,7 +140,7 @@ class AsyncPool(BaseAsyncPool):
                 # fetch the content of a url ================================================================
                 fetch_result, content = await self.fetch(session, url, keys, repeat)
                 if fetch_result > 0:
-                    self.update_number_dict(TPEnum.URL_FETCH, +1)
+                    self.update_number_dict(TPEnum.URL_FETCH, +1)                   # =======================
 
                     # parse the content of a url ============================================================
                     self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
@@ -147,7 +148,7 @@ class AsyncPool(BaseAsyncPool):
                     self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
 
                     if parse_result > 0:
-                        self.update_number_dict(TPEnum.HTM_PARSE, +1)
+                        self.update_number_dict(TPEnum.HTM_PARSE, +1)               # =======================
 
                         # add new task to self.queue
                         for _url, _keys, _priority in url_list:
@@ -160,8 +161,7 @@ class AsyncPool(BaseAsyncPool):
                             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, -1)
 
                             if save_result:
-                                self.update_number_dict(TPEnum.ITEM_SAVE, +1)
-
+                                self.update_number_dict(TPEnum.ITEM_SAVE, +1)       # =======================
                 elif fetch_result == 0:
                     self.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
                 else:
@@ -180,7 +180,7 @@ class AsyncPool(BaseAsyncPool):
         logging.warning("Worker[%s] end", index)
         return
 
-    async def fetch(self, session, url, keys, repeat):
+    async def fetch(self, session, url: str, keys: object, repeat: int) -> (int, object):
         """
         fetch the content of a url, must "try, expect" and don't change parameters and return
         :return (fetch_result, content): fetch_result can be -1(fetch failed), 0(need repeat), 1(fetch success), content can be anything
@@ -205,7 +205,7 @@ class AsyncPool(BaseAsyncPool):
         logging.debug("Fetcher end: fetch_result=%s, url=%s", fetch_result, url)
         return fetch_result, content
 
-    async def parse(self, priority, url, keys, deep, content):
+    async def parse(self, priority: int, url: str, keys: object, deep: int, content: object) -> (int, list, list):
         """
         parse the content of a url, must "try, except" and don't change parameters and return
         :return (parse_result, url_list, save_list): parse_result can be -1(parse failed), 1(parse success)
@@ -216,7 +216,7 @@ class AsyncPool(BaseAsyncPool):
         try:
             *_, cur_html = content
 
-            url_list = []
+            parse_result, url_list = 1, []
             if (self.max_deep < 0) or (deep < self.max_deep):
                 a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
                 url_list = [(_url, keys, priority + 1) for _url in [get_url_legal(href, url) for href in a_list]]
@@ -225,8 +225,6 @@ class AsyncPool(BaseAsyncPool):
 
             title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
             save_list = [(url, title.group("title"), datetime.datetime.now()), ] if title else []
-
-            parse_result = 1
         except Exception as excep:
             parse_result, url_list, save_list = -1, [], []
             logging.error("Parser error: %s, priority=%s, keys=%s, deep=%s, url=%s", excep, priority, keys, deep, url)
@@ -234,7 +232,7 @@ class AsyncPool(BaseAsyncPool):
         logging.debug("Parser end: parse_result=%s, len(url_list)=%s, len(save_list)=%s, url=%s", parse_result, len(url_list), len(save_list), url)
         return parse_result, url_list, save_list
 
-    async def save(self, url, keys, item):
+    async def save(self, url: str, keys: object, item: object) -> bool:
         """
         save the item of a url, must "try, except" and don't change parameters and return
         :return save_result: True or False
