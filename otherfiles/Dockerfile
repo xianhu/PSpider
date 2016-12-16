@@ -1,5 +1,5 @@
 # Dockerfile by xianhu: build a docker image for spider or flask
-# usage: docker build -t user/centos:v05 .
+# usage: docker build -t user/centos:v06 .
 
 FROM centos:6.8
 
@@ -31,7 +31,7 @@ RUN service crond restart
 # download python3
 WORKDIR /root/
 RUN wget https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tar.xz
-# or RUN COPY Python-3.5.2.tar.xz /root/
+# RUN COPY Python-3.5.2.tar.xz /root/
 RUN tar -xf Python-3.5.2.tar.xz
 
 # install python3
@@ -49,7 +49,11 @@ RUN pip3 install -r Dockerfile_requirements.txt
 RUN rm -rf /root/*
 
 # change python to python3
-RUN echo "alias python=python3" >> /root/.bashrc
-RUN source /root/.bashrc
+RUN ln -sf /usr/local/bin/python3 /usr/bin/python
+RUN ln -sf /usr/bin/python2.6 /usr/bin/python2
 
+# change /usr/bin/yum
+RUN sed -i 's/usr\/bin\/python/usr\/bin\/python2/g' /usr/bin/yum
+
+# cmd command
 CMD /bin/bash

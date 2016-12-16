@@ -101,6 +101,22 @@ web_spider_async.set_start_url("http://zhushou.360.cn/")
 # start this spider and wait for finishing
 web_spider_async.start_work_and_wait_done(fetcher_num=20)
 ```
+If you also want to rewrite WebSpiderAsync, you can:
+```python
+class MySpider(AsyncPool):
+
+    async def fetch(self, session, url: str, keys: object, repeat: int) -> (int, object):
+        # rewrite this function
+        return 1, ("",)
+
+    async def parse(self, priority: int, url: str, keys: object, deep: int, content: object) -> (int, list, list):
+        # rewrite this function
+        return 1, [], []
+
+    async def save(self, url: str, keys: object, item: object) -> bool:
+        # rewrite this function
+        return True
+```
 
 ### Demo (Not all demos can be used directly because of the changing of PSpider)
 1. demos_yundama
