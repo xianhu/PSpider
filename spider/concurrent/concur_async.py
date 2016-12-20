@@ -7,10 +7,10 @@ concur_async.py by xianhu
 import re
 import sys
 import time
-import aiohttp
 import asyncio
 import logging
 import datetime
+import aiohttp
 from ..abcbase import TPEnum, BasePool
 from ..utilities import get_url_legal, make_random_useragent
 
@@ -34,7 +34,7 @@ class BaseAsyncPool(BasePool):
         self.loop = loop or asyncio.get_event_loop()            # event_loop from parameter or call get_event_loop()
         self.queue = asyncio.PriorityQueue(loop=self.loop)      # (priority, url, keys, deep, repeat)
 
-        self.start_time = None              # start time of this pool
+        self.start_time = time.time()       # start time of this pool
         return
 
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):
@@ -224,7 +224,7 @@ class AsyncPool(BaseAsyncPool):
                 logging.debug("Parser stop parse urls: priority=%s, keys=%s, deep=%s, url=%s", priority, keys, deep, url)
 
             title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
-            save_list = [(url, title.group("title"), datetime.datetime.now()), ] if title else []
+            save_list = [(title.group("title"), datetime.datetime.now()), ] if title else []
         except Exception as excep:
             parse_result, url_list, save_list = -1, [], []
             logging.error("Parser error: %s, priority=%s, keys=%s, deep=%s, url=%s", excep, priority, keys, deep, url)
@@ -240,7 +240,7 @@ class AsyncPool(BaseAsyncPool):
         logging.debug("Saver start: keys=%s, url=%s", keys, url)
 
         try:
-            self.save_pip.write("\t".join([str(i) for i in item]) + "\n")
+            self.save_pip.write("\t".join([url, str(keys)] + [str(i) for i in item]) + "\n")
             self.save_pip.flush()
             save_result = True
         except Exception as excep:

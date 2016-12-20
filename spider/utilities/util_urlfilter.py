@@ -52,7 +52,7 @@ class UrlFilter(object):
         for re_white in self.re_white_list:
             if re_white.search(url):
                 if self.url_set is not None:
-                    result = (not (url in self.url_set))
+                    result = (url not in self.url_set)
                     self.url_set.add(url)
                 elif self.bloom_filter is not None:
                     # "add": if key already exists, return True, else return False
