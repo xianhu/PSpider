@@ -92,30 +92,22 @@ dou_spider.start_work_and_wait_done(fetcher_num=20)
 
 **Getting asyncio spider started: make a demo crawling zhushou.360**  
 ```python
+# get loop
+loop = asyncio.get_event_loop()
+
+# initial fetcher / parser / saver, you also can rewrite this three class
+fetcher = spider.FetcherAsync(max_repeat=3, sleep_time=0, loop=loop)
+parser = spider.ParserAsync(max_deep=1)
+saver = spider.SaverAsync(save_pipe=open("out_spider_thread.txt", "w"))
+
 # initial the WebSpiderAsync
-web_spider_async = spider.WebSpiderAsync(max_repeat=3, sleep_time=0, max_deep=1, url_filter=spider.UrlFilter())
+web_spider_async = spider.WebSpiderAsync(fetcher, parser, saver, url_filter=spider.UrlFilter(), loop=loop)
 
 # set the start url
 web_spider_async.set_start_url("http://zhushou.360.cn/")
 
 # start this spider and wait for finishing
 web_spider_async.start_work_and_wait_done(fetcher_num=20)
-```
-If you also want to rewrite WebSpiderAsync, you can:
-```python
-class MySpider(AsyncPool):
-
-    async def fetch(self, session, url: str, keys: object, repeat: int) -> (int, object):
-        # rewrite this function
-        return 1, ("",)
-
-    async def parse(self, priority: int, url: str, keys: object, deep: int, content: object) -> (int, list, list):
-        # rewrite this function
-        return 1, [], []
-
-    async def save(self, url: str, keys: object, item: object) -> bool:
-        # rewrite this function
-        return True
 ```
 
 ### Demo (Not all demos can be used directly because of the changing of PSpider)

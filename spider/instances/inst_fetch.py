@@ -20,8 +20,8 @@ class Fetcher(object):
         """
         constructor
         """
-        self.max_repeat = max_repeat    # default: 3, maximum repeat fetching time for a url
-        self.sleep_time = sleep_time    # default: 0, sleeping time after a fetching for a url
+        self._max_repeat = max_repeat       # default: 3, maximum repeat fetching time for a url
+        self._sleep_time = sleep_time       # default: 0, sleeping time after a fetching for a url
         return
 
     def working(self, url: str, keys: object, repeat: int) -> (int, object):
@@ -31,11 +31,11 @@ class Fetcher(object):
         """
         logging.debug("%s start: keys=%s, repeat=%s, url=%s", self.__class__.__name__, keys, repeat, url)
 
-        time.sleep(random.randint(0, self.sleep_time))
+        time.sleep(random.randint(0, self._sleep_time))
         try:
             fetch_result, content = self.url_fetch(url, keys, repeat)
         except Exception as excep:
-            if repeat >= self.max_repeat:
+            if repeat >= self._max_repeat:
                 fetch_result, content = -1, None
                 logging.error("%s error: %s, keys=%s, repeat=%s, url=%s", self.__class__.__name__, excep, keys, repeat, url)
             else:

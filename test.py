@@ -5,8 +5,8 @@ test.py by xianhu
 """
 
 import spider
+import asyncio
 import logging
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s\t%(levelname)s\t%(message)s")
 
 
 def test_spider():
@@ -41,8 +41,16 @@ def test_spider_async():
     """
     test spider with asyncio
     """
+    # 得到Loop
+    loop = asyncio.get_event_loop()
+
+    # 定义fetcher, parser和saver, 你也可以重写这三个类中的任何一个
+    fetcher = spider.FetcherAsync(max_repeat=3, sleep_time=0, loop=loop)
+    parser = spider.ParserAsync(max_deep=1)
+    saver = spider.SaverAsync(save_pipe=open("out_spider_thread.txt", "w"))
+
     # 初始化WebSpiderAsync
-    web_spider_async = spider.WebSpiderAsync(max_repeat=3, sleep_time=0, max_deep=1, save_pipe=open("out_spider_async.txt", "w"), url_filter=spider.UrlFilter())
+    web_spider_async = spider.WebSpiderAsync(fetcher, parser, saver, url_filter=spider.UrlFilter(), loop=loop)
 
     # 添加种子Url
     web_spider_async.set_start_url("http://zhushou.360.cn/")
@@ -53,6 +61,7 @@ def test_spider_async():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s\t%(levelname)s\t%(message)s")
     test_spider()
     test_spider_async()
     exit()

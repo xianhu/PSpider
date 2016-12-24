@@ -19,7 +19,7 @@ class Parser(object):
         """
         constructor
         """
-        self.max_deep = max_deep    # default: 0, if -1, spider will not stop until all urls are fetched
+        self._max_deep = max_deep       # default: 0, if -1, spider will not stop until all urls are fetched
         return
 
     def working(self, priority: int, url: str, keys: object, deep: int, content: object) -> (int, list, list):
@@ -48,7 +48,7 @@ class Parser(object):
 
         # get url_list
         url_list = []
-        if (self.max_deep < 0) or (deep < self.max_deep):
+        if (self._max_deep < 0) or (deep < self._max_deep):
             a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
             url_list = [(_url, keys, priority+1) for _url in [get_url_legal(href, url) for href in a_list]]
         else:

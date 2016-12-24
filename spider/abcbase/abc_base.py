@@ -36,8 +36,8 @@ class BaseThread(threading.Thread):
         """
         threading.Thread.__init__(self, name=name)
 
-        self.worker = worker    # the worker of each thread
-        self.pool = pool        # the thread_pool of each thread
+        self._worker = worker           # the worker of each thread
+        self._pool = pool               # the thread_pool of each thread
         return
 
     def run(self):
@@ -48,16 +48,16 @@ class BaseThread(threading.Thread):
 
         while True:
             try:
-                if not self.work():
+                if not self.working():
                     break
             except queue.Empty:
-                if self.pool.is_all_tasks_done():
+                if self._pool.is_all_tasks_done():
                     break
 
         logging.warning("%s[%s] end", self.__class__.__name__, self.getName())
         return
 
-    def work(self):
+    def working(self):
         """
         procedure of each thread, return True to continue, False to stop
         """
@@ -73,9 +73,9 @@ class BasePool(object):
         """
         constructor
         """
-        self.url_filter = url_filter        # default: None, also can be UrlFilter()
+        self._url_filter = url_filter       # default: None, also can be UrlFilter()
 
-        self.number_dict = {
+        self._number_dict = {
             TPEnum.TASKS_RUNNING: 0,        # the count of tasks which are running
 
             TPEnum.URL_FETCH: 0,            # the count of urls which have been fetched successfully
@@ -102,18 +102,24 @@ class BasePool(object):
         """
         raise NotImplementedError
 
-    def is_all_tasks_done(self):
-        """
-        check if all tasks are done, according to self.number_dict
-        """
-        return False if self.number_dict[TPEnum.TASKS_RUNNING] or self.number_dict[TPEnum.URL_NOT_FETCH] or \
-                        self.number_dict[TPEnum.HTM_NOT_PARSE] or self.number_dict[TPEnum.ITEM_NOT_SAVE] else True
-
     def update_number_dict(self, key, value):
         """
-        update self.number_dict of this pool
+        update the value of self._number_dict based on key
         """
         raise NotImplementedError
+
+    def get_number_dict(self, key):
+        """
+        get the value of self._number_dict based on key
+        """
+        return self._number_dict[key]
+
+    def is_all_tasks_done(self):
+        """
+        check if all tasks are done, according to self._number_dict
+        """
+        return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_NOT_FETCH] or \
+                        self._number_dict[TPEnum.HTM_NOT_PARSE] or self._number_dict[TPEnum.ITEM_NOT_SAVE] else True
 
     def add_a_task(self, task_name, task_content):
         """

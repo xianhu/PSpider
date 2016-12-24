@@ -7,3 +7,4 @@ define WebSpider, WebSpiderAsync, and also define utilities and instances for we
 from .utilities import *
 from .instances import *
 from .concurrent import WebSpider, WebSpiderAsync
+from .concurrent import FetcherAsync, ParserAsync, SaverAsync

@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 """
-define instances of url_fetch, htm_parse and item_save for web_spider
+define instances of url_fetch, htm_parse and item_save for threads web_spider
 """
 
 from .inst_fetch import Fetcher

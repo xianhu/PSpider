@@ -17,7 +17,7 @@ class Saver(object):
         """
         constructor
         """
-        self.save_pipe = save_pipe      # default: sys.stdout, also can be a file handler
+        self._save_pipe = save_pipe     # default: sys.stdout, also can be a file handler
         return
 
     def working(self, url: str, keys: object, item: object) -> bool:
@@ -40,6 +40,6 @@ class Saver(object):
         """
         save the item of a url, you can rewrite this function, parameters and return refer to self.working()
         """
-        self.save_pipe.write("\t".join([url, str(keys)] + [str(i) for i in item]) + "\n")
-        self.save_pipe.flush()
+        self._save_pipe.write("\t".join([url, str(keys)] + [str(i) for i in item]) + "\n")
+        self._save_pipe.flush()
         return True
