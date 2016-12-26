@@ -36,8 +36,8 @@ class BaseThread(threading.Thread):
         """
         threading.Thread.__init__(self, name=name)
 
-        self._worker = worker           # the worker of each thread
-        self._pool = pool               # the thread_pool of each thread
+        self._worker = worker   # the worker of each thread
+        self._pool = pool       # the thread_pool of each thread
         return
 
     def run(self):

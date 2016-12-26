@@ -24,11 +24,11 @@ class AsyncPool(BasePool):
         self._loop = loop or asyncio.get_event_loop()           # event_loop from parameter or call get_event_loop()
         self._queue = asyncio.PriorityQueue(loop=self._loop)    # (priority, url, keys, deep, repeat)
 
-        self._fetcher = fetcher             # fetcher instance
-        self._parser = parser               # parser instance
-        self._saver = saver                 # saver instance
+        self._fetcher = fetcher     # fetcher instance
+        self._parser = parser       # parser instance
+        self._saver = saver         # saver instance
 
-        self._start_time = time.time()      # start time of this pool
+        self._start_time = None     # start time of this pool
         return
 
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):
@@ -41,8 +41,12 @@ class AsyncPool(BasePool):
             self._start_time = time.time()
             self._loop.run_until_complete(self._start(fetcher_num=fetcher_num))
         except KeyboardInterrupt as excep:
-            logging.warning("%s KeyboardInterrupt: %s", self.__class__.__name__, excep)
+            logging.warning("%s start_work_and_wait_done keyboard interrupt: %s", self.__class__.__name__, excep)
+        except Exception as excep:
+            logging.error("%s start_work_and_wait_done error: %s", excep)
         finally:
+            self._loop.stop()
+            self._loop.run_forever()
             self._loop.close()
         return
 
@@ -63,6 +67,7 @@ class AsyncPool(BasePool):
         """
         logging.warning("Worker[%s] start", index)
 
+        self._fetcher.init_session(self._loop)
         try:
             while True:
                 # get a task
@@ -104,9 +109,11 @@ class AsyncPool(BasePool):
                 # print the information of this pool
                 if self._number_dict[TPEnum.URL_FETCH] % 100 == 0:
                     self.print_status()
+            # end of while True
         except asyncio.CancelledError:
             pass
 
+        self._fetcher.close_session()
         logging.warning("Worker[%s] end", index)
         return
 

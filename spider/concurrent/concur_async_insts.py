@@ -6,7 +6,6 @@ concur_async_insts.py by xianhu
 
 import re
 import sys
-import asyncio
 import logging
 import datetime
 import aiohttp
@@ -18,22 +17,30 @@ class FetcherAsync(object):
     class of FetcherAsync
     """
 
-    def __init__(self, max_repeat=3, sleep_time=0, loop=None):
+    def __init__(self, max_repeat=3, sleep_time=0):
         """
         constructor
         """
-        self._max_repeat = max_repeat   # default: 3, maximum repeat fetching time for a url
-        self._sleep_time = sleep_time   # default: 0, sleeping time after a fetching for a url
+        self._max_repeat = max_repeat       # default: 3, maximum repeat fetching time for a url
+        self._sleep_time = sleep_time       # default: 0, sleeping time after a fetching for a url
 
-        # session object to fetch the content of a url
-        self._session = aiohttp.ClientSession(loop=loop or asyncio.get_event_loop(), headers={"User-Agent": make_random_useragent()})
+        self._session = None                # session object to fetch the content of a url
         return
 
-    def __del__(self):
+    def init_session(self, loop):
         """
-        destructor
+        initial the session object of this class
         """
-        self._session.close()
+        if not self._session:
+            self._session = aiohttp.ClientSession(loop=loop, headers={"User-Agent": make_random_useragent(), "Accept-Encoding": "gzip"})
+        return
+
+    def close_session(self):
+        """
+        close the session object of this class
+        """
+        if not self._session.closed:
+            self._session.close()
         return
 
     async def fetch(self, url: str, keys: object, repeat: int) -> (int, object):

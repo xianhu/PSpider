@@ -27,13 +27,11 @@ def test_spider():
     # 初始化WebSpider
     web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
 
-    # 首先抓取一次豌豆荚页面, 抓取完成之后不停止monitor
-    web_spider.set_start_url("http://www.wandoujia.com/apps")
-    web_spider.start_work_and_wait_done(fetcher_num=10, is_over=False)
+    # 添加种子Url
+    web_spider.set_start_url("http://zhushou.360.cn/")
 
-    # 然后抓取360应用商店页面, 抓取完成之后停止monitor
-    web_spider.set_start_url("http://zhushou.360.cn/", ("360app",), priority=0, deep=0)
-    web_spider.start_work_and_wait_done(fetcher_num=10, is_over=True)
+    # 开始抓取任务并等待其结束
+    web_spider.start_work_and_wait_done(fetcher_num=10)
     return
 
 
@@ -45,7 +43,7 @@ def test_spider_async():
     loop = asyncio.get_event_loop()
 
     # 定义fetcher, parser和saver, 你也可以重写这三个类中的任何一个
-    fetcher = spider.FetcherAsync(max_repeat=3, sleep_time=0, loop=loop)
+    fetcher = spider.FetcherAsync(max_repeat=3, sleep_time=0)
     parser = spider.ParserAsync(max_deep=1)
     saver = spider.SaverAsync(save_pipe=open("out_spider_thread.txt", "w"))
 
