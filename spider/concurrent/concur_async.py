@@ -43,7 +43,7 @@ class AsyncPool(BasePool):
         except KeyboardInterrupt as excep:
             logging.warning("%s start_work_and_wait_done keyboard interrupt: %s", self.__class__.__name__, excep)
         except Exception as excep:
-            logging.error("%s start_work_and_wait_done error: %s", excep)
+            logging.error("%s start_work_and_wait_done error: %s", self.__class__.__name__, excep)
         finally:
             self._loop.stop()
             self._loop.run_forever()
