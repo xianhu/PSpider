@@ -8,7 +8,7 @@ import copy
 import queue
 import logging
 import threading
-from ..abcbase import TPEnum, BasePool
+from .concur_abase import TPEnum, BasePool
 from .concur_threads_insts import FetchThread, ParseThread, SaveThread, MonitorThread
 
 

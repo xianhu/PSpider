@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 """
-abc_base.py by xianhu
+concur_abase.py by xianhu
 """
 
 import enum

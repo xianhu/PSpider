@@ -7,7 +7,7 @@ concur_async.py by xianhu
 import time
 import asyncio
 import logging
-from ..abcbase import TPEnum, BasePool
+from .concur_abase import TPEnum, BasePool
 
 
 class AsyncPool(BasePool):

@@ -28,7 +28,7 @@ def test_spider():
     web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
 
     # 添加种子Url
-    web_spider.set_start_url("http://zhushou.360.cn/")
+    web_spider.set_start_url("http://zhushou.360.cn/", keys=("360web",))
 
     # 开始抓取任务并等待其结束
     web_spider.start_work_and_wait_done(fetcher_num=10)
@@ -45,13 +45,13 @@ def test_spider_async():
     # 定义fetcher, parser和saver, 你也可以重写这三个类中的任何一个
     fetcher = spider.FetcherAsync(max_repeat=3, sleep_time=0)
     parser = spider.ParserAsync(max_deep=1)
-    saver = spider.SaverAsync(save_pipe=open("out_spider_thread.txt", "w"))
+    saver = spider.SaverAsync(save_pipe=open("out_spider_async.txt", "w"))
 
     # 初始化WebSpiderAsync
     web_spider_async = spider.WebSpiderAsync(fetcher, parser, saver, url_filter=spider.UrlFilter(), loop=loop)
 
     # 添加种子Url
-    web_spider_async.set_start_url("http://zhushou.360.cn/")
+    web_spider_async.set_start_url("http://zhushou.360.cn/", keys=("360web",))
 
     # 开始抓取任务并等待其结束
     web_spider_async.start_work_and_wait_done(fetcher_num=10)

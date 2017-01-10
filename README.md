@@ -12,9 +12,8 @@ A simple spider frame written by Python, which needs Python3.5+
 ### Modules of PSpider
 1. utilities module: Define some utilities functions and utilities classes for spider
 2. instances module: Define classes of fetcher, parser, saver for multi-threading spider
-3. abcbase module: Define some base class for multi-threading spider and asyncio spider
-4. concurrent module: Define WebSpiderFrame of multi-threading mode and asyncio mode
-5. distributed module: Define WebSpiderFrame of distributed mode (not finished)
+3. concurrent module: Define WebSpiderFrame of multi-threading mode and asyncio mode
+4. distributed module: Define WebSpiderFrame of distributed mode (not finished)
 
 ### Procedure of PSpider
 1. procedure of multi-threading spider  

@@ -6,7 +6,7 @@ concur_threads_insts.py by xianhu
 
 import time
 import logging
-from ..abcbase import TPEnum, BaseThread
+from .concur_abase import TPEnum, BaseThread
 
 
 # ===============================================================================================================================
