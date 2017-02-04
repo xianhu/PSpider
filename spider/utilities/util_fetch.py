@@ -14,7 +14,7 @@ __all__ = [
 
 def make_random_useragent(ua_type="pc"):
     """
-    make a random user_agent based on ua_type, ua_type can be "pc", "phone" or "all"
+    make a random user_agent based on ua_type, ua_type can be "pc", "phone" or "all"(default)
     """
     ua_type = ua_type.lower()
     assert ua_type in ("pc", "phone", "all"), "make_random_useragent: parameter ua_type[%s] is invalid" % ua_type

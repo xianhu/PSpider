@@ -21,7 +21,7 @@ class AsyncPool(BasePool):
         """
         BasePool.__init__(self, url_filter=url_filter)
 
-        self._loop = loop or asyncio.get_event_loop()           # event_loop from parameter or call get_event_loop()
+        self._loop = loop or asyncio.get_event_loop()           # event_loop from parameter or asyncio.call get_event_loop()
         self._queue = asyncio.PriorityQueue(loop=self._loop)    # (priority, url, keys, deep, repeat)
 
         self._fetcher = fetcher     # fetcher instance
@@ -65,7 +65,7 @@ class AsyncPool(BasePool):
         """
         working process, fetching --> parsing --> saving
         """
-        logging.warning("Worker[%s] start", index)
+        logging.warning("%s[worker-%s] start...", self.__class__.__name__, index)
 
         self._fetcher.init_session(self._loop)
         try:
@@ -114,7 +114,7 @@ class AsyncPool(BasePool):
             pass
 
         self._fetcher.close_session()
-        logging.warning("Worker[%s] end", index)
+        logging.warning("%s[worker-%s] end...", self.__class__.__name__, index)
         return
 
     def update_number_dict(self, key, value):

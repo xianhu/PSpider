@@ -20,7 +20,7 @@ __all__ = [
 
 def get_string_num(string, base=None):
     """
-    get float number from a string, if base is not None, K means (base * B), M means (base * K), ...
+    get float number from a string, if base isn't None, K means (base * B), M means (base * K), ...
     """
     temp = re.search(r"(?P<num>\d+(\.\d+)?)(?P<param>[\w\W]*?)$", string.upper().strip(), flags=re.IGNORECASE)
     if not temp:
@@ -36,16 +36,17 @@ def get_string_num(string, base=None):
         num *= 100
     if param.find("十") >= 0:
         num *= 10
-    if (param.find("K") >= 0) and base:
-        num *= base
-    if (param.find("M") >= 0) and base:
-        num *= (base * base)
-    if (param.find("G") >= 0) and base:
-        num *= (base * base * base)
-    if (param.find("T") >= 0) and base:
-        num *= (base * base * base * base)
     if param.find("%") >= 0:
         num /= 100
+    if base:
+        if param.find("K") >= 0:
+            num *= base
+        if param.find("M") >= 0:
+            num *= (base * base)
+        if param.find("G") >= 0:
+            num *= (base * base * base)
+        if param.find("T") >= 0:
+            num *= (base * base * base * base)
     return num
 
 

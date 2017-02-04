@@ -44,7 +44,7 @@ class BaseThread(threading.Thread):
         """
         rewrite run function, auto running and must call self.work()
         """
-        logging.warning("%s[%s] start", self.__class__.__name__, self.getName())
+        logging.warning("%s[%s] start...", self.__class__.__name__, self.getName())
 
         while True:
             try:
@@ -54,7 +54,7 @@ class BaseThread(threading.Thread):
                 if self._pool.is_all_tasks_done():
                     break
 
-        logging.warning("%s[%s] end", self.__class__.__name__, self.getName())
+        logging.warning("%s[%s] end...", self.__class__.__name__, self.getName())
         return
 
     def working(self):

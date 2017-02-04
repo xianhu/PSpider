@@ -31,11 +31,9 @@ class UrlFilter(object):
         """
         if self._url_set is not None:
             self._url_set.update(url_list)
-        elif self._bloom_filter is not None:
+        else:
             for url in url_list:
                 self._bloom_filter.add(url)
-        else:
-            pass
         return
 
     def check_and_add(self, url):
@@ -52,10 +50,8 @@ class UrlFilter(object):
                 if self._url_set is not None:
                     result = (url not in self._url_set)
                     self._url_set.add(url)
-                elif self._bloom_filter is not None:
-                    result = (not self._bloom_filter.add(url))
                 else:
-                    pass
+                    result = (not self._bloom_filter.add(url))
                 break
 
         return result

@@ -31,7 +31,7 @@ class FetcherAsync(object):
 
     def init_session(self, loop):
         """
-        initial the session object of this class
+        initial self._session based on loop
         """
         if not self._session:
             self._session = aiohttp.ClientSession(loop=loop, headers={"User-Agent": make_random_useragent(), "Accept-Encoding": "gzip"})

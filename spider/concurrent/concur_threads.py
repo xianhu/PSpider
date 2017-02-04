@@ -23,7 +23,7 @@ class ThreadPool(BasePool):
         """
         BasePool.__init__(self, url_filter=url_filter)
 
-        self._inst_fetcher = fetcher                 # fetcher instance or a fetcher instance list, for fetch thread
+        self._inst_fetcher = fetcher                 # fetcher instance or a list, for fetch thread
         self._inst_parser = parser                   # parser instance for parse thread
         self._inst_saver = saver                     # saver instance for save thread
 
@@ -52,7 +52,8 @@ class ThreadPool(BasePool):
             fetcher_list = [FetchThread("fetcher-%d" % i, fetcher, self) for (i, fetcher) in enumerate(self._inst_fetcher)]
         else:
             fetcher_list = [FetchThread("fetcher-%d" % i, copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
-        threads_list = fetcher_list + [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
+        threads_list = fetcher_list + [ParseThread("parser", self._inst_parser, self),
+                                       SaveThread("saver", self._inst_saver, self)]
 
         for thread in threads_list:
             thread.setDaemon(True)
