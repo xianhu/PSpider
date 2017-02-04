@@ -21,7 +21,7 @@ class AsyncPool(BasePool):
         """
         BasePool.__init__(self, url_filter=url_filter)
 
-        self._loop = loop or asyncio.get_event_loop()           # event_loop from parameter or asyncio.call get_event_loop()
+        self._loop = loop or asyncio.get_event_loop()           # event_loop from parameter or call asyncio.get_event_loop()
         self._queue = asyncio.PriorityQueue(loop=self._loop)    # (priority, url, keys, deep, repeat)
 
         self._fetcher = fetcher     # fetcher instance
