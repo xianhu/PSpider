@@ -113,5 +113,8 @@ web_spider_async.start_work_and_wait_done(fetcher_num=20)
 2. demos_nbastats
 3. demos_doubanmovies
 4. demos_dangdang
+5. demos_weibo
+6. demos_weixin
+7. demos_zhihu
 
 ### If you have any questions or advices, you can commit "Issues" or "Pull requests"
