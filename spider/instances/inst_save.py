@@ -36,7 +36,7 @@ class Saver(object):
         logging.debug("%s end: save_result=%s, url=%s", self.__class__.__name__, save_result, url)
         return save_result
 
-    def item_save(self, url: str, keys: object, item: object) -> bool:
+    def item_save(self, url: str, keys: object, item: (list, tuple)) -> bool:
         """
         save the item of a url, you can rewrite this function, parameters and return refer to self.working()
         """

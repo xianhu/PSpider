@@ -40,8 +40,6 @@ class AsyncPool(BasePool):
         try:
             self._start_time = time.time()
             self._loop.run_until_complete(self._start(fetcher_num=fetcher_num))
-        except KeyboardInterrupt as excep:
-            logging.warning("%s start_work_and_wait_done keyboard interrupt: %s", self.__class__.__name__, excep)
         except Exception as excep:
             logging.error("%s start_work_and_wait_done error: %s", self.__class__.__name__, excep)
         finally:
@@ -54,10 +52,17 @@ class AsyncPool(BasePool):
         """
         start tasks, and wait for finishing
         """
-        tasks_list = [asyncio.Task(self._work(index), loop=self._loop) for index in range(fetcher_num)]
+        # initial session
+        self._fetcher.init_session(self._loop)
+
+        # start tasks and wait done
+        tasks_list = [asyncio.Task(self._work(index+1), loop=self._loop) for index in range(fetcher_num)]
         await self._queue.join()
         for task in tasks_list:
             task.cancel()
+
+        # close session
+        self._fetcher.close_session()
         self.print_status()
         return
 
@@ -67,16 +72,18 @@ class AsyncPool(BasePool):
         """
         logging.warning("%s[worker-%s] start...", self.__class__.__name__, index)
 
-        self._fetcher.init_session(self._loop)
-        try:
-            while True:
+        while True:
+            try:
                 # get a task
                 priority, url, keys, deep, repeat = await self.get_a_task(task_name=TPEnum.URL_FETCH)
+            except asyncio.CancelledError:
+                break
 
+            try:
                 # fetch the content of a url ================================================================
                 fetch_result, content = await self._fetcher.fetch(url, keys, repeat)
                 if fetch_result > 0:
-                    self.update_number_dict(TPEnum.URL_FETCH, +1)                   # =======================
+                    self.update_number_dict(TPEnum.URL_FETCH, +1)
 
                     # parse the content of a url ============================================================
                     self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
@@ -84,7 +91,7 @@ class AsyncPool(BasePool):
                     self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
 
                     if parse_result > 0:
-                        self.update_number_dict(TPEnum.HTM_PARSE, +1)               # =======================
+                        self.update_number_dict(TPEnum.HTM_PARSE, +1)
 
                         # add new task to self._queue
                         for _url, _keys, _priority in url_list:
@@ -97,23 +104,24 @@ class AsyncPool(BasePool):
                             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, -1)
 
                             if save_result:
-                                self.update_number_dict(TPEnum.ITEM_SAVE, +1)       # =======================
+                                self.update_number_dict(TPEnum.ITEM_SAVE, +1)
+                    # end of if parse_result > 0
                 elif fetch_result == 0:
                     self.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
                 else:
                     pass
-
+                # end of if fetch_result > 0
+            except Exception:
+                pass
+            finally:
                 # finish a task
                 self.finish_a_task(task_name=TPEnum.URL_FETCH)
 
-                # print the information of this pool
-                if self._number_dict[TPEnum.URL_FETCH] % 100 == 0:
-                    self.print_status()
-            # end of while True
-        except asyncio.CancelledError:
-            pass
+            # print the information of this pool
+            if self._number_dict[TPEnum.URL_FETCH] % 100 == 0:
+                self.print_status()
+        # end of while True
 
-        self._fetcher.close_session()
         logging.warning("%s[worker-%s] end...", self.__class__.__name__, index)
         return
 

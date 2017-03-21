@@ -51,8 +51,6 @@ class Parser(object):
         if (self._max_deep < 0) or (deep < self._max_deep):
             a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
             url_list = [(_url, keys, priority+1) for _url in [get_url_legal(href, url) for href in a_list]]
-        else:
-            logging.debug("%s stop parse urls: priority=%s, keys=%s, deep=%s, url=%s", self.__class__.__name__, priority, keys, deep, url)
 
         # get save_list
         title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)

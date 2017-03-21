@@ -14,17 +14,17 @@ def work_fetch(self):
     """
     procedure of fetching, auto running, and only return True
     """
-    # ----1
+    # ----1----
     priority, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
 
-    # ----2
+    # ----2----
     try:
         fetch_result, content = self._worker.working(url, keys, repeat)
     except Exception as excep:
         fetch_result, content = -1, None
         logging.error("%s._worker.working() error: %s", self.__class__.__name__, excep)
 
-    # ----3
+    # ----3----
     if fetch_result > 0:
         self._pool.update_number_dict(TPEnum.URL_FETCH, +1)
         self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
@@ -33,7 +33,7 @@ def work_fetch(self):
     else:
         pass
 
-    # ----4
+    # ----4----
     self._pool.finish_a_task(TPEnum.URL_FETCH)
     return True
 
@@ -45,17 +45,17 @@ def work_parse(self):
     """
     procedure of parsing, auto running, and only return True
     """
-    # ----1
+    # ----1----
     priority, url, keys, deep, content = self._pool.get_a_task(TPEnum.HTM_PARSE)
 
-    # ----2
+    # ----2----
     try:
         parse_result, url_list, save_list = self._worker.working(priority, url, keys, deep, content)
     except Exception as excep:
         parse_result, url_list, save_list = -1, [], []
         logging.error("%s._worker.working() error: %s", self.__class__.__name__, excep)
 
-    # ----3
+    # ----3----
     if parse_result > 0:
         self._pool.update_number_dict(TPEnum.HTM_PARSE, +1)
         for _url, _keys, _priority in url_list:
@@ -63,7 +63,7 @@ def work_parse(self):
         for item in save_list:
             self._pool.add_a_task(TPEnum.ITEM_SAVE, (url, keys, item))
 
-    # ----4
+    # ----4----
     self._pool.finish_a_task(TPEnum.HTM_PARSE)
     return True
 
@@ -75,21 +75,21 @@ def work_save(self):
     """
     procedure of saving, auto running, and only return True
     """
-    # ----1
+    # ----1----
     url, keys, item = self._pool.get_a_task(TPEnum.ITEM_SAVE)
 
-    # ----2
+    # ----2----
     try:
         save_result = self._worker.working(url, keys, item)
     except Exception as excep:
         save_result = False
         logging.error("%s._worker.working() error: %s", self.__class__.__name__, excep)
 
-    # ----3
+    # ----3----
     if save_result:
         self._pool.update_number_dict(TPEnum.ITEM_SAVE, +1)
 
-    # ----4
+    # ----4----
     self._pool.finish_a_task(TPEnum.ITEM_SAVE)
     return True
 

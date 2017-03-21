@@ -99,8 +99,6 @@ class ParserAsync(object):
             if (self._max_deep < 0) or (deep < self._max_deep):
                 a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
                 url_list = [(_url, keys, priority + 1) for _url in [get_url_legal(href, url) for href in a_list]]
-            else:
-                logging.debug("%s stop parse urls: priority=%s, keys=%s, deep=%s, url=%s", self.__class__.__name__, priority, keys, deep, url)
 
             title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
             save_list = [(title.group("title"), datetime.datetime.now()), ] if title else []
@@ -124,7 +122,7 @@ class SaverAsync(object):
         self._save_pip = save_pipe      # default: sys.stdout, also can be a file handler
         return
 
-    async def save(self, url: str, keys: object, item: object) -> bool:
+    async def save(self, url: str, keys: object, item: (list, tuple)) -> bool:
         """
         save the item of a url, must "try, except" and don't change parameters and return
         :return save_result: True or False

@@ -18,10 +18,10 @@ A simple spider frame written by Python, which needs Python3.5+
 1. procedure of multi-threading spider  
 ![](otherfiles/threads.png)  
 ①: Fetcher gets url from UrlQueue, and makes request based on this url  
-②: Put the result of ① to HtmlQueue, and make Parser can get it  
+②: Put the result of ① to HtmlQueue, and so Parser can get it  
 ③: Parser gets item from HtmlQueue, and parses it to get new urls and saved items  
-④: Put the new urls to UrlQueue, and make Fetcher can get it  
-⑤: Put the saved items to ItemQueue, and make Saver can get it  
+④: Put the new urls to UrlQueue, and so Fetcher can get it  
+⑤: Put the saved items to ItemQueue, and so Saver can get it  
 ⑥: Saver gets item from ItemQueue, and saves it to filesystem or database  
 
 2. procedure of asyncio spider  
@@ -36,6 +36,9 @@ Similar with multi-threading spider. The only difference is using "coroutine" in
 （1）Import spider `import spider`  
 （2）Make a new class of MovieFetcher based on spider.Fetcher, and rewrite functions of url_fetch  
 ```python
+import spider
+import requests
+
 class MovieFetcher(spider.Fetcher):
     def __init__(self, max_repeat=3, sleep_time=0):
         spider.Fetcher.__init__(self, max_repeat=max_repeat, sleep_time=sleep_time)    
@@ -47,9 +50,13 @@ class MovieFetcher(spider.Fetcher):
         if resp.status_code == 200:
             return 1, resp.text
         resp.raise_for_status()
+        return
 ```
 （3）Make a new class of MovieParser based on spider.Parser, and rewrite functions of htm_parse
-```python    
+```python
+import spider
+from bs4 import BeautifulSoup
+
 class MovieParser(spider.Parser):
     def htm_parse(self, priority, url, keys, deep, content):
         url_list, save_list = [], []
@@ -57,8 +64,6 @@ class MovieParser(spider.Parser):
 
         # decide how to parse the content of url, based on 'keys'
         if keys[0] == "index":
-            # parse the index page and get new urls
-        
             # get the new movie urls of detail page
             div_movies = soup.find_all("a", class_="nbg", title=True)
             url_list.extend([(item.get("href"), ("detail", keys[1]), 0) for item in div_movies])
@@ -72,12 +77,14 @@ class MovieParser(spider.Parser):
         else:
             # parse the detail page and get saved items
             content = soup.find("div", id="content")
-            ......
+            movie = content
             save_list.append(movie)
         return 1, url_list, save_list
 ```
 （4）Create the multi-theading spider, set the start url and start this spider using 20 threads
 ```python
+import spider
+
 # initial the WebSpider
 dou_spider = spider.WebSpider(MovieFetcher(), MovieParser(max_deep=-1), spider.Saver(), spider.UrlFilter())
 
@@ -90,6 +97,9 @@ dou_spider.start_work_and_wait_done(fetcher_num=20)
 
 **Getting asyncio spider started: make a demo crawling zhushou.360**  
 ```python
+import spider
+import asyncio
+
 # get loop
 loop = asyncio.get_event_loop()
 
