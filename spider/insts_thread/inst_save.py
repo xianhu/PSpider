@@ -20,7 +20,7 @@ class Saver(object):
         self._save_pipe = save_pipe     # default: sys.stdout, also can be a file handler
         return
 
-    def working(self, url: str, keys: object, item: object) -> bool:
+    def working(self, url: str, keys: object, item: (list, tuple)) -> bool:
         """
         working function, must "try, except" and don't change parameters and return
         :return save_result: True or False

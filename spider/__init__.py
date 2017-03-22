@@ -5,6 +5,6 @@ define WebSpider, WebSpiderAsync, and also define utilities and instances for we
 """
 
 from .utilities import *
-from .instances import Fetcher, Parser, Saver
-from .concurrent import FetcherAsync, ParserAsync, SaverAsync
-from .concurrent import WebSpider, WebSpiderAsync
+from .insts_thread import Fetcher, Parser, Saver
+from .insts_async import FetcherAsync, ParserAsync, SaverAsync
+from .module_concurrent import WebSpider, WebSpiderAsync
