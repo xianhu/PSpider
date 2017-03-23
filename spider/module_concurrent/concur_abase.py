@@ -123,18 +123,18 @@ class BasePool(object):
 
     def add_a_task(self, task_name, task_content):
         """
-        add a task based on task_name, if queue is full, blocking the queue
+        add a task based on task_name
         """
         raise NotImplementedError
 
     def get_a_task(self, task_name):
         """
-        get a task based on task_name, if queue is empty, raise queue.Empty
+        get a task based on task_name
         """
         raise NotImplementedError
 
     def finish_a_task(self, task_name):
         """
-        finish a task based on task_name, call queue.task_done()
+        finish a task based on task_name
         """
         raise NotImplementedError

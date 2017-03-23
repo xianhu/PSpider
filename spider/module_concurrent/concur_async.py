@@ -52,7 +52,7 @@ class AsyncPool(BasePool):
         """
         start tasks, and wait for finishing
         """
-        # initial session
+        # initial fetcher session
         self._fetcher.init_session(self._loop)
 
         # start tasks and wait done
@@ -61,7 +61,7 @@ class AsyncPool(BasePool):
         for task in tasks_list:
             task.cancel()
 
-        # close session
+        # close fetcher session
         self._fetcher.close_session()
         self.print_status()
         return
@@ -108,10 +108,8 @@ class AsyncPool(BasePool):
                     # end of if parse_result > 0
                 elif fetch_result == 0:
                     self.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
-                else:
-                    pass
                 # end of if fetch_result > 0
-            except Exception:
+            except:
                 pass
             finally:
                 # finish a task
@@ -134,7 +132,7 @@ class AsyncPool(BasePool):
 
     def add_a_task(self, task_name, task_content):
         """
-        add a task based on task_name, if queue is full, blocking the queue
+        add a task based on task_name
         """
         if (task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[1]):
             self._queue.put_nowait(task_content)
@@ -143,7 +141,7 @@ class AsyncPool(BasePool):
 
     async def get_a_task(self, task_name):
         """
-        get a task based on task_name, if queue is empty, raise queue.Empty
+        get a task based on task_name, if queue is empty, call await
         """
         task_content = await self._queue.get()
         self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)

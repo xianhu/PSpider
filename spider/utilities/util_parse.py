@@ -26,6 +26,8 @@ def get_string_num(string, base=None):
     if not temp:
         return 0.0
     num, param = float(temp.group("num")), temp.group("param")
+    if param.find("兆") >= 0:
+        num *= 10000000000000
     if param.find("亿") >= 0:
         num *= 100000000
     if param.find("万") >= 0:
