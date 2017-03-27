@@ -36,7 +36,7 @@ def test_spider():
 
 def test_spider_async():
     """
-    test spider with asyncio
+    test asyncio spider with asyncio
     """
     # 得到Loop
     loop = asyncio.get_event_loop()
@@ -57,8 +57,30 @@ def test_spider_async():
     return
 
 
+def test_spider_distributed():
+    """
+    test distributed spider
+    """
+    # 定义fetcher, parser和saver, 你也可以重写这三个类中的任何一个
+    fetcher = spider.Fetcher(max_repeat=3, sleep_time=0)
+    parser = spider.Parser(max_deep=-1)
+    saver = spider.Saver(save_pipe=open("out_spider_distributed.txt", "w"))
+
+    # 初始化WebSpiderDist
+    web_spider_dist = spider.WebSpiderDist(fetcher, parser, saver, monitor_sleep_time=5)
+    web_spider_dist.init_redis(host="localhost", port=6379, key_wait="spider.wait", key_all="spider.all")
+
+    # 添加种子Url
+    web_spider_dist.set_start_url("http://zhushou.360.cn/", keys=("360web",))
+
+    # 开始抓取任务并等待其结束
+    web_spider_dist.start_work_and_wait_done(fetcher_num=1)
+    return
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s\t%(levelname)s\t%(message)s")
-    test_spider()
-    test_spider_async()
+    # test_spider()
+    # test_spider_async()
+    test_spider_distributed()
     exit()

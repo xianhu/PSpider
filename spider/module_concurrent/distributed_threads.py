@@ -22,19 +22,19 @@ class DistThreadPool(ThreadPool):
         ThreadPool.__init__(self, fetcher, parser, saver, monitor_sleep_time=monitor_sleep_time)
 
         # redis configures
-        self.client = None          # redis client
-        self.redis_key_1 = None     # redis key
-        self.redis_key_2 = None     # redis key
+        self._client = None         # redis client
+        self._key_wait = None       # redis key, urls which wait to fetch
+        self._key_all = None        # redis key, all urls
         return
 
-    def init_redis(self, host="localhost", port=6379, db=0, key_1="", key_2=""):
+    def init_redis(self, host="localhost", port=6379, db=0, key_wait="spider.wait", key_all="spider.all"):
         """
         initial redis client
         """
-        if not self.client:
-            self.client = redis.Redis(host=host, port=port, db=db)
-            self.redis_key_1 = key_1
-            self.redis_key_2 = key_2
+        if not self._client:
+            self._client = redis.Redis(host=host, port=port, db=db)
+            self._key_wait = key_wait
+            self._key_all = key_all
         return
 
     # ================================================================================================================================
@@ -43,7 +43,8 @@ class DistThreadPool(ThreadPool):
         add a task based on task_name
         """
         if task_name == TPEnum.URL_FETCH:
-            self.client.push()
+            if (task_content[-1] > 0) or (not self._key_all) or self._client.sadd(self._key_all, task_content[1]):
+                self._client.lpush(self._key_wait, task_content)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put(task_content, block=True)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
@@ -61,7 +62,7 @@ class DistThreadPool(ThreadPool):
         """
         task_content = None
         if task_name == TPEnum.URL_FETCH:
-            self.client.get()
+            task_content = eval(self._client.brpop(self._key_wait, timeout=5)[1])
         elif task_name == TPEnum.HTM_PARSE:
             task_content = self._parse_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
@@ -73,3 +74,19 @@ class DistThreadPool(ThreadPool):
             exit()
         self.update_number_dict(TPEnum.TASKS_RUNNING, +1)
         return task_content
+
+    def finish_a_task(self, task_name):
+        """
+        finish a task based on task_name, call queue.task_done()
+        """
+        if task_name == TPEnum.URL_FETCH:
+            pass
+        elif task_name == TPEnum.HTM_PARSE:
+            self._parse_queue.task_done()
+        elif task_name == TPEnum.ITEM_SAVE:
+            self._save_queue.task_done()
+        else:
+            logging.error("%s finish_a_task error: parameter task_name[%s] is invalid", self.__class__.__name__, task_name)
+            exit()
+        self.update_number_dict(TPEnum.TASKS_RUNNING, -1)
+        return
