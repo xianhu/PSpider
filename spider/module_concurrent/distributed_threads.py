@@ -15,16 +15,19 @@ class DistThreadPool(ThreadPool):
     class of DistThreadPool, as the subclass of ThreadPool
     """
 
-    def __init__(self, fetcher, parser, saver, monitor_sleep_time=5):
+    def __init__(self, fetcher, parser, saver, url_filter=None, monitor_sleep_time=5):
         """
         constructor
         """
-        ThreadPool.__init__(self, fetcher, parser, saver, monitor_sleep_time=monitor_sleep_time)
+        ThreadPool.__init__(self, fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=monitor_sleep_time)
 
         # redis configures
         self._client = None         # redis client
         self._key_wait = None       # redis key, urls which wait to fetch
         self._key_all = None        # redis key, all urls
+
+        # make the spider run forever
+        self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
         return
 
     def init_redis(self, host="localhost", port=6379, db=0, key_wait="spider.wait", key_all="spider.all"):
@@ -43,7 +46,10 @@ class DistThreadPool(ThreadPool):
         add a task based on task_name
         """
         if task_name == TPEnum.URL_FETCH:
-            if (task_content[-1] > 0) or (not self._key_all) or self._client.sadd(self._key_all, task_content[1]):
+            if (task_content[-1] > 0) or (
+                ((not self._url_filter) or self._url_filter.check_and_add(task_content[1])) and
+                ((not self._key_all) or self._client.sadd(self._key_all, task_content[1]))
+            ):
                 self._client.lpush(self._key_wait, task_content)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put(task_content, block=True)

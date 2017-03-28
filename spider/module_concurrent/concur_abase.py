@@ -53,6 +53,8 @@ class BaseThread(threading.Thread):
             except queue.Empty:
                 if self._pool.is_all_tasks_done():
                     break
+            except TypeError:
+                pass
             except Exception as excep:
                 logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), excep)
                 break

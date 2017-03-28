@@ -54,7 +54,7 @@ class Parser(object):
 
         # get save_list
         title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
-        save_list = [(title.group("title"), datetime.datetime.now()), ] if title else []
+        save_list = [(title.group("title").strip(), datetime.datetime.now()), ] if title else []
 
         # return parse_result, url_list, save_list
         return 1, url_list, save_list

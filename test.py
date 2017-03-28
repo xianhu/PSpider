@@ -67,14 +67,14 @@ def test_spider_distributed():
     saver = spider.Saver(save_pipe=open("out_spider_distributed.txt", "w"))
 
     # 初始化WebSpiderDist
-    web_spider_dist = spider.WebSpiderDist(fetcher, parser, saver, monitor_sleep_time=5)
+    web_spider_dist = spider.WebSpiderDist(fetcher, parser, saver, url_filter=spider.UrlFilter(), monitor_sleep_time=5)
     web_spider_dist.init_redis(host="localhost", port=6379, key_wait="spider.wait", key_all="spider.all")
 
     # 添加种子Url
     web_spider_dist.set_start_url("http://zhushou.360.cn/", keys=("360web",))
 
     # 开始抓取任务并等待其结束
-    web_spider_dist.start_work_and_wait_done(fetcher_num=1)
+    web_spider_dist.start_work_and_wait_done(fetcher_num=10)
     return
 
 
@@ -82,5 +82,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
     # test_spider()
     # test_spider_async()
-    test_spider_distributed()
+    # test_spider_distributed()
     exit()

@@ -39,7 +39,7 @@ class ParserAsync(object):
                 url_list = [(_url, keys, priority + 1) for _url in [get_url_legal(href, url) for href in a_list]]
 
             title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
-            save_list = [(title.group("title"), datetime.datetime.now()), ] if title else []
+            save_list = [(title.group("title").strip(), datetime.datetime.now()), ] if title else []
         except Exception as excep:
             parse_result, url_list, save_list = -1, [], []
             logging.error("%s error: %s, priority=%s, keys=%s, deep=%s, url=%s", self.__class__.__name__, excep, priority, keys, deep, url)
