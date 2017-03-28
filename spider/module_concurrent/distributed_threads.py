@@ -63,6 +63,7 @@ class DistThreadPool(ThreadPool):
         task_content = None
         if task_name == TPEnum.URL_FETCH:
             task_content = eval(self._client.brpop(self._key_wait, timeout=5)[1])
+            logging.debug("%s redis status: wait=%s", self.__class__.__name__, self._client.llen(self._key_wait))
         elif task_name == TPEnum.HTM_PARSE:
             task_content = self._parse_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
