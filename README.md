@@ -12,8 +12,8 @@ A simple spider frame written by Python, which needs Python3.5+
 ### Modules of PSpider
 1. utilities module: define utilities functions and classes for spider
 2. insts_async module: define classes of fetcher, parser, saver for asyncio spider
-3. insts_thread module: define classes of fetcher, parser, saver for multi-threading spider or distributed spider
-4. module_concurrent module: define WebSpiderFrame of multi-threading mode spider, asyncio mode spider and distributed spider
+3. insts_thread module: define classes of fetcher, parser, saver for multi-threading spider
+4. module_concurrent module: define WebSpiderFrame of multi-threading mode spider, asyncio mode spider and distributed mode spider
 
 ### Procedure of PSpider
 1. procedure of multi-threading spider  
@@ -120,6 +120,26 @@ web_spider_async.set_start_url("http://zhushou.360.cn/")
 
 # start this spider and wait for finishing
 web_spider_async.start_work_and_wait_done(fetcher_num=20)
+```
+
+**Getting distributed spider started: make a demo crawling zhushou.360**  
+```python
+import spider
+
+# initial fetcher / parser / saver, you also can rewrite this three class
+fetcher = spider.Fetcher(max_repeat=3, sleep_time=0)
+parser = spider.Parser(max_deep=-1)
+saver = spider.Saver(save_pipe=open("out_spider_distributed.txt", "w"))
+
+# initial the WebSpiderDist
+web_spider_dist = spider.WebSpiderDist(fetcher, parser, saver, url_filter=spider.UrlFilter(), monitor_sleep_time=5)
+web_spider_dist.init_redis(host="localhost", port=6379, key_wait="spider.wait", key_all="spider.all")
+
+# set the start url
+web_spider_dist.set_start_url("http://zhushou.360.cn/", keys=("360web",))
+
+# start this spider and wait for finishing
+web_spider_dist.start_work_and_wait_done(fetcher_num=10)
 ```
 
 ### Demo (Not all demos can be used directly because of the changing of PSpider)

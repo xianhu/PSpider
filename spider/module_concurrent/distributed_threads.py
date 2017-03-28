@@ -43,7 +43,7 @@ class DistThreadPool(ThreadPool):
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):
         """
-        add a task based on task_name
+        add a task based on task_name, if queue is full, blocking the queue
         """
         if task_name == TPEnum.URL_FETCH:
             if (task_content[-1] > 0) or (
