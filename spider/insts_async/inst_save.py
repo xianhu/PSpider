@@ -10,7 +10,7 @@ import logging
 
 class SaverAsync(object):
     """
-    class of SaverAsync
+    class of SaverAsync, must include function save()
     """
 
     def __init__(self,  save_pipe=sys.stdout):

@@ -12,3 +12,8 @@
 .*
 data/
 build/
+spider/__pycache__/
+spider/insts_async/__pycache__/
+spider/insts_thread/__pycache__/
+spider/module_concurrent/__pycache__/
+spider/utilities/__pycache__/

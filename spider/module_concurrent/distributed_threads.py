@@ -23,8 +23,8 @@ class DistThreadPool(ThreadPool):
 
         # redis configures
         self._client = None         # redis client
-        self._key_wait = None       # redis key, urls which wait to fetch
-        self._key_all = None        # redis key, all urls
+        self._key_wait = None       # redis key, urls list which wait to fetch
+        self._key_all = None        # redis key, all urls set
 
         # make the spider run forever
         self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
@@ -43,7 +43,7 @@ class DistThreadPool(ThreadPool):
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):
         """
-        add a task based on task_name, if queue is full, blocking the queue
+        add a task based on task_name
         """
         if task_name == TPEnum.URL_FETCH:
             if (task_content[-1] > 0) or (
@@ -52,10 +52,10 @@ class DistThreadPool(ThreadPool):
             ):
                 self._client.lpush(self._key_wait, task_content)
         elif task_name == TPEnum.HTM_PARSE:
-            self._parse_queue.put(task_content, block=True)
+            self._parse_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
         elif task_name == TPEnum.ITEM_SAVE:
-            self._save_queue.put(task_content, block=True)
+            self._save_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, +1)
         else:
             logging.error("%s add_a_task error: parameter task_name[%s] is invalid", self.__class__.__name__, task_name)
@@ -69,7 +69,7 @@ class DistThreadPool(ThreadPool):
         task_content = None
         if task_name == TPEnum.URL_FETCH:
             task_content = eval(self._client.brpop(self._key_wait, timeout=5)[1])
-            logging.debug("%s redis status: wait=%s", self.__class__.__name__, self._client.llen(self._key_wait))
+            logging.debug("%s redis status: len(wait_url)=%s", self.__class__.__name__, self._client.llen(self._key_wait))
         elif task_name == TPEnum.HTM_PARSE:
             task_content = self._parse_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)

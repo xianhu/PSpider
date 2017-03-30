@@ -19,16 +19,12 @@ class AsyncPool(BasePool):
         """
         constructor
         """
-        BasePool.__init__(self, url_filter=url_filter)
+        BasePool.__init__(self, fetcher, parser, saver, url_filter=url_filter)
 
         self._loop = loop or asyncio.get_event_loop()           # event_loop from parameter or call asyncio.get_event_loop()
         self._queue = asyncio.PriorityQueue(loop=self._loop)    # (priority, url, keys, deep, repeat)
 
-        self._fetcher = fetcher     # fetcher instance
-        self._parser = parser       # parser instance
-        self._saver = saver         # saver instance
-
-        self._start_time = None     # start time of this pool
+        self._start_time = None                                 # start time of this pool
         return
 
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):
@@ -50,10 +46,10 @@ class AsyncPool(BasePool):
 
     async def _start(self, fetcher_num):
         """
-        start tasks, and wait for finishing
+        start the tasks, and wait for finishing
         """
         # initial fetcher session
-        self._fetcher.init_session(self._loop)
+        self._inst_fetcher.init_session(self._loop)
 
         # start tasks and wait done
         tasks_list = [asyncio.Task(self._work(index+1), loop=self._loop) for index in range(fetcher_num)]
@@ -62,7 +58,7 @@ class AsyncPool(BasePool):
             task.cancel()
 
         # close fetcher session
-        self._fetcher.close_session()
+        self._inst_fetcher.close_session()
         self.print_status()
         return
 
@@ -81,13 +77,13 @@ class AsyncPool(BasePool):
 
             try:
                 # fetch the content of a url ================================================================
-                fetch_result, content = await self._fetcher.fetch(url, keys, repeat)
+                fetch_result, content = await self._inst_fetcher.fetch(url, keys, repeat)
                 if fetch_result > 0:
                     self.update_number_dict(TPEnum.URL_FETCH, +1)
 
                     # parse the content of a url ============================================================
                     self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
-                    parse_result, url_list, save_list = await self._parser.parse(priority, url, keys, deep, content)
+                    parse_result, url_list, save_list = await self._inst_parser.parse(priority, url, keys, deep, content)
                     self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
 
                     if parse_result > 0:
@@ -100,7 +96,7 @@ class AsyncPool(BasePool):
                         # save the item of a url ============================================================
                         for item in save_list:
                             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, +1)
-                            save_result = await self._saver.save(url, keys, item)
+                            save_result = await self._inst_saver.save(url, keys, item)
                             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, -1)
 
                             if save_result:

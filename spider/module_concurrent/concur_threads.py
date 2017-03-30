@@ -21,11 +21,7 @@ class ThreadPool(BasePool):
         """
         constructor
         """
-        BasePool.__init__(self, url_filter=url_filter)
-
-        self._inst_fetcher = fetcher                 # fetcher instance or a list, for fetch thread
-        self._inst_parser = parser                   # parser instance for parse thread
-        self._inst_saver = saver                     # saver instance for save thread
+        BasePool.__init__(self, fetcher, parser, saver, url_filter=url_filter)
 
         self._fetch_queue = queue.PriorityQueue()    # (priority, url, keys, deep, repeat)
         self._parse_queue = queue.PriorityQueue()    # (priority, url, keys, deep, content)
@@ -88,17 +84,17 @@ class ThreadPool(BasePool):
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):
         """
-        add a task based on task_name, if queue is full, blocking the queue
+        add a task based on task_name
         """
         if task_name == TPEnum.URL_FETCH:
             if (task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[1]):
-                self._fetch_queue.put(task_content, block=True)
+                self._fetch_queue.put_nowait(task_content)
                 self.update_number_dict(TPEnum.URL_NOT_FETCH, +1)
         elif task_name == TPEnum.HTM_PARSE:
-            self._parse_queue.put(task_content, block=True)
+            self._parse_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
         elif task_name == TPEnum.ITEM_SAVE:
-            self._save_queue.put(task_content, block=True)
+            self._save_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, +1)
         else:
             logging.error("%s add_a_task error: parameter task_name[%s] is invalid", self.__class__.__name__, task_name)

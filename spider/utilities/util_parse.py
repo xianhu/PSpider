@@ -20,7 +20,7 @@ __all__ = [
 
 def get_string_num(string, base=None):
     """
-    get float number from a string, if base isn't None, K means (base * B), M means (base * K), ...
+    get a float number from a string, if base isn't None, K means (base * B), M means (base * K), ...
     """
     temp = re.search(r"(?P<num>\d+(\.\d+)?)(?P<param>[\w\W]*?)$", string.upper().strip(), flags=re.IGNORECASE)
     if not temp:
@@ -54,7 +54,7 @@ def get_string_num(string, base=None):
 
 def get_string_split(string, split_chars=(" ", "\t", ","), is_remove_empty=False):
     """
-    get string list by splitting string based on split_chars, len(split_chars) must >= 2
+    get a string list by splitting string based on split_chars, len(split_chars) must >= 2
     """
     assert len(split_chars) >= 2, "get_string_split: parameter split_chars[%s] is invalid, the length of it must >= 2" % split_chars
     string_list = string.split(split_chars[0])
@@ -65,14 +65,14 @@ def get_string_split(string, split_chars=(" ", "\t", ","), is_remove_empty=False
 
 def get_string_strip(string):
     """
-    get string striped \t, \r, \n from a string, also change None to ""
+    get a string which striped \t, \r, \n from a string, also change None to ""
     """
     return re.sub(r"\s+", " ", string, flags=re.IGNORECASE).strip() if string else ""
 
 
 def get_url_legal(url, base_url, encoding=None):
     """
-    get legal url from a url, based on base_url, and set url_frags.fragment = ""
+    get a legal url from a url, based on base_url, and set url_frags.fragment = ""
     :key: http://stats.nba.com/player/#!/201566/?p=russell-westbrook
     """
     url_join = urllib.parse.urljoin(base_url, url, allow_fragments=True)

@@ -55,7 +55,7 @@ class Fetcher(object):
         if response.history:
             logging.debug("%s redirect: keys=%s, repeat=%s, url=%s", self.__class__.__name__, keys, repeat, url)
 
-        # get content(cur_code, cur_url, cur_html)
+        # get content(status_code, url, html_text)
         content = (response.status_code, response.url, response.text)
 
         # return fetch_result, content

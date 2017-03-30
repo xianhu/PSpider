@@ -21,7 +21,7 @@ def test_spider():
     # 定义Url过滤, UrlFilter使用Set, 适合Url数量不多的情况
     black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download",)
     white_patterns = ("^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)",)
-    url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=1000)
+    url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns)
 
     # 初始化WebSpider
     web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
@@ -46,8 +46,13 @@ def test_spider_async():
     parser = spider.ParserAsync(max_deep=1)
     saver = spider.SaverAsync(save_pipe=open("out_spider_async.txt", "w"))
 
+    # 定义Url过滤, UrlFilter使用BloomFilter, 适合Url数量较多的情况
+    black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download",)
+    white_patterns = ("^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)",)
+    url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=10000)
+
     # 初始化WebSpiderAsync
-    web_spider_async = spider.WebSpiderAsync(fetcher, parser, saver, url_filter=spider.UrlFilter(), loop=loop)
+    web_spider_async = spider.WebSpiderAsync(fetcher, parser, saver, url_filter=url_filter, loop=loop)
 
     # 添加种子Url
     web_spider_async.set_start_url("http://zhushou.360.cn/", keys=("360web",))

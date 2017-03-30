@@ -43,17 +43,17 @@ class Parser(object):
         """
         parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
-        # parse content(cur_code, cur_url, cur_html)
-        *_, cur_html = content
+        # parse content(status_code, url, html_text)
+        *_, html_text = content
 
         # get url_list
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):
-            a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
+            a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", html_text, flags=re.IGNORECASE)
             url_list = [(_url, keys, priority+1) for _url in [get_url_legal(href, url) for href in a_list]]
 
         # get save_list
-        title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
+        title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", html_text, flags=re.IGNORECASE)
         save_list = [(title.group("title").strip(), datetime.datetime.now()), ] if title else []
 
         # return parse_result, url_list, save_list

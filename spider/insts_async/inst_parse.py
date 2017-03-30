@@ -12,7 +12,7 @@ from ..utilities import get_url_legal
 
 class ParserAsync(object):
     """
-    class of ParserAsync
+    class of ParserAsync, must include function parse()
     """
 
     def __init__(self, max_deep=0):
@@ -31,14 +31,14 @@ class ParserAsync(object):
         logging.debug("%s start: priority=%s, keys=%s, deep=%s, url=%s", self.__class__.__name__, priority, keys, deep, url)
 
         try:
-            *_, cur_html = content
+            *_, html_text = content
 
             parse_result, url_list = 1, []
             if (self._max_deep < 0) or (deep < self._max_deep):
-                a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", cur_html, flags=re.IGNORECASE)
+                a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", html_text, flags=re.IGNORECASE)
                 url_list = [(_url, keys, priority + 1) for _url in [get_url_legal(href, url) for href in a_list]]
 
-            title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", cur_html, flags=re.IGNORECASE)
+            title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", html_text, flags=re.IGNORECASE)
             save_list = [(title.group("title").strip(), datetime.datetime.now()), ] if title else []
         except Exception as excep:
             parse_result, url_list, save_list = -1, [], []

@@ -13,7 +13,7 @@ from ..utilities import make_random_useragent
 
 class FetcherAsync(object):
     """
-    class of FetcherAsync
+    class of FetcherAsync, must include function fetch()
     """
 
     def __init__(self, max_repeat=3, sleep_time=0):

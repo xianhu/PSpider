@@ -75,11 +75,15 @@ class BasePool(object):
     class of BasePool, as base class of each pool
     """
 
-    def __init__(self, url_filter=None):
+    def __init__(self, fetcher, parser, saver, url_filter=None):
         """
         constructor
         """
         self._url_filter = url_filter       # default: None, also can be UrlFilter()
+
+        self._inst_fetcher = fetcher        # fetcher instance or a instance list
+        self._inst_parser = parser          # parser instance
+        self._inst_saver = saver            # saver instance
 
         self._number_dict = {
             TPEnum.TASKS_RUNNING: 0,        # the count of tasks which are running
