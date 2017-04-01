@@ -30,12 +30,11 @@ RUN service crond restart
 
 # download python3
 WORKDIR /root/
-RUN wget https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tar.xz
-# RUN COPY Python-3.5.2.tar.xz /root/
-RUN tar -xf Python-3.5.2.tar.xz
+RUN wget https://www.python.org/ftp/python/3.5.3/Python-3.5.3.tar.xz
+RUN tar -xf Python-3.5.3.tar.xz
 
 # install python3
-WORKDIR /root/Python-3.5.2
+WORKDIR /root/Python-3.5.3
 RUN ./configure
 RUN make install
 RUN make clean
