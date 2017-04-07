@@ -15,7 +15,9 @@ from demos_dangdang import BookFetcher, BookParser, BookSaver
 
 
 def get_douban_movies():
-
+    """
+    测试豆瓣电影爬虫
+    """
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36",
         "Host": "movie.douban.com",
@@ -55,6 +57,9 @@ def get_douban_movies():
 
 
 def get_dangdang_books():
+    """
+    测试当当网爬虫
+    """
     fetcher_number = 10
     fetcher_list = []
     for i in range(fetcher_number):
@@ -64,119 +69,7 @@ def get_dangdang_books():
     dang_spider = spider.WebSpider(fetcher_list, parser, saver, None)
 
     # 获取所有链接并存入数据库,由于时间太长,因此抓取链接和信息分开进行
-    url_prefix_list = ["http://category.dangdang.com/pg{}-cp01.41.43.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.02.19.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.02.20.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.02.15.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.02.13.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.02.22.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.02.21.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.02.12.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.02.17.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.02.11.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.05.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.05.01.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.05.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.05.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.05.09.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.26.01.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.26.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.26.19.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.26.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.26.11.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.26.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.26.09.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.26.15.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.26.17.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.27.09.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.27.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.27.01.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.27.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.27.02.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.27.11.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.27.15.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.27.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.27.13.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.41.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.41.01.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.41.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.50.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.50.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.50.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.01.16.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.01.11.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.01.13.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.01.21.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.01.19.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.01.15.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.01.14.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.45.13.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.45.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.45.09.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.45.01.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.45.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.45.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.45.11.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.44.01.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.44.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.44.09.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.44.13.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.44.09.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.44.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.44.11.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.44.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.46.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.46.11.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.46.17.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.46.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.46.09.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.46.13.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.46.15.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.51.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.51.13.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.51.01.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.51.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.51.11.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.51.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.51.09.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.51.15.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.47.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.13.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.17.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.15.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.37.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.01.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.25.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.23.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.45.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.27.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.43.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.39.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.21.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.09.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.55.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.19.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.29.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.29.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.53.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.11.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.33.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.31.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.35.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.57.41.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.48.03.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.48.01.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.48.07.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.48.02.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.48.04.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.48.05.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.48.06.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.55.00.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.69.00.00.00.html",
-                       "http://category.dangdang.com/pg{}-cp01.41.59.00.00.00.html"]
+    url_prefix_list = ["http://category.dangdang.com/pg{}-cp01.41.43.05.00.00.html", "http://category.dangdang.com/pg{}-cp01.41.59.00.00.00.html"]
 
     for url_prefix in url_prefix_list:
         for i in range(100):
@@ -201,6 +94,15 @@ def get_dangdang_books():
     return
 
 
+def get_car_price():
+    """
+    测试汽车价格爬虫
+    """
+    return
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
-    get_douban_movies()
+    # get_douban_movies()
+    # get_dangdang_books()
+    get_car_price()
