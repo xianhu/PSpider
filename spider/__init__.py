@@ -7,4 +7,4 @@ define WebSpider, WebSpiderAsync, WebSpiderDist, and also define utilities and i
 from .utilities import *
 from .insts_thread import Fetcher, Parser, Saver
 from .insts_async import FetcherAsync, ParserAsync, SaverAsync
-from .module_concurrent import WebSpider, WebSpiderAsync, WebSpiderDist
+from .concurrent import WebSpider, WebSpiderAsync, WebSpiderDist

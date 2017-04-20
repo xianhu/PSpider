@@ -121,13 +121,6 @@ class AsyncPool(BasePool):
         logging.warning("%s[worker-%s] end...", self.__class__.__name__, index)
         return
 
-    def update_number_dict(self, key, value):
-        """
-        update the value of self._number_dict based on key
-        """
-        self._number_dict[key] += value
-        return
-
     def add_a_task(self, task_name, task_content):
         """
         add a task based on task_name
@@ -139,7 +132,7 @@ class AsyncPool(BasePool):
 
     async def get_a_task(self, task_name):
         """
-        get a task based on task_name, if queue is empty, call await
+        get a task based on task_name
         """
         task_content = await self._queue.get()
         self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)

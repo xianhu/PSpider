@@ -40,6 +40,9 @@ class Saver(object):
         """
         save the item of a url, you can rewrite this function, parameters and return refer to self.working()
         """
+        # save the item
         self._save_pipe.write("\t".join([url, str(keys)] + [str(i) for i in item]) + "\n")
         self._save_pipe.flush()
+
+        # return save_result
         return True

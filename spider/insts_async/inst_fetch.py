@@ -36,7 +36,7 @@ class FetcherAsync(object):
 
     def close_session(self):
         """
-        close the session object of this class
+        close self._session object
         """
         if not self._session.closed:
             self._session.close()

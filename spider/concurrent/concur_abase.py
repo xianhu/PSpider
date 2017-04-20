@@ -51,9 +51,11 @@ class BaseThread(threading.Thread):
                 if not self.working():
                     break
             except queue.Empty:
+                # caused by 'queue.get()'
                 if self._pool.is_all_tasks_done():
                     break
             except TypeError:
+                # caused by 'eval()' in distributed_threads.py
                 if self._pool.is_all_tasks_done():
                     break
             except Exception as excep:
@@ -81,7 +83,7 @@ class BasePool(object):
         """
         self._url_filter = url_filter       # default: None, also can be UrlFilter()
 
-        self._inst_fetcher = fetcher        # fetcher instance or a instance list
+        self._inst_fetcher = fetcher        # fetcher instance
         self._inst_parser = parser          # parser instance
         self._inst_saver = saver            # saver instance
 
@@ -116,7 +118,8 @@ class BasePool(object):
         """
         update the value of self._number_dict based on key
         """
-        raise NotImplementedError
+        self._number_dict[key] += value
+        return
 
     def get_number_dict(self, key):
         """

@@ -18,11 +18,7 @@ def work_fetch(self):
     priority, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
 
     # ----2----
-    try:
-        fetch_result, content = self._worker.working(url, keys, repeat)
-    except Exception as excep:
-        fetch_result, content = -1, None
-        logging.error("%s._worker.working() error: %s", self.__class__.__name__, excep)
+    fetch_result, content = self._worker.working(url, keys, repeat)
 
     # ----3----
     if fetch_result > 0:
@@ -49,11 +45,7 @@ def work_parse(self):
     priority, url, keys, deep, content = self._pool.get_a_task(TPEnum.HTM_PARSE)
 
     # ----2----
-    try:
-        parse_result, url_list, save_list = self._worker.working(priority, url, keys, deep, content)
-    except Exception as excep:
-        parse_result, url_list, save_list = -1, [], []
-        logging.error("%s._worker.working() error: %s", self.__class__.__name__, excep)
+    parse_result, url_list, save_list = self._worker.working(priority, url, keys, deep, content)
 
     # ----3----
     if parse_result > 0:
@@ -79,11 +71,7 @@ def work_save(self):
     url, keys, item = self._pool.get_a_task(TPEnum.ITEM_SAVE)
 
     # ----2----
-    try:
-        save_result = self._worker.working(url, keys, item)
-    except Exception as excep:
-        save_result = False
-        logging.error("%s._worker.working() error: %s", self.__class__.__name__, excep)
+    save_result = self._worker.working(url, keys, item)
 
     # ----3----
     if save_result:

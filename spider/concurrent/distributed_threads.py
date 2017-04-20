@@ -22,9 +22,9 @@ class DistThreadPool(ThreadPool):
         ThreadPool.__init__(self, fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=monitor_sleep_time)
 
         # redis configures
-        self._client = None         # redis client
+        self._client = None         # redis client object
         self._key_wait = None       # redis key, urls list which wait to fetch
-        self._key_all = None        # redis key, all urls set
+        self._key_all = None        # redis key, all urls set, the speed will be very slow because of too many urls
 
         # make the spider run forever
         self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
@@ -32,7 +32,7 @@ class DistThreadPool(ThreadPool):
 
     def init_redis(self, host="localhost", port=6379, db=0, key_wait="spider.wait", key_all="spider.all"):
         """
-        initial redis client
+        initial redis client object
         """
         if not self._client:
             self._client = redis.Redis(host=host, port=port, db=db)
@@ -69,7 +69,6 @@ class DistThreadPool(ThreadPool):
         task_content = None
         if task_name == TPEnum.URL_FETCH:
             task_content = eval(self._client.brpop(self._key_wait, timeout=5)[1])
-            logging.debug("%s redis status: len(wait_url)=%s", self.__class__.__name__, self._client.llen(self._key_wait))
         elif task_name == TPEnum.HTM_PARSE:
             task_content = self._parse_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
