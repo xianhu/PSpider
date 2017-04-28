@@ -8,9 +8,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="spider",
-    version="2.3.0",
+    version="2.3.1",
     author="xianhu",
-    keywords=["spider", "crawler"],
+    keywords=["spider", "crawler", "multi-threads", "asyncio", "distributed"],
     packages=find_packages(exclude=("otherfiles", "test", "test.*", "demos_*")),
     package_data={
         "": ["*.conf"],         # include all *.conf files
