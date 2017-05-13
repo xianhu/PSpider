@@ -18,7 +18,7 @@ __all__ = [
 ]
 
 
-def get_string_num(string, base=None):
+def get_string_num(string, base=None, only_num=False):
     """
     get a float number from a string, if base isn't None, K means (base * B), M means (base * K), ...
     """
@@ -26,6 +26,8 @@ def get_string_num(string, base=None):
     if not temp:
         return 0.0
     num, param = float(temp.group("num")), temp.group("param")
+    if only_num:
+        return num
     if param.find("兆") >= 0:
         num *= 10000000000000
     if param.find("亿") >= 0:

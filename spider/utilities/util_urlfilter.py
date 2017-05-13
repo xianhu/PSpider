@@ -49,7 +49,7 @@ class UrlFilter(object):
         if not self._re_white_list:
             return True
 
-        # if url in while_list, return True
+        # if url in white_list, return True
         for re_white in self._re_white_list:
             if re_white.search(url):
                 return True

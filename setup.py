@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="spider",
-    version="2.3.1",
+    version="2.3.2",
     author="xianhu",
     keywords=["spider", "crawler", "multi-threads", "asyncio", "distributed"],
     packages=find_packages(exclude=("otherfiles", "test", "test.*", "demos_*")),

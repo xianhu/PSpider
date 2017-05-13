@@ -31,7 +31,6 @@ CONFIG_URLPATTERN_VIDEO = r"\.(mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|
 
 # define user_agents, include useragent_pc, useragent_phone and useragent_all
 CONFIG_USERAGENT_PC = [
-
     "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Maxthon 2.0)",
     "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; TencentTraveler 4.0)",
     "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; The World)",
