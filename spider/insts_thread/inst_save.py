@@ -22,7 +22,7 @@ class Saver(object):
 
     def working(self, url: str, keys: object, item: (list, tuple)) -> bool:
         """
-        working function, must "try, except" and don't change parameters and return
+        working function, must "try, except" and don't change the parameters and return
         :return save_result: True or False
         """
         logging.debug("%s start: keys=%s, url=%s", self.__class__.__name__, keys, url)
@@ -40,9 +40,6 @@ class Saver(object):
         """
         save the item of a url, you can rewrite this function, parameters and return refer to self.working()
         """
-        # save the item
         self._save_pipe.write("\t".join([url, str(keys)] + [str(i) for i in item]) + "\n")
         self._save_pipe.flush()
-
-        # return save_result
         return True

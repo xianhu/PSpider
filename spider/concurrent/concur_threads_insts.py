@@ -26,8 +26,6 @@ def work_fetch(self):
         self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
     elif fetch_result == 0:
         self._pool.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
-    else:
-        pass
 
     # ----4----
     self._pool.finish_a_task(TPEnum.URL_FETCH)

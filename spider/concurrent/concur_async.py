@@ -104,8 +104,6 @@ class AsyncPool(BasePool):
                     # end of if parse_result > 0
                 elif fetch_result == 0:
                     self.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
-                else:
-                    pass
                 # end of if fetch_result > 0
             except Exception as excep:
                 logging.error("%s[worker-%s] error: %s", self.__class__.__name__, index, excep)

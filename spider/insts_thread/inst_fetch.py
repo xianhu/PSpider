@@ -26,7 +26,7 @@ class Fetcher(object):
 
     def working(self, url: str, keys: object, repeat: int) -> (int, object):
         """
-        working function, must "try, expect" and don't change parameters and return
+        working function, must "try, expect" and don't change the parameters and return
         :return (fetch_result, content): fetch_result can be -1(fetch failed), 0(need repeat), 1(fetch success), content can be anything
         """
         logging.debug("%s start: keys=%s, repeat=%s, url=%s", self.__class__.__name__, keys, repeat, url)
@@ -49,14 +49,9 @@ class Fetcher(object):
         """
         fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
-        # get response based on headers
-        headers = {"User-Agent": make_random_useragent(), "Accept-Encoding": "gzip"}
-        response = requests.get(url, params=None, data=None, headers=headers, cookies=None, timeout=(3.05, 10))
+        response = requests.get(url, headers={"User-Agent": make_random_useragent(), "Accept-Encoding": "gzip"}, timeout=(3.05, 10))
         if response.history:
             logging.debug("%s redirect: keys=%s, repeat=%s, url=%s", self.__class__.__name__, keys, repeat, url)
 
-        # get content(status_code, url, html_text)
         content = (response.status_code, response.url, response.text)
-
-        # return fetch_result, content
         return 1, content

@@ -23,7 +23,7 @@ class DistThreadPool(ThreadPool):
 
         # redis configures
         self._client = None         # redis client object
-        self._key_wait = None       # redis key, urls list which wait to fetch
+        self._key_wait = None       # redis key, urls list, which wait to fetch
         self._key_all = None        # redis key, all urls set, the speed will be very slow because of too many urls
 
         # make the spider run forever

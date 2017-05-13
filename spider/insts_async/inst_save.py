@@ -22,7 +22,7 @@ class SaverAsync(object):
 
     async def save(self, url: str, keys: object, item: (list, tuple)) -> bool:
         """
-        save the item of a url, must "try, except" and don't change parameters and return
+        save the item of a url, must "try, except" and don't change the parameters and return
         :return save_result: True or False
         """
         logging.debug("%s start: keys=%s, url=%s", self.__class__.__name__, keys, url)
