@@ -65,8 +65,10 @@ class ThreadPool(BasePool):
             if thread.is_alive():
                 thread.join()
 
+        # clear the variables if all fetcher stoped
         while self.get_number_dict(TPEnum.URL_NOT_FETCH):
-            self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
+            self.get_a_task(TPEnum.URL_FETCH)
+            self.finish_a_task(TPEnum.URL_FETCH)
 
         # 2-----
         for thread in parser_saver_list:

@@ -18,8 +18,8 @@ class UrlFilter(object):
         """
         constructor, use variable of BloomFilter if capacity else variable of set
         """
-        self._re_black_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in black_patterns]
-        self._re_white_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in white_patterns]
+        self._re_black_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in black_patterns] if black_patterns else []
+        self._re_white_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in white_patterns] if white_patterns else []
 
         self._url_set = set() if not capacity else None
         self._bloom_filter = pybloom_live.ScalableBloomFilter(capacity, error_rate=0.001) if capacity else None
@@ -45,17 +45,12 @@ class UrlFilter(object):
             if re_black.search(url):
                 return False
 
-        # if not white_list, return True
-        if not self._re_white_list:
-            return True
-
         # if url in white_list, return True
         for re_white in self._re_white_list:
             if re_white.search(url):
                 return True
 
-        # return False
-        return False
+        return False if self._re_white_list else True
 
     def check_and_add(self, url):
         """
