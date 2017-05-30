@@ -38,14 +38,4 @@ Similar with multi-threading spider. The only difference is getting url from red
 
 **See test.py**  
 
-### Demo (Not all demos can be used directly because of the changing of PSpider)
-1. demos_yundama
-2. demos_nbastats
-3. demos_doubanmovies
-4. demos_dangdang
-5. demos_weibo
-6. demos_weixin
-7. demos_zhihu
-8. demos_carprice
-
 ### If you have any questions or advices, you can commit "Issues" or "Pull requests"
