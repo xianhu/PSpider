@@ -45,7 +45,8 @@ class FetcherAsync(object):
     async def fetch(self, url: str, keys: object, repeat: int) -> (int, object):
         """
         fetch the content of a url, must "try, expect" and don't change the parameters and return
-        :return (fetch_result, content): fetch_result can be -1(fetch failed), 0(need repeat), 1(fetch success), content can be anything
+        :return (fetch_result, content): fetch_result can be -2(fetch failed, need stop), -1(fetch failed), 0(need repeat), 1(fetch success)
+        :return (fetch_result, content): content can be anything
         """
         logging.debug("%s start: keys=%s, repeat=%s, url=%s", self.__class__.__name__, keys, repeat, url)
 

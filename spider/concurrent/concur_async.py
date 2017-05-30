@@ -25,6 +25,7 @@ class AsyncPool(BasePool):
         self._queue = asyncio.PriorityQueue(loop=self._loop)    # (priority, url, keys, deep, repeat)
 
         self._start_time = None                                 # start time of this pool
+        self._running_tasks = 0                                 # the count of running tasks
         return
 
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):
@@ -67,6 +68,7 @@ class AsyncPool(BasePool):
         working process, fetching --> parsing --> saving
         """
         logging.warning("%s[worker-%s] start...", self.__class__.__name__, index)
+        self._running_tasks += 1
 
         while True:
             try:
@@ -78,7 +80,7 @@ class AsyncPool(BasePool):
             try:
                 # fetch the content of a url ================================================================
                 fetch_result, content = await self._inst_fetcher.fetch(url, keys, repeat)
-                if fetch_result > 0:
+                if fetch_result == 1:
                     self.update_number_dict(TPEnum.URL_FETCH, +1)
 
                     # parse the content of a url ============================================================
@@ -86,7 +88,7 @@ class AsyncPool(BasePool):
                     parse_result, url_list, save_list = await self._inst_parser.parse(priority, url, keys, deep, content)
                     self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
 
-                    if parse_result > 0:
+                    if parse_result == 1:
                         self.update_number_dict(TPEnum.HTM_PARSE, +1)
 
                         # add new task to self._queue
@@ -104,17 +106,26 @@ class AsyncPool(BasePool):
                     # end of if parse_result > 0
                 elif fetch_result == 0:
                     self.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
-                # end of if fetch_result > 0
+                # end of if fetch_result == 1
             except Exception as excep:
                 logging.error("%s[worker-%s] error: %s", self.__class__.__name__, index, excep)
             finally:
                 # finish a task
                 self.finish_a_task(task_name=TPEnum.URL_FETCH)
+                if fetch_result == -2:
+                    logging.error("%s[worker-%s] error: fetch failed and try to stop", self.__class__.__name__, index)
+                    break
 
             # print the information of this pool
             if self._number_dict[TPEnum.URL_FETCH] % 100 == 0:
                 self.print_status()
         # end of while True
+
+        # stop tasks according to self._running_tasks
+        self._running_tasks -= 1
+        while (not self._running_tasks) and (not self._queue.empty()):
+            await self.get_a_task(TPEnum.URL_FETCH)
+            self.finish_a_task(TPEnum.URL_FETCH)
 
         logging.warning("%s[worker-%s] end...", self.__class__.__name__, index)
         return

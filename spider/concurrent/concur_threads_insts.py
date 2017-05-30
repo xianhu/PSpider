@@ -12,7 +12,7 @@ from .concur_abase import TPEnum, BaseThread
 # ===============================================================================================================================
 def work_fetch(self):
     """
-    procedure of fetching, auto running, and only return True
+    procedure of fetching, auto running, and return False if you need stop thread
     """
     # ----1----
     priority, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
@@ -21,7 +21,7 @@ def work_fetch(self):
     fetch_result, content = self._worker.working(url, keys, repeat)
 
     # ----3----
-    if fetch_result > 0:
+    if fetch_result == 1:
         self._pool.update_number_dict(TPEnum.URL_FETCH, +1)
         self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
     elif fetch_result == 0:
@@ -29,7 +29,7 @@ def work_fetch(self):
 
     # ----4----
     self._pool.finish_a_task(TPEnum.URL_FETCH)
-    return True
+    return False if fetch_result == -2 else True
 
 FetchThread = type("FetchThread", (BaseThread,), dict(working=work_fetch))
 

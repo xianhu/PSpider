@@ -45,20 +45,35 @@ class ThreadPool(BasePool):
         logging.warning("%s start: fetcher_num=%s, is_over=%s", self.__class__.__name__, fetcher_num, is_over)
 
         if isinstance(self._inst_fetcher, (list, tuple)):
-            fetcher_list = [FetchThread("fetcher-%d" % i, fetcher, self) for (i, fetcher) in enumerate(self._inst_fetcher)]
+            fetcher_list = [FetchThread("fetcher-%d" % (i+1), fetcher, self) for (i, fetcher) in enumerate(self._inst_fetcher)]
         else:
-            fetcher_list = [FetchThread("fetcher-%d" % i, copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
+            fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
+        parser_saver_list = [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
 
-        threads_list = fetcher_list + [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
-
-        for thread in threads_list:
+        # 1-----
+        for thread in fetcher_list:
             thread.setDaemon(True)
             thread.start()
 
-        for thread in threads_list:
+        # 1-----
+        for thread in parser_saver_list:
+            thread.setDaemon(True)
+            thread.start()
+
+        # 2-----
+        for thread in fetcher_list:
             if thread.is_alive():
                 thread.join()
 
+        while self.get_number_dict(TPEnum.URL_NOT_FETCH):
+            self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
+
+        # 2-----
+        for thread in parser_saver_list:
+            if thread.is_alive():
+                thread.join()
+
+        # 3-----
         if is_over and self._monitor.is_alive():
             self._monitor_stop = True
             self._monitor.join()
