@@ -100,21 +100,24 @@ def init_monitor_thread(self, name, pool, sleep_time=5):
 
 def work_monitor(self):
     """
-    monitor the pool, auto running and return True to continue, False to stop
+    monitor the pool, auto running, and return False if you need stop thread
     """
     time.sleep(self._sleep_time)
     info = "%s status: running_tasks=%s;" % (self._pool.__class__.__name__, self._pool.get_number_dict(TPEnum.TASKS_RUNNING))
 
     cur_fetch_num = self._pool.get_number_dict(TPEnum.URL_FETCH)
-    info += " fetch=(%d, %d, %d/(%ds));" % (self._pool.get_number_dict(TPEnum.URL_NOT_FETCH), cur_fetch_num, cur_fetch_num-self._last_fetch_num, self._sleep_time)
+    cur_not_fetch_num = self._pool.get_number_dict(TPEnum.URL_NOT_FETCH)
+    info += " fetch=(%d, %d, %d/(%ds));" % (cur_not_fetch_num, cur_fetch_num, cur_fetch_num-self._last_fetch_num, self._sleep_time)
     self._last_fetch_num = cur_fetch_num
 
     cur_parse_num = self._pool.get_number_dict(TPEnum.HTM_PARSE)
-    info += " parse=(%d, %d, %d/(%ds));" % (self._pool.get_number_dict(TPEnum.HTM_NOT_PARSE), cur_parse_num, cur_parse_num-self._last_parse_num, self._sleep_time)
+    cur_not_parse_num = self._pool.get_number_dict(TPEnum.HTM_NOT_PARSE)
+    info += " parse=(%d, %d, %d/(%ds));" % (cur_not_parse_num, cur_parse_num, cur_parse_num-self._last_parse_num, self._sleep_time)
     self._last_parse_num = cur_parse_num
 
     cur_save_num = self._pool.get_number_dict(TPEnum.ITEM_SAVE)
-    info += " save=(%d, %d, %d/(%ds));" % (self._pool.get_number_dict(TPEnum.ITEM_NOT_SAVE), cur_save_num, cur_save_num-self._last_save_num, self._sleep_time)
+    cur_not_save_num = self._pool.get_number_dict(TPEnum.ITEM_NOT_SAVE)
+    info += " save=(%d, %d, %d/(%ds));" % (cur_not_save_num, cur_save_num, cur_save_num-self._last_save_num, self._sleep_time)
     self._last_save_num = cur_save_num
 
     info += " total_seconds=%d" % (time.time() - self._init_time)

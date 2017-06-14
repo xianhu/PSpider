@@ -72,23 +72,24 @@ def get_string_strip(string):
     return re.sub(r"\s+", " ", string, flags=re.IGNORECASE).strip() if string else ""
 
 
-def get_url_legal(url, base_url, encoding=None):
+def get_url_legal(url, base_url, encoding=None, remove_fragment=True):
     """
-    get a legal url from a url, based on base_url, and set url_frags.fragment = ""
+    get a legal url from a url, based on base_url, and set url_frags.fragment = "" if remove_fragment is True
     :key: http://stats.nba.com/player/#!/201566/?p=russell-westbrook
     """
     url_join = urllib.parse.urljoin(base_url, url, allow_fragments=True)
     url_legal = urllib.parse.quote(url_join, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
-    url_frags = urllib.parse.urlparse(url_legal, allow_fragments=True)
-    return urllib.parse.urlunparse((url_frags.scheme, url_frags.netloc, url_frags.path, url_frags.params, url_frags.query, ""))
+    if remove_fragment:
+        url_frags = urllib.parse.urlparse(url_legal, allow_fragments=True)
+        url_legal = urllib.parse.urlunparse((url_frags.scheme, url_frags.netloc, url_frags.path, url_frags.params, url_frags.query, ""))
+    return url_legal
 
 
-def get_url_params(url, is_unique_value=True, keep_blank_value=False, encoding="utf-8"):
+def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
     """
     get main_part(a string) and query_part(a dictionary) from a url
     """
     url_frags = urllib.parse.urlparse(url, allow_fragments=True)
-    querys = urllib.parse.parse_qs(url_frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
     main_part = urllib.parse.urlunparse((url_frags.scheme, url_frags.netloc, url_frags.path, url_frags.params, "", ""))
-    query_part = {key: querys[key][0] for key in querys} if is_unique_value else querys
+    query_part = urllib.parse.parse_qs(url_frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
     return main_part, query_part

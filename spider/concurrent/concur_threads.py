@@ -25,7 +25,7 @@ class ThreadPool(BasePool):
 
         self._fetch_queue = queue.PriorityQueue()    # (priority, url, keys, deep, repeat)
         self._parse_queue = queue.PriorityQueue()    # (priority, url, keys, deep, content)
-        self._save_queue = queue.Queue()             # (url, keys, item), item can be any type object
+        self._save_queue = queue.Queue()             # (url, keys, item), item can be anything
 
         self._lock = threading.Lock()                # the lock which self._number_dict needs
 
@@ -40,7 +40,7 @@ class ThreadPool(BasePool):
         """
         start this pool, and wait for finishing
         :param fetcher_num: not useful if self._inst_fetcher is a list or tuple
-        :param is_over: whether to stop monitor thread, default True
+        :param is_over: stop monitor thread or not, default True
         """
         logging.warning("%s start: fetcher_num=%s, is_over=%s", self.__class__.__name__, fetcher_num, is_over)
 
@@ -66,7 +66,7 @@ class ThreadPool(BasePool):
                 thread.join()
 
         # clear the variables if all fetcher stoped
-        while self.get_number_dict(TPEnum.URL_NOT_FETCH):
+        while self.get_number_dict(TPEnum.URL_NOT_FETCH) > 0:
             self.get_a_task(TPEnum.URL_FETCH)
             self.finish_a_task(TPEnum.URL_FETCH)
 
@@ -103,19 +103,15 @@ class ThreadPool(BasePool):
         """
         add a task based on task_name
         """
-        if task_name == TPEnum.URL_FETCH:
-            if (task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[1]):
-                self._fetch_queue.put_nowait(task_content)
-                self.update_number_dict(TPEnum.URL_NOT_FETCH, +1)
+        if task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[1])):
+            self._fetch_queue.put_nowait(task_content)
+            self.update_number_dict(TPEnum.URL_NOT_FETCH, +1)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
         elif task_name == TPEnum.ITEM_SAVE:
             self._save_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, +1)
-        else:
-            logging.error("%s add_a_task error: parameter task_name[%s] is invalid", self.__class__.__name__, task_name)
-            exit()
         return
 
     def get_a_task(self, task_name):
@@ -132,9 +128,6 @@ class ThreadPool(BasePool):
         elif task_name == TPEnum.ITEM_SAVE:
             task_content = self._save_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.ITEM_NOT_SAVE, -1)
-        else:
-            logging.error("%s get_a_task error: parameter task_name[%s] is invalid", self.__class__.__name__, task_name)
-            exit()
         self.update_number_dict(TPEnum.TASKS_RUNNING, +1)
         return task_content
 
@@ -148,9 +141,6 @@ class ThreadPool(BasePool):
             self._parse_queue.task_done()
         elif task_name == TPEnum.ITEM_SAVE:
             self._save_queue.task_done()
-        else:
-            logging.error("%s finish_a_task error: parameter task_name[%s] is invalid", self.__class__.__name__, task_name)
-            exit()
         self.update_number_dict(TPEnum.TASKS_RUNNING, -1)
         return
     # ================================================================================================================================

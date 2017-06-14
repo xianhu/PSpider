@@ -37,7 +37,7 @@ class BaseThread(threading.Thread):
         threading.Thread.__init__(self, name=name)
 
         self._worker = worker       # the worker of each thread
-        self._pool = pool           # the thread_pool of each thread
+        self._pool = pool           # the pool of each thread
         return
 
     def run(self):
@@ -74,7 +74,7 @@ class BaseThread(threading.Thread):
 
 class BasePool(object):
     """
-    class of BasePool, as base class of each pool
+    class of BasePool, as the base class of each pool
     """
 
     def __init__(self, fetcher, parser, saver, url_filter=None):

@@ -5,7 +5,7 @@ A simple spider frame written by Python, which needs Python3.5+
 ### Features of PSpider
 1. Support multi-threading crawling mode (using threading and requests)
 2. Support asyncio crawling mode (using aiohttp)
-3. Support distributed crawling mode (using redis)
+3. Support distributed crawling mode (using redis and threading)
 4. Define some utility functions and classes, for example: UrlFilter, make_random_useragent, etc
 5. Fewer lines of code, easyer to read, understand and expand
 
@@ -18,7 +18,7 @@ A simple spider frame written by Python, which needs Python3.5+
 ### Procedure of PSpider
 1. procedure of multi-threading spider  
 ![](otherfiles/threads.png)  
-①: Fetcher gets url from UrlQueue, and makes request based on this url  
+①: Fetcher gets url from UrlQueue, and makes requests based on this url  
 ②: Put the result of ① to HtmlQueue, and so Parser can get it  
 ③: Parser gets item from HtmlQueue, and parses it to get new urls and saved items  
 ④: Put the new urls to UrlQueue, and so Fetcher can get it  
