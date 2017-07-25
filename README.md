@@ -17,7 +17,7 @@ A simple spider frame written by Python, which needs Python3.5+
 
 ### Procedure of PSpider
 1. procedure of multi-threading spider  
-![](otherfiles/threads.png)  
+![](procedure.png)  
 ①: Fetcher gets url from UrlQueue, and makes requests based on this url  
 ②: Put the result of ① to HtmlQueue, and so Parser can get it  
 ③: Parser gets item from HtmlQueue, and parses it to get new urls and saved items  

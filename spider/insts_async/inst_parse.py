@@ -35,8 +35,8 @@ class ParserAsync(object):
 
             parse_result, url_list = 1, []
             if (self._max_deep < 0) or (deep < self._max_deep):
-                a_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", html_text, flags=re.IGNORECASE)
-                url_list = [(_url, keys, priority + 1) for _url in [get_url_legal(href, url) for href in a_list]]
+                tmp_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", html_text, flags=re.IGNORECASE)
+                url_list = [(_url, keys, priority + 1) for _url in [get_url_legal(href, url) for href in tmp_list]]
 
             title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", html_text, flags=re.IGNORECASE)
             save_list = [(title.group("title").strip(), datetime.datetime.now()), ] if title else []

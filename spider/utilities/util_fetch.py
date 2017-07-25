@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-def make_random_useragent(ua_type="pc"):
+def make_random_useragent(ua_type="all"):
     """
     make a random user_agent based on ua_type, ua_type can be "pc", "phone" or "all"(default)
     """
