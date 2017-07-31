@@ -22,7 +22,6 @@ class Fetcher(object):
         """
         self._max_repeat = max_repeat       # default: 3, maximum repeat fetching time for a url
         self._sleep_time = sleep_time       # default: 0, sleeping time after a fetching for a url
-        return
 
     def working(self, url: str, keys: object, repeat: int) -> (int, object):
         """
