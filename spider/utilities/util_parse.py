@@ -46,11 +46,11 @@ def get_string_num(string, base=None, only_num=False):
         if param.find("K") >= 0:
             num *= base
         if param.find("M") >= 0:
-            num *= (base * base)
+            num *= base * base
         if param.find("G") >= 0:
-            num *= (base * base * base)
+            num *= base * base * base
         if param.find("T") >= 0:
-            num *= (base * base * base * base)
+            num *= base * base * base * base
     return num
 
 

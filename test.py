@@ -9,7 +9,7 @@ import asyncio
 import logging
 
 black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download",)
-white_patterns = ("^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)",)
+white_patterns = (r"^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)",)
 
 
 def test_spider():

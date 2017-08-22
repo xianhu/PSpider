@@ -77,9 +77,7 @@ class DistThreadPool(ThreadPool):
         """
         finish a task based on task_name, call queue.task_done()
         """
-        if task_name == TPEnum.URL_FETCH:
-            pass
-        elif task_name == TPEnum.HTM_PARSE:
+        if task_name == TPEnum.HTM_PARSE:
             self._parse_queue.task_done()
         elif task_name == TPEnum.ITEM_SAVE:
             self._save_queue.task_done()
