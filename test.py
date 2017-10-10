@@ -17,7 +17,7 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver, you also can rewrite this three class
-    fetcher = spider.Fetcher(max_repeat=3, sleep_time=0)
+    fetcher = spider.Fetcher(max_repeat=3, sleep_time=1)
     parser = spider.Parser(max_deep=2)
     saver = spider.Saver(save_pipe=open("out_spider_thread.txt", "w"))
 
@@ -39,8 +39,6 @@ def test_spider_async():
     """
     test asyncio spider with asyncio
     """
-    loop = asyncio.get_event_loop()
-
     # initial fetcher / parser / saver, you also can rewrite this three class
     fetcher = spider.FetcherAsync(max_repeat=3, sleep_time=0)
     parser = spider.ParserAsync(max_deep=2)
@@ -50,7 +48,7 @@ def test_spider_async():
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=10000)
 
     # initial web_spider
-    web_spider_async = spider.WebSpiderAsync(fetcher, parser, saver, url_filter=url_filter, loop=loop)
+    web_spider_async = spider.WebSpiderAsync(fetcher, parser, saver, url_filter=url_filter, loop=asyncio.get_event_loop())
 
     # add start url
     web_spider_async.set_start_url("http://zhushou.360.cn/", keys=("360web",))

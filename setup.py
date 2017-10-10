@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="spider",
-    version="2.4.7",
+    version="2.4.8",
     author="xianhu",
     keywords=["spider", "crawler", "multi-threads", "asyncio", "distributed"],
     packages=find_packages(exclude=("test.*",)),
@@ -17,8 +17,8 @@ setup(
     },
     install_requires=[
         "aiohttp>=2.2.0",       # aiohttp, http for asyncio
-        "pybloom_live>=2.2.0",  # pybloom-live, fork from pybloom
+        "pybloom_live>=2.3.0",  # pybloom-live, fork from pybloom
         "redis>=2.10.0",        # redis, python client for redis
-        "requests>=2.10.0",     # requests, http for humans
+        "requests>=2.18.0",     # requests, http for humans
     ]
 )

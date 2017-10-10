@@ -123,6 +123,6 @@ def work_monitor(self):
     info += " total_seconds=%d" % (time.time() - self._init_time)
     logging.warning(info)
 
-    return False if self._pool.get_monitor_stop() else True
+    return False if self._pool.get_monitor_stop_flag() else True
 
 MonitorThread = type("MonitorThread", (BaseThread,), dict(__init__=init_monitor_thread, working=work_monitor))

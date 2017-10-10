@@ -92,7 +92,7 @@ class ThreadPool(BasePool):
         self._lock.release()
         return
 
-    def get_monitor_stop(self):
+    def get_monitor_stop_flag(self):
         """
         get the monitor stop flag of this pool
         """

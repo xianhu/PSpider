@@ -18,7 +18,7 @@ __all__ = [
 ]
 
 
-def get_string_num(string, base=None, only_num=False):
+def get_string_num(string, base=None, only_num=True):
     """
     get a float number from a string, if base isn't None, K means (base * B), M means (base * K), ...
     """
