@@ -72,10 +72,7 @@ def test_spider_distributed():
 
     # initial web_spider
     web_spider_dist = spider.WebSpiderDist(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
-    web_spider_dist.init_redis(host="localhost", port=6379, key_wait="spider.wait", key_all="spider.all")
-
-    # add start url
-    web_spider_dist.set_start_url("http://zhushou.360.cn/", keys=("360web",))
+    web_spider_dist.init_redis(host="localhost", port=6379, key_high_priority="spider.high", key_low_priority="spider.low")
 
     # start web_spider
     web_spider_dist.start_work_and_wait_done(fetcher_num=10)

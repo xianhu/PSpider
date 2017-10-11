@@ -21,34 +21,40 @@ class DistThreadPool(ThreadPool):
         ThreadPool.__init__(self, fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=monitor_sleep_time)
 
         # redis configures
-        self._redis_client = None   # redis client object
-        self._key_wait = None       # redis key, value is a urls list, which wait to fetch
-        self._key_all = None        # redis key, value is all urls set. [the speed will be very slow because of too many urls]
+        self._redis_client = None           # redis client object
+        self._key_high_priority = None      # redis key, value is a urls list, which wait to fetch, high priority
+        self._key_low_priority = None       # redis key, value is a urls list, which wait to fetch, low priority
 
         # make the spider run forever
         self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
         return
 
-    def init_redis(self, host="localhost", port=6379, db=0, key_wait="spider.wait", key_all="spider.all"):
+    def init_redis(self, host="localhost", port=6379, db=0, key_high_priority="spider.high", key_low_priority="spider.low"):
         """
         initial redis client object
         """
         if not self._redis_client:
             self._redis_client = redis.Redis(host=host, port=port, db=db)
-            self._key_wait = key_wait
-            self._key_all = key_all
+            self._key_high_priority = key_high_priority
+            self._key_low_priority = key_low_priority
         return
+
+    def set_start_url(self, url, keys=None, priority=0, deep=0):
+        """
+        ignore this function
+        """
+        raise NotImplementedError
 
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):
         """
         add a task based on task_name
         """
-        if task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (
-                    ((not self._url_filter) or self._url_filter.check_and_add(task_content[1])) and
-                    ((not self._key_all) or self._redis_client.sadd(self._key_all, task_content[1]))
-        )):
-            self._redis_client.lpush(self._key_wait, task_content)
+        if task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check(task_content[1])):
+            if task_content[0] < 5:
+                self._redis_client.lpush(self._key_high_priority, task_content)
+            else:
+                self._redis_client.lpush(self._key_low_priority, task_content)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
@@ -63,7 +69,7 @@ class DistThreadPool(ThreadPool):
         """
         task_content = None
         if task_name == TPEnum.URL_FETCH:
-            task_content = eval(self._redis_client.brpop(self._key_wait, timeout=5)[1])
+            task_content = eval(self._redis_client.rpop(self._key_high_priority) or self._redis_client.rpop(self._key_low_priority))
         elif task_name == TPEnum.HTM_PARSE:
             task_content = self._parse_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
