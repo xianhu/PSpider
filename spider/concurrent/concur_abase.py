@@ -14,15 +14,23 @@ class TPEnum(enum.Enum):
     """
     enum of TPEnum, to express the status of web_spider
     """
-    TASKS_RUNNING = "tasks_running"     # flag of tasks_running
+    TASKS_RUNNING = "tasks_running"         # flag of tasks_running
 
-    URL_FETCH = "url_fetch"             # flag of url_fetched
-    HTM_PARSE = "htm_parse"             # flag of htm_parsed
-    ITEM_SAVE = "item_save"             # flag of item_saved
+    URL_FETCH = "url_fetch"                 # flag of url_fetch
+    HTM_PARSE = "htm_parse"                 # flag of htm_parse
+    ITEM_SAVE = "item_save"                 # flag of item_save
 
-    URL_NOT_FETCH = "url_not_fetch"     # flag of url_not_fetch
-    HTM_NOT_PARSE = "htm_not_parse"     # flag of htm_not_parse
-    ITEM_NOT_SAVE = "item_not_save"     # flag of item_not_save
+    URL_NOT_FETCH = "url_not_fetch"         # flag of url_not_fetch
+    HTM_NOT_PARSE = "htm_not_parse"         # flag of htm_not_parse
+    ITEM_NOT_SAVE = "item_not_save"         # flag of item_not_save
+
+    URL_FETCH_SUCC = "url_fetch_succ"       # flag of url_fetch_succ
+    HTM_PARSE_SUCC = "htm_parse_succ"       # flag of htm_parse_succ
+    ITEM_SAVE_SUCC = "item_save_succ"       # flag of item_save_succ
+
+    URL_FETCH_ERROR = "url_fetch_error"     # flag of url_fetch_error
+    HTM_PARSE_ERROR = "htm_parse_error"     # flag of htm_parse_error
+    ITEM_SAVE_ERROR = "item_save_error"     # flag of item_save_error
 
 
 class BaseThread(threading.Thread):
@@ -90,13 +98,17 @@ class BasePool(object):
         self._number_dict = {
             TPEnum.TASKS_RUNNING: 0,        # the count of tasks which are running
 
-            TPEnum.URL_FETCH: 0,            # the count of urls which have been fetched successfully
-            TPEnum.HTM_PARSE: 0,            # the count of urls which have been parsed successfully
-            TPEnum.ITEM_SAVE: 0,            # the count of urls which have been saved successfully
-
             TPEnum.URL_NOT_FETCH: 0,        # the count of urls which haven't been fetched
             TPEnum.HTM_NOT_PARSE: 0,        # the count of urls which haven't been parsed
             TPEnum.ITEM_NOT_SAVE: 0,        # the count of urls which haven't been saved
+
+            TPEnum.URL_FETCH_SUCC: 0,       # the count of urls which have been fetched successfully
+            TPEnum.HTM_PARSE_SUCC: 0,       # the count of urls which have been parsed successfully
+            TPEnum.ITEM_SAVE_SUCC: 0,       # the count of urls which have been saved successfully
+
+            TPEnum.URL_FETCH_ERROR: 0,      # the count of urls which have been fetched unsuccessfully
+            TPEnum.HTM_PARSE_ERROR: 0,      # the count of urls which have been parsed unsuccessfully
+            TPEnum.ITEM_SAVE_ERROR: 0,      # the count of urls which have been saved unsuccessfully
         }
         return
 

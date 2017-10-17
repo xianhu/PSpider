@@ -22,10 +22,12 @@ def work_fetch(self):
 
     # ----3----
     if fetch_result == 1:
-        self._pool.update_number_dict(TPEnum.URL_FETCH, +1)
+        self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
         self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
     elif fetch_result == 0:
         self._pool.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
+    else:
+        self._pool.update_number_dict(TPEnum.URL_FETCH_ERROR, +1)
 
     # ----4----
     self._pool.finish_a_task(TPEnum.URL_FETCH)
@@ -47,11 +49,13 @@ def work_parse(self):
 
     # ----3----
     if parse_result > 0:
-        self._pool.update_number_dict(TPEnum.HTM_PARSE, +1)
+        self._pool.update_number_dict(TPEnum.HTM_PARSE_SUCC, +1)
         for _url, _keys, _priority in url_list:
             self._pool.add_a_task(TPEnum.URL_FETCH, (_priority, _url, _keys, deep+1, 0))
         for item in save_list:
             self._pool.add_a_task(TPEnum.ITEM_SAVE, (url, keys, item))
+    else:
+        self._pool.update_number_dict(TPEnum.HTM_PARSE_ERROR, +1)
 
     # ----4----
     self._pool.finish_a_task(TPEnum.HTM_PARSE)
@@ -73,7 +77,9 @@ def work_save(self):
 
     # ----3----
     if save_result:
-        self._pool.update_number_dict(TPEnum.ITEM_SAVE, +1)
+        self._pool.update_number_dict(TPEnum.ITEM_SAVE_SUCC, +1)
+    else:
+        self._pool.update_number_dict(TPEnum.ITEM_SAVE_ERROR, +1)
 
     # ----4----
     self._pool.finish_a_task(TPEnum.ITEM_SAVE)
@@ -105,20 +111,26 @@ def work_monitor(self):
     time.sleep(self._sleep_time)
     info = "%s status: running_tasks=%s;" % (self._pool.__class__.__name__, self._pool.get_number_dict(TPEnum.TASKS_RUNNING))
 
-    cur_fetch_num = self._pool.get_number_dict(TPEnum.URL_FETCH)
     cur_not_fetch_num = self._pool.get_number_dict(TPEnum.URL_NOT_FETCH)
-    info += " fetch=(%d, %d, %d/(%ds));" % (cur_not_fetch_num, cur_fetch_num, cur_fetch_num-self._last_fetch_num, self._sleep_time)
-    self._last_fetch_num = cur_fetch_num
+    cur_fetch_num_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
+    cur_fetch_num_error = self._pool.get_number_dict(TPEnum.URL_FETCH_ERROR)
+    cur_fetch_num_all = cur_fetch_num_succ + cur_fetch_num_error
+    info += " fetch:[ NOT=%d, SUCC=%d, ERROR=%d, %d/(%ds) ];" % (cur_not_fetch_num, cur_fetch_num_succ, cur_fetch_num_error, cur_fetch_num_all-self._last_fetch_num, self._sleep_time)
+    self._last_fetch_num = cur_fetch_num_all
 
-    cur_parse_num = self._pool.get_number_dict(TPEnum.HTM_PARSE)
     cur_not_parse_num = self._pool.get_number_dict(TPEnum.HTM_NOT_PARSE)
-    info += " parse=(%d, %d, %d/(%ds));" % (cur_not_parse_num, cur_parse_num, cur_parse_num-self._last_parse_num, self._sleep_time)
-    self._last_parse_num = cur_parse_num
+    cur_parse_num_succ = self._pool.get_number_dict(TPEnum.HTM_PARSE_SUCC)
+    cur_parse_num_error = self._pool.get_number_dict(TPEnum.HTM_PARSE_ERROR)
+    cur_parse_num_all = cur_parse_num_succ + cur_parse_num_error
+    info += " parse:[ NOT=%d, SUCC=%d, ERROR=%d, %d/(%ds) ];" % (cur_not_parse_num, cur_parse_num_succ, cur_parse_num_error, cur_parse_num_all-self._last_parse_num, self._sleep_time)
+    self._last_parse_num = cur_parse_num_all
 
-    cur_save_num = self._pool.get_number_dict(TPEnum.ITEM_SAVE)
     cur_not_save_num = self._pool.get_number_dict(TPEnum.ITEM_NOT_SAVE)
-    info += " save=(%d, %d, %d/(%ds));" % (cur_not_save_num, cur_save_num, cur_save_num-self._last_save_num, self._sleep_time)
-    self._last_save_num = cur_save_num
+    cur_save_num_succ = self._pool.get_number_dict(TPEnum.ITEM_SAVE_SUCC)
+    cur_save_num_error = self._pool.get_number_dict(TPEnum.ITEM_SAVE_ERROR)
+    cur_save_num_all = cur_save_num_succ + cur_save_num_error
+    info += " save:[ NOT=%d, SUCC=%d, ERROR=%d, %d/(%ds) ];" % (cur_not_save_num, cur_save_num_succ, cur_save_num_error, cur_save_num_all-self._last_save_num, self._sleep_time)
+    self._last_save_num = cur_save_num_all
 
     info += " total_seconds=%d" % (time.time() - self._init_time)
     logging.warning(info)

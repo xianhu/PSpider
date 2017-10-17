@@ -5,7 +5,6 @@ test.py by xianhu
 """
 
 import spider
-import asyncio
 import logging
 
 black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download",)
@@ -17,7 +16,7 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver, you also can rewrite this three class
-    fetcher = spider.Fetcher(max_repeat=3, sleep_time=1)
+    fetcher = spider.Fetcher(max_repeat=3, sleep_time=0)
     parser = spider.Parser(max_deep=2)
     saver = spider.Saver(save_pipe=open("out_spider_thread.txt", "w"))
 
@@ -32,29 +31,6 @@ def test_spider():
 
     # start web_spider
     web_spider.start_work_and_wait_done(fetcher_num=10, is_over=True)
-    return
-
-
-def test_spider_async():
-    """
-    test asyncio spider with asyncio
-    """
-    # initial fetcher / parser / saver, you also can rewrite this three class
-    fetcher = spider.FetcherAsync(max_repeat=3, sleep_time=0)
-    parser = spider.ParserAsync(max_deep=2)
-    saver = spider.SaverAsync(save_pipe=open("out_spider_async.txt", "w"))
-
-    # define url_filter
-    url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=10000)
-
-    # initial web_spider
-    web_spider_async = spider.WebSpiderAsync(fetcher, parser, saver, url_filter=url_filter, loop=asyncio.get_event_loop())
-
-    # add start url
-    web_spider_async.set_start_url("http://zhushou.360.cn/", keys=("360web",))
-
-    # start web_spider
-    web_spider_async.start_work_and_wait_done(fetcher_num=10)
     return
 
 
@@ -82,6 +58,5 @@ def test_spider_distributed():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
     # test_spider()
-    # test_spider_async()
     # test_spider_distributed()
     exit()
