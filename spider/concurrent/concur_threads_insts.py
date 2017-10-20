@@ -31,6 +31,11 @@ def work_fetch(self):
 
     # ----4----
     self._pool.finish_a_task(TPEnum.URL_FETCH)
+
+    # ----5----
+    if self._pool.get_number_dict(TPEnum.HTM_NOT_PARSE) > 100:
+        logging.debug("%s[%s] sleep 5 seconds...", self.__class__.__name__, self.getName())
+        time.sleep(5)
     return False if fetch_result == -2 else True
 
 FetchThread = type("FetchThread", (BaseThread,), dict(working=work_fetch))
