@@ -42,7 +42,7 @@ class ThreadPool(BasePool):
         :param fetcher_num: not useful if self._inst_fetcher is a list or tuple
         :param is_over: stop monitor thread or not, default True
         """
-        logging.warning("%s start: fetcher_num=%s, is_over=%s", self.__class__.__name__, fetcher_num, is_over)
+        logging.warning("%s start: urls_count=%s, fetcher_num=%s, is_over=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_NOT_FETCH), fetcher_num, is_over)
 
         if isinstance(self._inst_fetcher, (list, tuple)):
             fetcher_list = [FetchThread("fetcher-%d" % (i+1), fetcher, self) for (i, fetcher) in enumerate(self._inst_fetcher)]

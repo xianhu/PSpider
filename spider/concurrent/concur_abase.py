@@ -116,7 +116,6 @@ class BasePool(object):
         """
         set start url based on "keys", "priority" and "deep", repeat must be 0
         """
-        logging.warning("%s set_start_url: keys=%s, priority=%s, deep=%s, url=%s", self.__class__.__name__, keys, priority, deep, url)
         self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys, deep, 0))
         return
 
