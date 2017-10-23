@@ -82,7 +82,7 @@ class ThreadPool(BasePool):
                         self.get_number_dict(TPEnum.URL_FETCH_SUCC), self.get_number_dict(TPEnum.URL_FETCH_FAIL),
                         self.get_number_dict(TPEnum.HTM_PARSE_SUCC), self.get_number_dict(TPEnum.HTM_PARSE_FAIL),
                         self.get_number_dict(TPEnum.ITEM_SAVE_SUCC), self.get_number_dict(TPEnum.ITEM_SAVE_FAIL))
-        return
+        return self._number_dict
 
     def get_monitor_stop_flag(self):
         """

@@ -5,5 +5,6 @@ define WebSpider, WebSpiderDist, and also define utilities and instances for web
 """
 
 from .utilities import *
+from .concurrent import TPEnum
 from .concurrent import WebSpider, WebSpiderDist
 from .insts_thread import Fetcher, Parser, Saver

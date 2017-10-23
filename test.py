@@ -30,7 +30,10 @@ def test_spider():
     web_spider.set_start_url("http://zhushou.360.cn/", keys=("360web",))
 
     # start web_spider
-    web_spider.start_work_and_wait_done(fetcher_num=10, is_over=True)
+    result = web_spider.start_work_and_wait_done(fetcher_num=10, is_over=True)
+
+    # print result of web_spider
+    print(result[spider.TPEnum.URL_FETCH_SUCC], result[spider.TPEnum.HTM_PARSE_SUCC], result[spider.TPEnum.ITEM_SAVE_SUCC])
     return
 
 
