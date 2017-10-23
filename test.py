@@ -16,7 +16,7 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver, you also can rewrite this three class
-    fetcher = spider.Fetcher(max_repeat=3, sleep_time=0)
+    fetcher = spider.Fetcher(max_repeat=3, sleep_time=1)
     parser = spider.Parser(max_deep=2)
     saver = spider.Saver(save_pipe=open("out_spider_thread.txt", "w"))
 
@@ -57,6 +57,6 @@ def test_spider_distributed():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
-    # test_spider()
+    test_spider()
     # test_spider_distributed()
     exit()

@@ -28,9 +28,9 @@ class TPEnum(enum.Enum):
     HTM_PARSE_SUCC = "htm_parse_succ"       # flag of htm_parse_succ
     ITEM_SAVE_SUCC = "item_save_succ"       # flag of item_save_succ
 
-    URL_FETCH_ERROR = "url_fetch_error"     # flag of url_fetch_error
-    HTM_PARSE_ERROR = "htm_parse_error"     # flag of htm_parse_error
-    ITEM_SAVE_ERROR = "item_save_error"     # flag of item_save_error
+    URL_FETCH_FAIL = "url_fetch_fail"       # flag of url_fetch_fail
+    HTM_PARSE_FAIL = "htm_parse_fail"       # flag of htm_parse_fail
+    ITEM_SAVE_FAIL = "item_save_fail"       # flag of item_save_fail
 
 
 class BaseThread(threading.Thread):
@@ -52,25 +52,25 @@ class BaseThread(threading.Thread):
         """
         rewrite run function, auto running and must call self.work()
         """
-        logging.warning("%s[%s] start...", self.__class__.__name__, self.getName())
+        logging.debug("%s[%s] start...", self.__class__.__name__, self.getName())
 
         while True:
             try:
                 if not self.working():
                     break
             except queue.Empty:
-                # caused by 'queue.get()'
+                # caused by "queue.get()"
                 if self._pool.is_all_tasks_done():
                     break
             except TypeError:
-                # caused by 'eval()' in distributed_threads.py
+                # caused by "eval()" in distributed_threads.py
                 if self._pool.is_all_tasks_done():
                     break
             except Exception as excep:
                 logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), excep)
                 break
 
-        logging.warning("%s[%s] end...", self.__class__.__name__, self.getName())
+        logging.debug("%s[%s] end...", self.__class__.__name__, self.getName())
         return
 
     def working(self):
@@ -106,10 +106,11 @@ class BasePool(object):
             TPEnum.HTM_PARSE_SUCC: 0,       # the count of urls which have been parsed successfully
             TPEnum.ITEM_SAVE_SUCC: 0,       # the count of urls which have been saved successfully
 
-            TPEnum.URL_FETCH_ERROR: 0,      # the count of urls which have been fetched unsuccessfully
-            TPEnum.HTM_PARSE_ERROR: 0,      # the count of urls which have been parsed unsuccessfully
-            TPEnum.ITEM_SAVE_ERROR: 0,      # the count of urls which have been saved unsuccessfully
+            TPEnum.URL_FETCH_FAIL: 0,       # the count of urls which have been fetched failed
+            TPEnum.HTM_PARSE_FAIL: 0,       # the count of urls which have been parsed failed
+            TPEnum.ITEM_SAVE_FAIL: 0,       # the count of urls which have been saved failed
         }
+        self._lock = threading.Lock()       # the lock which self._number_dict needs
         return
 
     def set_start_url(self, url, keys=None, priority=0, deep=0):
@@ -117,6 +118,7 @@ class BasePool(object):
         set start url based on "keys", "priority" and "deep", repeat must be 0
         """
         self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys, deep, 0))
+        logging.debug("%s set_start_url: keys=%s, priority=%s, deep=%s, url=%s", self.__class__.__name__, keys, priority, deep, url)
         return
 
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):
@@ -129,7 +131,9 @@ class BasePool(object):
         """
         update the value of self._number_dict based on key
         """
+        self._lock.acquire()
         self._number_dict[key] += value
+        self._lock.release()
         return
 
     def get_number_dict(self, key):

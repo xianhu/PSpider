@@ -4,14 +4,14 @@ A simple spider frame written by Python, which needs Python3.5+
 
 ### Features of PSpider
 1. Support multi-threading crawling mode (using threading and requests)
-2. Support distributed crawling mode (using redis and threading)
+2. Support distributed crawling mode (using threading, requests and redis)
 3. Define some utility functions and classes, for example: UrlFilter, make_random_useragent, etc
 4. Fewer lines of code, easyer to read, understand and expand
 
 ### Modules of PSpider
-1. utilities module: define utilities functions and classes for spider
+1. utilities module: define some utilities functions and classes for spider
 2. insts_thread module: define classes of fetcher, parser, saver for multi-threading spider
-3. concurrent module: define WebSpiderFrame of multi-threading spider, asyncio spider and distributed spider
+3. concurrent module: define WebSpiderFrame of multi-threading spider and distributed spider
 
 ### Procedure of PSpider
 1. procedure of multi-threading spider  

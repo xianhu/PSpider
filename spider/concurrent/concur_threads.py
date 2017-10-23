@@ -7,7 +7,6 @@ concur_threads.py by xianhu
 import copy
 import queue
 import logging
-import threading
 from .concur_abase import TPEnum, BasePool
 from .concur_threads_insts import FetchThread, ParseThread, SaveThread, MonitorThread
 
@@ -26,8 +25,6 @@ class ThreadPool(BasePool):
         self._fetch_queue = queue.PriorityQueue()    # (priority, url, keys, deep, repeat)
         self._parse_queue = queue.PriorityQueue()    # (priority, url, keys, deep, content)
         self._save_queue = queue.Queue()             # (url, keys, item), item can be anything
-
-        self._lock = threading.Lock()                # the lock which self._number_dict needs
 
         # set monitor thread
         self._monitor_stop = False
@@ -50,17 +47,17 @@ class ThreadPool(BasePool):
             fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
         parser_saver_list = [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
 
-        # 1-----
+        # ----1----
         for thread in fetcher_list:
             thread.setDaemon(True)
             thread.start()
 
-        # 1-----
+        # ----1----
         for thread in parser_saver_list:
             thread.setDaemon(True)
             thread.start()
 
-        # 2-----
+        # ----2----
         for thread in fetcher_list:
             if thread.is_alive():
                 thread.join()
@@ -70,7 +67,7 @@ class ThreadPool(BasePool):
             self.get_a_task(TPEnum.URL_FETCH)
             self.finish_a_task(TPEnum.URL_FETCH)
 
-        # 2-----
+        # ----2----
         for thread in parser_saver_list:
             if thread.is_alive():
                 thread.join()
@@ -80,16 +77,11 @@ class ThreadPool(BasePool):
             self._monitor_stop = True
             self._monitor.join()
 
-        logging.warning("%s end: fetcher_num=%s, is_over=%s", self.__class__.__name__, fetcher_num, is_over)
-        return
-
-    def update_number_dict(self, key, value):
-        """
-        update the value of self._number_dict based on key
-        """
-        self._lock.acquire()
-        self._number_dict[key] += value
-        self._lock.release()
+        logging.warning("%s end: fetcher_num=%s, is_over=%s, fetch:[SUCC=%d, FAIL=%d]; parse[SUCC=%d, FAIL=%d]; save:[SUCC=%d, FAIL=%d]",
+                        self.__class__.__name__, fetcher_num, is_over,
+                        self.get_number_dict(TPEnum.URL_FETCH_SUCC), self.get_number_dict(TPEnum.URL_FETCH_FAIL),
+                        self.get_number_dict(TPEnum.HTM_PARSE_SUCC), self.get_number_dict(TPEnum.HTM_PARSE_FAIL),
+                        self.get_number_dict(TPEnum.ITEM_SAVE_SUCC), self.get_number_dict(TPEnum.ITEM_SAVE_FAIL))
         return
 
     def get_monitor_stop_flag(self):

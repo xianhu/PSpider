@@ -43,7 +43,7 @@ class Parser(object):
         """
         parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
-        *_, html_text = content
+        status_code, url_now, html_text = content
 
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):

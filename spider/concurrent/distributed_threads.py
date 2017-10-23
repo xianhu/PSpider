@@ -39,12 +39,6 @@ class DistThreadPool(ThreadPool):
             self._key_low_priority = key_low_priority
         return
 
-    def set_start_url(self, url, keys=None, priority=0, deep=0):
-        """
-        ignore this function
-        """
-        raise NotImplementedError
-
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):
         """
