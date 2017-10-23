@@ -72,7 +72,7 @@ class ThreadPool(BasePool):
             if thread.is_alive():
                 thread.join()
 
-        # 3-----
+        # ----3----
         if is_over and self._monitor.is_alive():
             self._monitor_stop = True
             self._monitor.join()
