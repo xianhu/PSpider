@@ -38,6 +38,7 @@ def work_fetch(self):
         time.sleep(5)
     return False if fetch_result == -2 else True
 
+
 FetchThread = type("FetchThread", (BaseThread,), dict(working=work_fetch))
 
 
@@ -66,6 +67,7 @@ def work_parse(self):
     self._pool.finish_a_task(TPEnum.HTM_PARSE)
     return True
 
+
 ParseThread = type("ParseThread", (BaseThread,), dict(working=work_parse))
 
 
@@ -89,6 +91,7 @@ def work_save(self):
     # ----4----
     self._pool.finish_a_task(TPEnum.ITEM_SAVE)
     return True
+
 
 SaveThread = type("SaveThread", (BaseThread,), dict(working=work_save))
 
@@ -141,5 +144,6 @@ def work_monitor(self):
     logging.warning(info)
 
     return False if self._pool.get_monitor_stop_flag() else True
+
 
 MonitorThread = type("MonitorThread", (BaseThread,), dict(__init__=init_monitor_thread, working=work_monitor))

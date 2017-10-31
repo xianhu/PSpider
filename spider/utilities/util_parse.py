@@ -65,11 +65,11 @@ def get_string_split(string, split_chars=(" ", "\t", ","), is_remove_empty=False
     return string_list if not is_remove_empty else [item.strip() for item in string_list if item.strip()]
 
 
-def get_string_strip(string):
+def get_string_strip(string, replace_char=" "):
     """
     get a string which striped \t, \r, \n from a string, also change None to ""
     """
-    return re.sub(r"\s+", " ", string, flags=re.IGNORECASE).strip() if string else ""
+    return re.sub(r"\s+", replace_char, string, flags=re.IGNORECASE).strip() if string else ""
 
 
 def get_url_legal(url, base_url, encoding=None, remove_fragment=True):
