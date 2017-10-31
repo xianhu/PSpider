@@ -13,7 +13,6 @@
 data/
 build/
 spider/__pycache__/
-spider/insts_async/__pycache__/
-spider/instances/__pycache__/
 spider/concurrent/__pycache__/
+spider/instances/__pycache__/
 spider/utilities/__pycache__/
