@@ -33,8 +33,8 @@ def work_fetch(self):
     self._pool.finish_a_task(TPEnum.URL_FETCH)
 
     # ----5----
-    while self._pool.get_number_dict(TPEnum.HTM_NOT_PARSE) > 500:
-        logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_NOT_PARSE'...", self.__class__.__name__, self.getName())
+    while (self._pool.get_number_dict(TPEnum.HTM_NOT_PARSE) > 500) or (self._pool.get_number_dict(TPEnum.ITEM_NOT_SAVE) > 500):
+        logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_NOT_PARSE' or 'ITEM_NOT_SAVE'...", self.__class__.__name__, self.getName())
         time.sleep(5)
     return False if fetch_result == -2 else True
 
