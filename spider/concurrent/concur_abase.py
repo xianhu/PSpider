@@ -113,12 +113,12 @@ class BasePool(object):
         self._lock = threading.Lock()       # the lock which self._number_dict needs
         return
 
-    def set_start_url(self, url, keys=None, priority=0, deep=0):
+    def set_start_url(self, url, priority=0, keys=None, deep=0):
         """
-        set start url based on "keys", "priority" and "deep", repeat must be 0
+        set start url based on "priority", "keys" and "deep", repeat must be 0
         """
         self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys, deep, 0))
-        logging.debug("%s set_start_url: keys=%s, priority=%s, deep=%s, url=%s", self.__class__.__name__, keys, priority, deep, url)
+        logging.debug("%s set_start_url: priority=%s, keys=%s, deep=%s, url=%s", self.__class__.__name__, priority, keys, deep, url)
         return
 
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):

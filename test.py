@@ -27,7 +27,7 @@ def test_spider():
     web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
 
     # add start url
-    web_spider.set_start_url("http://zhushou.360.cn/", keys=("360web",))
+    web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys="360web", deep=0)
 
     # start web_spider
     result = web_spider.start_work_and_wait_done(fetcher_num=10, is_over=True)

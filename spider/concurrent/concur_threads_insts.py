@@ -18,7 +18,7 @@ def work_fetch(self):
     priority, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
 
     # ----2----
-    fetch_result, content = self._worker.working(url, keys, repeat)
+    fetch_result, content = self._worker.working(priority, url, keys, deep, repeat)
 
     # ----3----
     if fetch_result == 1:

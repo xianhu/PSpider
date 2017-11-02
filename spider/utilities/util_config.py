@@ -5,6 +5,7 @@ util_config.py by xianhu
 """
 
 __all__ = [
+    "CONFIG_ERROR_MESSAGE",
     "CONFIG_URLPATTERN_ALL",
     "CONFIG_URLPATTERN_FILES",
     "CONFIG_URLPATTERN_IMAGE",
@@ -14,6 +15,8 @@ __all__ = [
     "CONFIG_USERAGENT_ALL",
 ]
 
+# define the structure of error message, used in Fetcher and Parser
+CONFIG_ERROR_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
 
 # define url_patterns, include urlpattern_all, urlpattern_files, urlpattern_image and urlpattern_video
 CONFIG_URLPATTERN_ALL = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|" \
