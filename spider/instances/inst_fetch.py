@@ -8,7 +8,7 @@ import time
 import random
 import logging
 import requests
-from ..utilities import CONFIG_ERROR_MESSAGE, make_random_useragent
+from ..utilities import CONFIG_FETCH_MESSAGE, make_random_useragent
 
 
 class Fetcher(object):
@@ -27,10 +27,10 @@ class Fetcher(object):
     def working(self, priority: int, url: str, keys: object, deep: int, repeat: int) -> (int, object):
         """
         working function, must "try, expect" and don't change the parameters and return
-        :return (fetch_result, content): fetch_result can be -2(fetch failed, need stop thread), -1(fetch failed), 0(need repeat), 1(fetch success)
+        :return (fetch_result, content): fetch_result can be -2(fetch failed, stop thread), -1(fetch failed), 0(need repeat), 1(fetch success)
         :return (fetch_result, content): content can be any object, for example: string, list, etc
         """
-        logging.debug("%s start: priority=%s, keys=%s, deep=%s, repeat=%s, url=%s", self.__class__.__name__, priority, keys, deep, repeat, url)
+        logging.debug("%s start: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
         time.sleep(random.randint(0, self._sleep_time))
         try:
@@ -38,10 +38,10 @@ class Fetcher(object):
         except Exception as excep:
             if repeat >= self._max_repeat:
                 fetch_result, content = -1, None
-                logging.error("%s error: %s, %s", self.__class__.__name__, excep, CONFIG_ERROR_MESSAGE % (priority, keys, deep, url))
+                logging.error("%s error: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
             else:
                 fetch_result, content = 0, None
-                logging.debug("%s repeat: %s, priority=%s, keys=%s, deep=%s, repeat=%s, url=%s", self.__class__.__name__, excep, priority, keys, deep, repeat, url)
+                logging.debug("%s repeat: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
         logging.debug("%s end: fetch_result=%s, url=%s", self.__class__.__name__, fetch_result, url)
         return fetch_result, content
@@ -52,7 +52,7 @@ class Fetcher(object):
         """
         response = requests.get(url, headers={"User-Agent": make_random_useragent(), "Accept-Encoding": "gzip"}, timeout=(3.05, 10))
         if response.history:
-            logging.debug("%s redirect: priority=%s, keys=%s, deep=%s, repeat=%s, url=%s", self.__class__.__name__, priority, keys, deep, repeat, url)
+            logging.debug("%s redirect: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
         content = (response.status_code, response.url, response.text)
         return 1, content

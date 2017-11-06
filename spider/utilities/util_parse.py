@@ -5,13 +5,10 @@ util_parse.py by xianhu
 """
 
 import re
-import operator
-import functools
 import urllib.parse
 
 __all__ = [
     "get_string_num",
-    "get_string_split",
     "get_string_strip",
     "get_url_legal",
     "get_url_params",
@@ -22,10 +19,11 @@ def get_string_num(string, base=None, only_num=True):
     """
     get a float number from a string, if base isn't None, K means (base * B), M means (base * K), ...
     """
-    temp = re.search(r"(?P<num>\d+(\.\d+)?)(?P<param>[\w\W]*?)$", string.upper().strip(), flags=re.IGNORECASE)
-    if not temp:
+    string_temp = get_string_strip(string, replace_char="").upper().replace(",", "")
+    string_re = re.search(r"(?P<num>\d+(\.\d+)?)(?P<param>[\w\W]*?)$", string_temp, flags=re.IGNORECASE)
+    if not string_re:
         return 0.0
-    num, param = float(temp.group("num")), temp.group("param")
+    num, param = float(string_re.group("num")), string_re.group("param")
     if only_num:
         return num
     if param.find("兆") >= 0:
@@ -52,17 +50,6 @@ def get_string_num(string, base=None, only_num=True):
         if param.find("T") >= 0:
             num *= base * base * base * base
     return num
-
-
-def get_string_split(string, split_chars=(" ", "\t", ","), is_remove_empty=False):
-    """
-    get a string list by splitting string based on split_chars, len(split_chars) must >= 2
-    """
-    assert len(split_chars) >= 2, "get_string_split: parameter split_chars[%s] is invalid, the length of it must >= 2" % split_chars
-    string_list = string.split(split_chars[0])
-    for char in split_chars[1:]:
-        string_list = functools.reduce(operator.add, [item.split(char) for item in string_list], [])
-    return string_list if not is_remove_empty else [item.strip() for item in string_list if item.strip()]
 
 
 def get_string_strip(string, replace_char=" "):

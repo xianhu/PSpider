@@ -7,11 +7,13 @@ concur_threads.py by xianhu
 import copy
 import queue
 import logging
-from .concur_abase import TPEnum, BasePool
+import threading
+from .concur_abase import TPEnum
 from .concur_threads_insts import FetchThread, ParseThread, SaveThread, MonitorThread
+from ..utilities import CONFIG_FETCH_MESSAGE
 
 
-class ThreadPool(BasePool):
+class ThreadPool(object):
     """
     class of ThreadPool, as the subclass of BasePool
     """
@@ -20,11 +22,32 @@ class ThreadPool(BasePool):
         """
         constructor
         """
-        BasePool.__init__(self, fetcher, parser, saver, url_filter=url_filter)
+        self._inst_fetcher = fetcher                    # fetcher instance, subclass of Fetcher
+        self._inst_parser = parser                      # parser instance, subclass of Parser
+        self._inst_saver = saver                        # saver instance, subclass of Saver
 
-        self._fetch_queue = queue.PriorityQueue()    # (priority, url, keys, deep, repeat)
-        self._parse_queue = queue.PriorityQueue()    # (priority, url, keys, deep, content)
-        self._save_queue = queue.Queue()             # (url, keys, item), item can be anything
+        self._fetch_queue = queue.PriorityQueue()       # (priority, url, keys, deep, repeat)
+        self._parse_queue = queue.PriorityQueue()       # (priority, url, keys, deep, content)
+        self._save_queue = queue.Queue()                # (url, keys, item), item can be anything
+
+        self._url_filter = url_filter                   # default: None, also can be UrlFilter()
+
+        self._number_dict = {
+            TPEnum.TASKS_RUNNING: 0,                    # the count of tasks which are running
+
+            TPEnum.URL_NOT_FETCH: 0,                    # the count of urls which haven't been fetched
+            TPEnum.HTM_NOT_PARSE: 0,                    # the count of urls which haven't been parsed
+            TPEnum.ITEM_NOT_SAVE: 0,                    # the count of urls which haven't been saved
+
+            TPEnum.URL_FETCH_SUCC: 0,                   # the count of urls which have been fetched successfully
+            TPEnum.HTM_PARSE_SUCC: 0,                   # the count of urls which have been parsed successfully
+            TPEnum.ITEM_SAVE_SUCC: 0,                   # the count of urls which have been saved successfully
+
+            TPEnum.URL_FETCH_FAIL: 0,                   # the count of urls which have been fetched failed
+            TPEnum.HTM_PARSE_FAIL: 0,                   # the count of urls which have been parsed failed
+            TPEnum.ITEM_SAVE_FAIL: 0,                   # the count of urls which have been saved failed
+        }
+        self._lock = threading.Lock()                   # the lock which self._number_dict needs
 
         # set monitor thread
         self._monitor_stop = False
@@ -33,11 +56,17 @@ class ThreadPool(BasePool):
         self._monitor.start()
         return
 
+    def set_start_url(self, url, priority=0, keys=None, deep=0):
+        """
+        set start url based on "priority", "keys" and "deep", repeat must be 0
+        """
+        self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys, deep, 0))
+        logging.debug("%s set_start_url: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, 0, url))
+        return
+
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):
         """
         start this pool, and wait for finishing
-        :param fetcher_num: not useful if self._inst_fetcher is a list or tuple
-        :param is_over: stop monitor thread or not, default True
         """
         logging.warning("%s start: urls_count=%s, fetcher_num=%s, is_over=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_NOT_FETCH), fetcher_num, is_over)
 
@@ -64,7 +93,8 @@ class ThreadPool(BasePool):
 
         # clear the variables if all fetcher stoped
         while self.get_number_dict(TPEnum.URL_NOT_FETCH) > 0:
-            self.get_a_task(TPEnum.URL_FETCH)
+            priority, url, keys, deep, repeat = self.get_a_task(TPEnum.URL_FETCH)
+            logging.ERROR("%s error: not fetch, %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
             self.finish_a_task(TPEnum.URL_FETCH)
 
         # ----2----
@@ -84,11 +114,34 @@ class ThreadPool(BasePool):
                         self.get_number_dict(TPEnum.ITEM_SAVE_SUCC), self.get_number_dict(TPEnum.ITEM_SAVE_FAIL))
         return self._number_dict
 
+    # ================================================================================================================================
     def get_monitor_stop_flag(self):
         """
         get the monitor stop flag of this pool
         """
         return self._monitor_stop
+
+    def update_number_dict(self, key, value):
+        """
+        update the value of self._number_dict based on key
+        """
+        self._lock.acquire()
+        self._number_dict[key] += value
+        self._lock.release()
+        return
+
+    def get_number_dict(self, key):
+        """
+        get the value of self._number_dict based on key
+        """
+        return self._number_dict[key]
+
+    def is_all_tasks_done(self):
+        """
+        check if all tasks are done, according to self._number_dict
+        """
+        return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_NOT_FETCH] or \
+                        self._number_dict[TPEnum.HTM_NOT_PARSE] or self._number_dict[TPEnum.ITEM_NOT_SAVE] else True
 
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):

@@ -25,14 +25,15 @@ def make_random_useragent(ua_type="all"):
 
 def parse_error_message(line):
     """
-    parse error message based on CONFIG_ERROR_MESSAGE
-    :return (priority, keys, deep, url): a tuple
+    parse error message based on CONFIG_***_MESSAGE
+    :return (priority, keys, deep, url): a tuple, used in set_start_url
     """
-    re_search = re.search(r"priority=(?P<priority>.+?), keys=(?P<keys>.+?), deep=(?P<deep>.+?), url=(?P<url>.+?)$", line.strip(), flags=re.IGNORECASE)
+    line_no_repeat = re.sub(r"repeat=\d+, ", "", line.strip())
+    re_search = re.search(r"priority=(?P<priority>\d+?), keys=(?P<keys>.+?), deep=(?P<deep>\d+?), url=(?P<url>.+?)$", line_no_repeat)
     priority = int(re_search.group("priority"))
     try:
-        keys = eval(re_search.group("keys"))
-    except NameError:
+        keys = eval(re_search.group("keys").strip())
+    except Exception:
         keys = re_search.group("keys").strip()
     deep = int(re_search.group("deep"))
     url = re_search.group("url").strip()
