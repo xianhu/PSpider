@@ -1,6 +1,4 @@
-*.[oa]
-*.py[co]
-*.exe
+.*
 *.log
 *.out
 *.dat
@@ -8,11 +6,4 @@
 *.png
 *.jpg
 *.jpeg
-
-.*
-data/
-build/
-spider/__pycache__/
-spider/concurrent/__pycache__/
-spider/instances/__pycache__/
-spider/utilities/__pycache__/
+*.py[co]
