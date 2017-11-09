@@ -8,6 +8,7 @@ import enum
 import queue
 import logging
 import threading
+from ..utilities import extract_error_info
 
 
 class TPEnum(enum.Enum):
@@ -63,7 +64,7 @@ class BaseThread(threading.Thread):
                 if self._pool.is_all_tasks_done():
                     break
             except Exception as excep:
-                logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), excep)
+                logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), extract_error_info(excep))
                 break
 
         logging.debug("%s[%s] end...", self.__class__.__name__, self.getName())

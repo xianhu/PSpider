@@ -8,7 +8,7 @@ import time
 import random
 import logging
 import requests
-from ..utilities import CONFIG_FETCH_MESSAGE, make_random_useragent
+from ..utilities import CONFIG_FETCH_MESSAGE, extract_error_info, make_random_useragent
 
 
 class Fetcher(object):
@@ -38,10 +38,10 @@ class Fetcher(object):
         except Exception as excep:
             if repeat >= self._max_repeat:
                 fetch_result, content = -1, None
-                logging.error("%s error: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+                logging.error("%s error: %s, %s", self.__class__.__name__, extract_error_info(excep), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
             else:
                 fetch_result, content = 0, None
-                logging.debug("%s repeat: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+                logging.debug("%s repeat: %s, %s", self.__class__.__name__, extract_error_info(excep), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
         logging.debug("%s end: fetch_result=%s, url=%s", self.__class__.__name__, fetch_result, url)
         return fetch_result, content
