@@ -7,7 +7,7 @@ test.py by xianhu
 import spider
 import logging
 
-black_patterns = (spider.CONFIG_URLPATTERN_FILES, r"binding", r"download",)
+black_patterns = (spider.CONFIG_URL_PATTERN, r"binding", r"download",)
 white_patterns = (r"^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)",)
 
 
@@ -16,8 +16,8 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver, you also can rewrite this three class
-    fetcher = spider.Fetcher(max_repeat=3, sleep_time=1)
-    parser = spider.Parser(max_deep=2)
+    fetcher = spider.Fetcher(max_repeat=1, sleep_time=0)
+    parser = spider.Parser(max_deep=3)
     saver = spider.Saver(save_pipe=open("out_spider_thread.txt", "w"))
 
     # define url_filter
@@ -39,7 +39,7 @@ def test_spider_distributed():
     test distributed spider
     """
     # initial fetcher / parser / saver, you also can rewrite this three class
-    fetcher = spider.Fetcher(max_repeat=3, sleep_time=0)
+    fetcher = spider.Fetcher(max_repeat=1, sleep_time=0)
     parser = spider.Parser(max_deep=-1)
     saver = spider.Saver(save_pipe=open("out_spider_distributed.txt", "w"))
 

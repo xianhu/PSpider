@@ -19,8 +19,8 @@ def get_string_num(string, base=None, only_num=True):
     """
     get a float number from a string, if base isn't None, K means (base * B), M means (base * K), ...
     """
-    string_temp = get_string_strip(string, replace_char="").upper().replace(",", "")
-    string_re = re.search(r"(?P<num>\d+(\.\d+)?)(?P<param>[\w\W]*?)$", string_temp, flags=re.IGNORECASE)
+    string_temp = get_string_strip(string.upper().replace(",", ""), replace_char="")
+    string_re = re.search(r"(?P<num>\d+(\.\d+)?)(?P<param>.*?)$", string_temp, flags=re.IGNORECASE)
     if not string_re:
         return 0.0
     num, param = float(string_re.group("num")), string_re.group("param")

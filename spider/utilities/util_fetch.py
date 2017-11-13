@@ -30,10 +30,9 @@ def extract_error_info(excep):
     """
     extract error information from exception, return a string
     """
-    info = sys.exc_info()
-    tb_instance = traceback.extract_tb(info[2])
-    file_name, line_number, function_name, text = tb_instance[-1]
-    return "filename=%s, line=%s, function=%s, error=%s" % (file_name, line_number, function_name, excep)
+    _type, _value, _traceback = sys.exc_info()
+    tb_list = traceback.extract_tb(_traceback)
+    return "filename=%s, line=%s, function=%s, error=%s" % (tb_list[-1].filename, tb_list[-1].lineno, tb_list[-1].name, excep)
 
 
 def parse_error_info(line):
@@ -44,7 +43,7 @@ def parse_error_info(line):
     priority = int(re_search.group("priority"))
     try:
         keys = eval(re_search.group("keys").strip())
-    except Exception as excep:
+    except Exception:
         keys = re_search.group("keys").strip()
     deep = int(re_search.group("deep"))
     url = re_search.group("url").strip()

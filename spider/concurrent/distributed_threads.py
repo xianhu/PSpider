@@ -45,10 +45,7 @@ class DistThreadPool(ThreadPool):
         add a task based on task_name
         """
         if task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check(task_content[1])):
-            if task_content[0] < 100:
-                self._redis_client.lpush(self._key_high_priority, task_content)
-            else:
-                self._redis_client.lpush(self._key_low_priority, task_content)
+            self._redis_client.lpush(self._key_high_priority if task_content[0] < 100 else self._key_low_priority, task_content)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)

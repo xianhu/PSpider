@@ -26,7 +26,7 @@ class Fetcher(object):
 
     def working(self, priority: int, url: str, keys: object, deep: int, repeat: int) -> (int, object):
         """
-        working function, must "try, expect" and don't change the parameters and return
+        working function, must "try, except" and don't change the parameters and return
         :return (fetch_result, content): fetch_result can be -2(fetch failed, stop thread), -1(fetch failed), 0(need repeat), 1(fetch success)
         :return (fetch_result, content): content can be any object, for example: string, list, etc
         """

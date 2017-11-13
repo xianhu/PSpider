@@ -7,10 +7,7 @@ util_config.py by xianhu
 __all__ = [
     "CONFIG_FETCH_MESSAGE",
     "CONFIG_PARSE_MESSAGE",
-    "CONFIG_URLPATTERN_ALL",
-    "CONFIG_URLPATTERN_FILES",
-    "CONFIG_URLPATTERN_IMAGE",
-    "CONFIG_URLPATTERN_VIDEO",
+    "CONFIG_URL_PATTERN",
     "CONFIG_USERAGENT_PC",
     "CONFIG_USERAGENT_PHONE",
     "CONFIG_USERAGENT_ALL",
@@ -21,17 +18,10 @@ CONFIG_FETCH_MESSAGE = "priority=%s, keys=%s, deep=%s, repeat=%s, url=%s"
 CONFIG_PARSE_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
 
 # define url_patterns, include urlpattern_all, urlpattern_files, urlpattern_image and urlpattern_video
-CONFIG_URLPATTERN_ALL = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|" \
-                        "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|" \
-                        "jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|" \
-                        "mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$"
-
-CONFIG_URLPATTERN_FILES = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|" \
-                          "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|pyc|java|c|cc|js|css|log)$"
-
-CONFIG_URLPATTERN_IMAGE = r"\.(jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff)$"
-
-CONFIG_URLPATTERN_VIDEO = r"\.(mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$"
+CONFIG_URL_PATTERN = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|" \
+                     "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|" \
+                     "jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|" \
+                     "mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$"
 
 
 # define user_agents, include useragent_pc, useragent_phone and useragent_all
@@ -250,16 +240,3 @@ CONFIG_USERAGENT_PHONE = [
 ]
 
 CONFIG_USERAGENT_ALL = CONFIG_USERAGENT_PC + CONFIG_USERAGENT_PHONE
-
-
-# request headers
-CONFIG_HEADERS = {
-    "Accept", "Accept-Charset", "Accept-Encoding", "Accept-Language", "Accept-Ranges",
-    "Age", "Allow", "Authorization", "Cache-Control", "Connection",
-    "Content-Encoding", "Content-Language", "Content-Length", "Content-Location", "Content-MD5", "Content-Range", "Content-Type",
-    "Cookie", "Date", "ETag", "Expect", "Expires", "From", "Host",
-    "If-Match", "If-Modified-Since", "If-None-Match", "If-Range", "If-Unmodified-Since",
-    "Last-Modified", "Location", "Max-Forwards", "Pragma", "Proxy-Authenticate", "Proxy-Authorization", "Range", "Referer", "Retry-After",
-    "Server", "TE", "Trailer", "Transfer-Encoding", "Upgrade", "User-Agent", "Vary", "Via",
-    "Warning", "WWW-Authenticate", "Origin", "Upgrade-Insecure-Requests", "X_FORWARDED_FOR"
-}
