@@ -8,7 +8,7 @@ import time
 import random
 import logging
 import requests
-from ..utilities import CONFIG_FETCH_MESSAGE, extract_error_info, make_random_useragent
+from ..utilities import CONFIG_FETCH_MESSAGE, extract_error_info
 
 
 class Fetcher(object):
@@ -50,7 +50,7 @@ class Fetcher(object):
         """
         fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
-        response = requests.get(url, headers={"User-Agent": make_random_useragent(), "Accept-Encoding": "gzip"}, timeout=(3.05, 10))
+        response = requests.get(url, headers={}, timeout=(3.05, 10))
         if response.history:
             logging.debug("%s redirect: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
