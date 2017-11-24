@@ -14,7 +14,7 @@ __all__ = [
 CONFIG_FETCH_MESSAGE = "priority=%s, keys=%s, deep=%s, repeat=%s, url=%s"
 CONFIG_PARSE_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
 
-# define url_patterns, include urlpattern_all, urlpattern_files, urlpattern_image and urlpattern_video
+# define url_pattern
 CONFIG_URL_PATTERN = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|" \
                      "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|" \
                      "jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|" \

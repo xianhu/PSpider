@@ -27,7 +27,7 @@ def parse_error_info(line):
     """
     parse error information based on CONFIG_***_MESSAGE, return a tuple(priority, keys, deep, url)
     """
-    re_search = re.search(r"priority=(?P<priority>\d+?), keys=(?P<keys>.+?), deep=(?P<deep>\d+?), (repeat=\d+, )?url=(?P<url>.+?)$", line.strip())
+    re_search = re.search(r"priority=(?P<priority>\d+?),\s*?keys=(?P<keys>.+?),\s*?deep=(?P<deep>\d+?),\s*?(repeat=\d+,)?\s*?url=(?P<url>.+?)$", line.strip())
     priority = int(re_search.group("priority"))
     try:
         keys = eval(re_search.group("keys").strip())

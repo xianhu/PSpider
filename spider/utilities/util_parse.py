@@ -59,16 +59,12 @@ def get_string_strip(string, replace_char=" "):
     return re.sub(r"\s+", replace_char, string, flags=re.IGNORECASE).strip() if string else ""
 
 
-def get_url_legal(url, base_url, encoding=None, remove_fragment=True):
+def get_url_legal(url, base_url, encoding=None):
     """
-    get a legal url from a url, based on base_url, and set url_frags.fragment = "" if remove_fragment is True
-    :key: http://stats.nba.com/player/#!/201566/?p=russell-westbrook
+    get a legal url from a url, based on base_url
     """
     url_join = urllib.parse.urljoin(base_url, url, allow_fragments=True)
     url_legal = urllib.parse.quote(url_join, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
-    if remove_fragment:
-        url_frags = urllib.parse.urlparse(url_legal, allow_fragments=True)
-        url_legal = urllib.parse.urlunparse((url_frags.scheme, url_frags.netloc, url_frags.path, url_frags.params, url_frags.query, ""))
     return url_legal
 
 
