@@ -4,6 +4,6 @@
 define ThreadPool as WebSpider, and DistThreadPool as WebSpiderDist
 """
 
-from .concur_abase import TPEnum
-from .concur_threads import ThreadPool as WebSpider
-from .distributed_threads import DistThreadPool as WebSpiderDist
+from .threads_inst import TPEnum
+from .threads_pool import ThreadPool as WebSpider
+from .threads_pool_dist import DistThreadPool as WebSpiderDist

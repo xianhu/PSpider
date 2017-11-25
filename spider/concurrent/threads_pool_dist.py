@@ -1,12 +1,12 @@
 # _*_ coding: utf-8 _*_
 
 """
-distributed_threads.py by xianhu
+threads_pool_dist.py by xianhu
 """
 
 import redis
-from .concur_abase import TPEnum
-from .concur_threads import ThreadPool
+from .threads_inst import TPEnum
+from .threads_pool import ThreadPool
 
 
 class DistThreadPool(ThreadPool):

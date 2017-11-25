@@ -17,7 +17,7 @@ def test_spider():
     """
     # initial fetcher / parser / saver, you also can rewrite this three class
     fetcher = spider.Fetcher(max_repeat=1, sleep_time=0)
-    parser = spider.Parser(max_deep=3)
+    parser = spider.Parser(max_deep=2)
     saver = spider.Saver(save_pipe=open("out_spider_thread.txt", "w"))
 
     # define url_filter
@@ -25,6 +25,7 @@ def test_spider():
 
     # initial web_spider
     web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
+    # web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, proxies_func=proxies_func, monitor_sleep_time=5)
 
     # add start url
     web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys="360web", deep=0)

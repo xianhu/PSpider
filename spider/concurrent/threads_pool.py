@@ -1,24 +1,23 @@
 # _*_ coding: utf-8 _*_
 
 """
-concur_threads.py by xianhu
+threads_pool.py by xianhu
 """
 
 import copy
 import queue
 import logging
 import threading
-from .concur_abase import TPEnum
-from .concur_threads_insts import FetchThread, ParseThread, SaveThread, MonitorThread
+from .threads_inst import TPEnum, FetchThread, ParseThread, SaveThread, MonitorThread
 from ..utilities import CONFIG_FETCH_MESSAGE
 
 
 class ThreadPool(object):
     """
-    class of ThreadPool, as the subclass of BasePool
+    class of ThreadPool
     """
 
-    def __init__(self, fetcher, parser, saver, url_filter=None, monitor_sleep_time=5):
+    def __init__(self, fetcher, parser, saver, proxieser=None, url_filter=None, monitor_sleep_time=5):
         """
         constructor
         """
@@ -31,6 +30,9 @@ class ThreadPool(object):
         self._save_queue = queue.Queue()                # (url, keys, item), item can be anything
 
         self._url_filter = url_filter                   # default: None, also can be UrlFilter()
+
+        self._proxieser = proxieser                     # proxies instance, subclass of Proxieser
+        self._proxies_queue = queue.Queue()             # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
 
         self._number_dict = {
             TPEnum.TASKS_RUNNING: 0,                    # the count of tasks which are running
@@ -46,6 +48,9 @@ class ThreadPool(object):
             TPEnum.URL_FETCH_FAIL: 0,                   # the count of urls which have been fetched failed
             TPEnum.HTM_PARSE_FAIL: 0,                   # the count of urls which have been parsed failed
             TPEnum.ITEM_SAVE_FAIL: 0,                   # the count of urls which have been saved failed
+
+            TPEnum.PROXIES: 0,                          # the count of proxies which in self._proxies_queue
+            TPEnum.PROXIES_FAIL: 0,                     # the count of proxies which banned by website
         }
         self._lock = threading.Lock()                   # the lock which self._number_dict needs
 
@@ -70,10 +75,8 @@ class ThreadPool(object):
         """
         logging.warning("%s start: urls_count=%s, fetcher_num=%s, is_over=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_NOT_FETCH), fetcher_num, is_over)
 
-        if isinstance(self._inst_fetcher, (list, tuple)):
-            fetcher_list = [FetchThread("fetcher-%d" % (i+1), fetcher, self) for (i, fetcher) in enumerate(self._inst_fetcher)]
-        else:
-            fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
+        # fetcher/parser/saver thread list
+        fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
         parser_saver_list = [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
 
         # ----1----
