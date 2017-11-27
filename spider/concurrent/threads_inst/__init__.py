@@ -8,3 +8,4 @@ from .threads_inst_fetch import FetchThread
 from .threads_inst_parse import ParseThread
 from .threads_inst_save import SaveThread
 from .threads_inst_base import TPEnum, MonitorThread
+from .threads_inst_proxies import ProxiesThread

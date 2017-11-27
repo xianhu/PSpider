@@ -1,9 +1,4 @@
 .*
-*.log
-*.out
-*.dat
 *.txt
 *.png
-*.jpg
-*.jpeg
 *.py[co]

@@ -14,12 +14,13 @@ class FetchThread(BaseThread):
     class of FetchThread, as the subclass of BaseThread
     """
 
-    def __init__(self, name, worker, pool):
+    def __init__(self, name, worker, pool, proxies=None):
         """
         constructor
+        :param proxies: proxies for fetching, if None, getting from proxies_queue
         """
         BaseThread.__init__(self, name, worker, pool)
-        self._proxies = None        # proxies for fetching, if None, getting from proxies_queue
+        self._proxies = proxies
         return
 
     def working(self):
@@ -27,19 +28,26 @@ class FetchThread(BaseThread):
         procedure of fetching, auto running, and return False if you need stop thread
         """
         # ----1----
+        if self._pool.get_proxies_flag() and (not self._proxies):
+            self._proxies = self._pool.get_a_task(TPEnum.PROXIES)
         priority, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
 
         # ----2----
-        fetch_result, content = self._worker.working(priority, url, keys, deep, repeat)
+        fetch_result, proxies_state, content = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
 
         # ----3----
-        if fetch_result == 1:
+        if fetch_result > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
             self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
         elif fetch_result == 0:
             self._pool.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
         else:
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
+
+        if not proxies_state:
+            self._proxies = None
+            self._pool.update_number_dict(TPEnum.PROXIES_FAIL, +1)
+            self._pool.finish_a_task(TPEnum.PROXIES)
 
         # ----4----
         self._pool.finish_a_task(TPEnum.URL_FETCH)

@@ -35,7 +35,8 @@ class TPEnum(enum.Enum):
     ITEM_SAVE_FAIL = "item_save_fail"       # flag of item_save_fail
 
     PROXIES = "proxies"                     # flag of proxies
-    PROXIES_FAIL = "proxies_fail"           # flag of proxies_fail
+    PROXIES_LEFT = "proxies_left"           # flag of proxies_left --> URL_NOT_FETCH
+    PROXIES_FAIL = "proxies_fail"           # flag of proxies_fail --> URL_FETCH_FAIL
 
 
 class BaseThread(threading.Thread):
@@ -125,9 +126,12 @@ def work_monitor(self):
     info += " save:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];" % (cur_not_save, cur_save_succ, cur_save_fail, cur_save_all-self._last_save_num, self._sleep_time)
     self._last_save_num = cur_save_all
 
+    if self._pool.get_proxies_flag():
+        info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
+
     info += " total_seconds=%d" % (time.time() - self._init_time)
     logging.warning(info)
-    return False if self._pool.get_monitor_stop_flag() else True
+    return self._pool.get_monitor_flag()
 
 
 MonitorThread = type("MonitorThread", (BaseThread,), dict(__init__=init_monitor_thread, working=work_monitor))

@@ -8,7 +8,7 @@ import copy
 import queue
 import logging
 import threading
-from .threads_inst import TPEnum, FetchThread, ParseThread, SaveThread, MonitorThread
+from .threads_inst import TPEnum, FetchThread, ParseThread, SaveThread, MonitorThread, ProxiesThread
 from ..utilities import CONFIG_FETCH_MESSAGE
 
 
@@ -31,7 +31,7 @@ class ThreadPool(object):
 
         self._url_filter = url_filter                   # default: None, also can be UrlFilter()
 
-        self._proxieser = proxieser                     # proxies instance, subclass of Proxieser
+        self._proxieser = proxieser                     # default: None, proxies instance, subclass of Proxieser
         self._proxies_queue = queue.Queue()             # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
 
         self._number_dict = {
@@ -49,13 +49,13 @@ class ThreadPool(object):
             TPEnum.HTM_PARSE_FAIL: 0,                   # the count of urls which have been parsed failed
             TPEnum.ITEM_SAVE_FAIL: 0,                   # the count of urls which have been saved failed
 
-            TPEnum.PROXIES: 0,                          # the count of proxies which in self._proxies_queue
+            TPEnum.PROXIES_LEFT: 0,                     # the count of proxies which in self._proxies_queue
             TPEnum.PROXIES_FAIL: 0,                     # the count of proxies which banned by website
         }
         self._lock = threading.Lock()                   # the lock which self._number_dict needs
 
         # set monitor thread
-        self._monitor_stop = False
+        self._monitor_flag = True
         self._monitor = MonitorThread("monitor", self, sleep_time=monitor_sleep_time)
         self._monitor.setDaemon(True)
         self._monitor.start()
@@ -75,9 +75,17 @@ class ThreadPool(object):
         """
         logging.warning("%s start: urls_count=%s, fetcher_num=%s, is_over=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_NOT_FETCH), fetcher_num, is_over)
 
+        # proxies thread
+        proxies_thread = ProxiesThread("proxieser", self._proxieser, self) if self._proxieser else None
+
         # fetcher/parser/saver thread list
         fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
         parser_saver_list = [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
+
+        # ----1----
+        if proxies_thread:
+            proxies_thread.setDaemon(True)
+            proxies_thread.start()
 
         # ----1----
         for thread in fetcher_list:
@@ -97,8 +105,13 @@ class ThreadPool(object):
         # clear the variables if all fetcher stoped
         while self.get_number_dict(TPEnum.URL_NOT_FETCH) > 0:
             priority, url, keys, deep, repeat = self.get_a_task(TPEnum.URL_FETCH)
-            logging.ERROR("%s error: not fetch, %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+            logging.error("%s error: not fetch, %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+            self.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
             self.finish_a_task(TPEnum.URL_FETCH)
+
+        # ----2----
+        if proxies_thread and proxies_thread.is_alive():
+            proxies_thread.join()
 
         # ----2----
         for thread in parser_saver_list:
@@ -107,22 +120,23 @@ class ThreadPool(object):
 
         # ----3----
         if is_over and self._monitor.is_alive():
-            self._monitor_stop = True
+            self._monitor_flag = False
             self._monitor.join()
 
-        logging.warning("%s end: fetcher_num=%s, is_over=%s, fetch:[SUCC=%d, FAIL=%d]; parse[SUCC=%d, FAIL=%d]; save:[SUCC=%d, FAIL=%d]",
-                        self.__class__.__name__, fetcher_num, is_over,
-                        self.get_number_dict(TPEnum.URL_FETCH_SUCC), self.get_number_dict(TPEnum.URL_FETCH_FAIL),
-                        self.get_number_dict(TPEnum.HTM_PARSE_SUCC), self.get_number_dict(TPEnum.HTM_PARSE_FAIL),
-                        self.get_number_dict(TPEnum.ITEM_SAVE_SUCC), self.get_number_dict(TPEnum.ITEM_SAVE_FAIL))
         return self._number_dict
 
     # ================================================================================================================================
-    def get_monitor_stop_flag(self):
+    def get_monitor_flag(self):
         """
-        get the monitor stop flag of this pool
+        get the monitor flag of this pool
         """
-        return self._monitor_stop
+        return self._monitor_flag
+
+    def get_proxies_flag(self):
+        """
+        get the proxies flag of this pool
+        """
+        return True if self._proxieser else False
 
     def update_number_dict(self, key, value):
         """
@@ -149,11 +163,15 @@ class ThreadPool(object):
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):
         """
-        add a task based on task_name
+        add a task based on task_name, also for proxies
         """
-        if task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[1])):
-            self._fetch_queue.put_nowait(task_content)
-            self.update_number_dict(TPEnum.URL_NOT_FETCH, +1)
+        if task_name == TPEnum.PROXIES:
+            self._proxies_queue.put_nowait(task_content)
+            self.update_number_dict(TPEnum.PROXIES_LEFT, +1)
+        elif task_name == TPEnum.URL_FETCH:
+            if (task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[1]):
+                self._fetch_queue.put_nowait(task_content)
+                self.update_number_dict(TPEnum.URL_NOT_FETCH, +1)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
@@ -164,10 +182,14 @@ class ThreadPool(object):
 
     def get_a_task(self, task_name):
         """
-        get a task based on task_name, if queue is empty, raise queue.Empty
+        get a task based on task_name, if queue is empty, raise queue.Empty, also for proxies
         """
         task_content = None
-        if task_name == TPEnum.URL_FETCH:
+        if task_name == TPEnum.PROXIES:
+            task_content = self._proxies_queue.get(block=True, timeout=5)
+            self.update_number_dict(TPEnum.PROXIES_LEFT, -1)
+            return task_content
+        elif task_name == TPEnum.URL_FETCH:
             task_content = self._fetch_queue.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
         elif task_name == TPEnum.HTM_PARSE:
@@ -181,9 +203,12 @@ class ThreadPool(object):
 
     def finish_a_task(self, task_name):
         """
-        finish a task based on task_name, call queue.task_done()
+        finish a task based on task_name, call queue.task_done(), also for proxies
         """
-        if task_name == TPEnum.URL_FETCH:
+        if task_name == TPEnum.PROXIES:
+            self._proxies_queue.task_done()
+            return
+        elif task_name == TPEnum.URL_FETCH:
             self._fetch_queue.task_done()
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.task_done()

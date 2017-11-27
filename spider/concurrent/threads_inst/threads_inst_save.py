@@ -23,7 +23,7 @@ class SaveThread(BaseThread):
         save_result = self._worker.working(url, keys, item)
 
         # ----3----
-        if save_result:
+        if save_result > 0:
             self._pool.update_number_dict(TPEnum.ITEM_SAVE_SUCC, +1)
         else:
             self._pool.update_number_dict(TPEnum.ITEM_SAVE_FAIL, +1)

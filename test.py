@@ -24,8 +24,7 @@ def test_spider():
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
 
     # initial web_spider
-    web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
-    # web_spider = spider.WebSpider(fetcher, parser, saver, url_filter=url_filter, proxies_func=proxies_func, monitor_sleep_time=5)
+    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, monitor_sleep_time=5)
 
     # add start url
     web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys="360web", deep=0)

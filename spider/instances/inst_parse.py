@@ -18,8 +18,9 @@ class Parser(object):
     def __init__(self, max_deep=0):
         """
         constructor
+        :param max_deep: default 0, if -1, spider will not stop until all urls are fetched
         """
-        self._max_deep = max_deep       # default: 0, if -1, spider will not stop until all urls are fetched
+        self._max_deep = max_deep
         return
 
     def working(self, priority: int, url: str, keys: object, deep: int, content: object) -> (int, list, list):
