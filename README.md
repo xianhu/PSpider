@@ -5,12 +5,12 @@ A simple spider frame written by Python, which needs Python3.5+
 ### Features of PSpider
 1. Support multi-threading crawling mode (using threading and requests)
 2. Support distributed crawling mode (using threading, requests and redis)
-3. Define some utility functions and classes, for example: UrlFilter, make_random_useragent, etc
+3. Define some utility functions and classes, for example: UrlFilter, get_string_num, etc
 4. Fewer lines of code, easyer to read, understand and expand
 
 ### Modules of PSpider
 1. utilities module: define some utilities functions and classes for spider
-2. insts_thread module: define classes of fetcher, parser, saver for multi-threading spider
+2. instances module: define classes of fetcher, parser, saver for multi-threading spider
 3. concurrent module: define WebSpiderFrame of multi-threading spider and distributed spider
 
 ### Procedure of PSpider
@@ -22,6 +22,8 @@ A simple spider frame written by Python, which needs Python3.5+
 ④: Put the new urls to UrlQueue, and so Fetcher can get it  
 ⑤: Put the saved items to ItemQueue, and so Saver can get it  
 ⑥: Saver gets item from ItemQueue, and saves it to filesystem or database  
+⑦: Proxieser gets proxies from web or database and puts proxies to ProxiesQueue  
+⑧: Fetcher gets proxies from ProxiesQueue if needed, and makes requests based on this proxies  
 
 2. procedure of distributed spider  
 Similar with multi-threading spider. The only difference is getting url from redis instead of queue.  
