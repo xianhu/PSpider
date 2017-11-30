@@ -14,13 +14,12 @@ class FetchThread(BaseThread):
     class of FetchThread, as the subclass of BaseThread
     """
 
-    def __init__(self, name, worker, pool, proxies=None):
+    def __init__(self, name, worker, pool):
         """
         constructor
-        :param proxies: proxies for fetching, if None, getting from proxies_queue
         """
         BaseThread.__init__(self, name, worker, pool)
-        self._proxies = proxies
+        self._proxies = None    # proxies for fetching, if None, getting from proxies_queue
         return
 
     def working(self):

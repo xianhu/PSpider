@@ -64,8 +64,7 @@ def get_url_legal(url, base_url, encoding=None):
     get a legal url from a url, based on base_url
     """
     url_join = urllib.parse.urljoin(base_url, url, allow_fragments=True)
-    url_legal = urllib.parse.quote(url_join, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
-    return url_legal
+    return urllib.parse.quote(url_join, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
 
 
 def get_url_params(url, keep_blank_value=False, encoding="utf-8"):

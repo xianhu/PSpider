@@ -48,10 +48,10 @@ class Parser(object):
 
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):
-            tmp_list = re.findall(r"<a[\w\W]+?href=\"(?P<url>[\w\W]{5,}?)\"[\w\W]*?>[\w\W]+?</a>", html_text, flags=re.IGNORECASE)
+            tmp_list = re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)
             url_list = [(_url, keys, priority+1) for _url in [get_url_legal(href, url) for href in tmp_list]]
 
-        title = re.search(r"<title>(?P<title>[\w\W]+?)</title>", html_text, flags=re.IGNORECASE)
+        title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
 
         return 1, url_list, save_list

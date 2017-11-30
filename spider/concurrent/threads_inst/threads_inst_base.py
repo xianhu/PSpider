@@ -58,8 +58,7 @@ class BaseThread(threading.Thread):
         """
         rewrite run function, auto running and must call self.work()
         """
-        logging.debug("%s[%s] start...", self.__class__.__name__, self.getName())
-
+        logging.debug("%s[%s] start......", self.__class__.__name__, self.getName())
         while True:
             try:
                 if not self.working():
@@ -71,8 +70,7 @@ class BaseThread(threading.Thread):
             except Exception as excep:
                 logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), extract_error_info(excep))
                 break
-
-        logging.debug("%s[%s] end...", self.__class__.__name__, self.getName())
+        logging.debug("%s[%s] end......", self.__class__.__name__, self.getName())
         return
 
     def working(self):

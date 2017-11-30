@@ -47,7 +47,7 @@ def test_spider_distributed():
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns)
 
     # initial web_spider
-    web_spider_dist = spider.WebSpiderDist(fetcher, parser, saver, url_filter=url_filter, monitor_sleep_time=5)
+    web_spider_dist = spider.WebSpiderDist(fetcher, parser, saver, proxieser=None, url_filter=url_filter, monitor_sleep_time=5)
     web_spider_dist.init_redis(host="localhost", port=6379, key_high_priority="spider.high", key_low_priority="spider.low")
 
     # start web_spider
@@ -56,7 +56,7 @@ def test_spider_distributed():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
+    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s\t%(levelname)s\t%(message)s")
     test_spider()
     # test_spider_distributed()
     exit()

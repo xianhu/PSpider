@@ -49,7 +49,7 @@ class ThreadPool(object):
             TPEnum.HTM_PARSE_FAIL: 0,                   # the count of urls which have been parsed failed
             TPEnum.ITEM_SAVE_FAIL: 0,                   # the count of urls which have been saved failed
 
-            TPEnum.PROXIES_LEFT: 0,                     # the count of proxies which in self._proxies_queue
+            TPEnum.PROXIES_LEFT: 0,                     # the count of proxies which are avaliable
             TPEnum.PROXIES_FAIL: 0,                     # the count of proxies which banned by website
         }
         self._lock = threading.Lock()                   # the lock which self._number_dict needs
@@ -105,7 +105,7 @@ class ThreadPool(object):
         # clear the variables if all fetcher stoped
         while self.get_number_dict(TPEnum.URL_NOT_FETCH) > 0:
             priority, url, keys, deep, repeat = self.get_a_task(TPEnum.URL_FETCH)
-            logging.error("%s error: not fetch, %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+            logging.error("%s error: not fetch, %s", self._inst_fetcher.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
             self.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
             self.finish_a_task(TPEnum.URL_FETCH)
 
