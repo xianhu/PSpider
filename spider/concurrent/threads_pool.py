@@ -110,13 +110,13 @@ class ThreadPool(object):
             self.finish_a_task(TPEnum.URL_FETCH)
 
         # ----2----
-        if proxies_thread and proxies_thread.is_alive():
-            proxies_thread.join()
-
-        # ----2----
         for thread in parser_saver_list:
             if thread.is_alive():
                 thread.join()
+
+        # ----2----
+        if proxies_thread and proxies_thread.is_alive():
+            proxies_thread.join()
 
         # ----3----
         if is_over and self._monitor.is_alive():

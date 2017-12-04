@@ -21,7 +21,8 @@ def extract_error_info(excep):
     """
     _type, _value, _traceback = sys.exc_info()
     tb_list = traceback.extract_tb(_traceback)
-    return "filename=%s, line=%s, function=%s, error=%s" % (tb_list[-1].filename, tb_list[-1].lineno, tb_list[-1].name, excep)
+    error_info = "-->".join(["【filename=%s, line=%s, function=%s】" % (tb.filename, tb.lineno, tb.name) for tb in tb_list])
+    return "error_info=%s, error=%s" % (error_info, excep)
 
 
 def parse_error_info(line):
