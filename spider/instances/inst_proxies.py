@@ -33,9 +33,9 @@ class Proxieser(object):
         time.sleep(self._sleep_time)
         try:
             proxies_result, proxies_list = self.proxies_get()
-        except Exception as excep:
+        except Exception:
             proxies_result, proxies_list = -1, []
-            logging.error("%s error: %s", self.__class__.__name__, extract_error_info(excep))
+            logging.error("%s error: %s", self.__class__.__name__, extract_error_info())
 
         logging.debug("%s end: proxies_result=%s, len(proxies_list)=%s", self.__class__.__name__, proxies_result, len(proxies_list))
         return proxies_result, proxies_list

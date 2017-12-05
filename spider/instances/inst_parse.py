@@ -23,7 +23,7 @@ class Parser(object):
         self._max_deep = max_deep
         return
 
-    def working(self, priority: int, url: str, keys: object, deep: int, content: object) -> (int, list, list):
+    def working(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, list):
         """
         working function, must "try, except" and don't change the parameters and return
         :return (parse_result, url_list, save_list): parse_result can be -1(parse failed), 1(parse success)
@@ -33,14 +33,14 @@ class Parser(object):
 
         try:
             parse_result, url_list, save_list = self.htm_parse(priority, url, keys, deep, content)
-        except Exception as excep:
+        except Exception:
             parse_result, url_list, save_list = -1, [], []
-            logging.error("%s error: %s, %s", self.__class__.__name__, extract_error_info(excep), CONFIG_PARSE_MESSAGE % (priority, keys, deep, url))
+            logging.error("%s error: %s, %s", self.__class__.__name__, extract_error_info(), CONFIG_PARSE_MESSAGE % (priority, keys, deep, url))
 
         logging.debug("%s end: parse_result=%s, len(url_list)=%s, len(save_list)=%s, url=%s", self.__class__.__name__, parse_result, len(url_list), len(save_list), url)
         return parse_result, url_list, save_list
 
-    def htm_parse(self, priority: int, url: str, keys: object, deep: int, content: object) -> (int, list, list):
+    def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, list):
         """
         parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """

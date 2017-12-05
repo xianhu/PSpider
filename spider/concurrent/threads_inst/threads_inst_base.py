@@ -64,11 +64,11 @@ class BaseThread(threading.Thread):
                 if not self.working():
                     break
             except (queue.Empty, TypeError):
-                # caused by "queue.get()" or "eval()"
+                # caused by queue.get() or eval()
                 if self._pool.is_all_tasks_done():
                     break
-            except Exception as excep:
-                logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), extract_error_info(excep))
+            except Exception:
+                logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), extract_error_info())
                 break
         logging.debug("%s[%s] end......", self.__class__.__name__, self.getName())
         return

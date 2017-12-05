@@ -22,7 +22,7 @@ class Saver(object):
         self._save_pipe = save_pipe
         return
 
-    def working(self, url: str, keys: object, item: (list, tuple)) -> int:
+    def working(self, url: str, keys: dict, item: (list, tuple)) -> int:
         """
         working function, must "try, except" and don't change the parameters and return
         :return save_result: save_result can be -1(save failed), 1(save success)
@@ -31,14 +31,14 @@ class Saver(object):
 
         try:
             save_result = self.item_save(url, keys, item)
-        except Exception as excep:
+        except Exception:
             save_result = -1
-            logging.error("%s error: %s, keys=%s, url=%s", self.__class__.__name__, extract_error_info(excep), keys, url)
+            logging.error("%s error: %s, keys=%s, url=%s", self.__class__.__name__, extract_error_info(), keys, url)
 
         logging.debug("%s end: save_result=%s, url=%s", self.__class__.__name__, save_result, url)
         return save_result
 
-    def item_save(self, url: str, keys: object, item: (list, tuple)) -> int:
+    def item_save(self, url: str, keys: dict, item: (list, tuple)) -> int:
         """
         save the item of a url, you can rewrite this function, parameters and return refer to self.working()
         """

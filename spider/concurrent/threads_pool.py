@@ -63,9 +63,9 @@ class ThreadPool(object):
 
     def set_start_url(self, url, priority=0, keys=None, deep=0):
         """
-        set start url based on "priority", "keys" and "deep", repeat must be 0
+        set start url based on "priority", "keys" and "deep", keys must be a dictionary, and repeat must be 0
         """
-        self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys, deep, 0))
+        self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys or {}, deep, 0))
         logging.debug("%s set_start_url: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, 0, url))
         return
 
