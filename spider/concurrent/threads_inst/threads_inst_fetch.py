@@ -19,7 +19,7 @@ class FetchThread(BaseThread):
         constructor
         """
         BaseThread.__init__(self, name, worker, pool)
-        self._proxies = None    # proxies for fetching, if None, getting from proxies_queue
+        self._proxies = None
         return
 
     def working(self):
@@ -44,9 +44,9 @@ class FetchThread(BaseThread):
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
 
         if not proxies_state:
-            self._proxies = None
             self._pool.update_number_dict(TPEnum.PROXIES_FAIL, +1)
             self._pool.finish_a_task(TPEnum.PROXIES)
+            self._proxies = None
 
         # ----4----
         self._pool.finish_a_task(TPEnum.URL_FETCH)

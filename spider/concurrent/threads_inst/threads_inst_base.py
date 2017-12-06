@@ -47,11 +47,13 @@ class BaseThread(threading.Thread):
     def __init__(self, name, worker, pool):
         """
         constructor
+        :param name: the name of each thread
+        :param worker: the worker of each thread
+        :param pool: the pool of each thread
         """
         threading.Thread.__init__(self, name=name)
-
-        self._worker = worker       # the worker of each thread
-        self._pool = pool           # the pool of each thread
+        self._worker = worker
+        self._pool = pool
         return
 
     def run(self):

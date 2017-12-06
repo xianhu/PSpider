@@ -20,7 +20,6 @@ class DistThreadPool(ThreadPool):
         """
         ThreadPool.__init__(self, fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, monitor_sleep_time=monitor_sleep_time)
 
-        # redis configures
         self._redis_client = None           # redis client object
         self._key_high_priority = None      # redis key, value is a urls list, which wait to fetch, high priority
         self._key_low_priority = None       # redis key, value is a urls list, which wait to fetch, low priority
@@ -47,9 +46,8 @@ class DistThreadPool(ThreadPool):
         if task_name == TPEnum.PROXIES:
             self._proxies_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.PROXIES_LEFT, +1)
-        elif task_name == TPEnum.URL_FETCH:
-            if (task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check(task_content[1]):
-                self._redis_client.lpush(self._key_high_priority if task_content[0] < 100 else self._key_low_priority, task_content)
+        elif task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check(task_content[1])):
+            self._redis_client.lpush(self._key_high_priority if task_content[0] < 100 else self._key_low_priority, task_content)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)

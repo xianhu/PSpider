@@ -24,12 +24,11 @@ class ThreadPool(object):
         self._inst_fetcher = fetcher                    # fetcher instance, subclass of Fetcher
         self._inst_parser = parser                      # parser instance, subclass of Parser
         self._inst_saver = saver                        # saver instance, subclass of Saver
+        self._url_filter = url_filter                   # default: None, also can be UrlFilter()
 
         self._fetch_queue = queue.PriorityQueue()       # (priority, url, keys, deep, repeat)
         self._parse_queue = queue.PriorityQueue()       # (priority, url, keys, deep, content)
         self._save_queue = queue.Queue()                # (url, keys, item), item can be anything
-
-        self._url_filter = url_filter                   # default: None, also can be UrlFilter()
 
         self._proxieser = proxieser                     # default: None, proxies instance, subclass of Proxieser
         self._proxies_queue = queue.Queue()             # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
@@ -66,7 +65,7 @@ class ThreadPool(object):
         set start url based on "priority", "keys" and "deep", keys must be a dictionary, and repeat must be 0
         """
         self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys or {}, deep, 0))
-        logging.debug("%s set_start_url: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, 0, url))
+        logging.debug("%s set_start_url: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys or {}, deep, 0, url))
         return
 
     def start_work_and_wait_done(self, fetcher_num=10, is_over=True):
@@ -168,10 +167,9 @@ class ThreadPool(object):
         if task_name == TPEnum.PROXIES:
             self._proxies_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.PROXIES_LEFT, +1)
-        elif task_name == TPEnum.URL_FETCH:
-            if (task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[1]):
-                self._fetch_queue.put_nowait(task_content)
-                self.update_number_dict(TPEnum.URL_NOT_FETCH, +1)
+        elif task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[1])):
+            self._fetch_queue.put_nowait(task_content)
+            self.update_number_dict(TPEnum.URL_NOT_FETCH, +1)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
