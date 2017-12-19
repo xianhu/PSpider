@@ -20,7 +20,7 @@ def extract_error_info():
     """
     _type, _value, _traceback = sys.exc_info()
     tb_list = traceback.extract_tb(_traceback)
-    error_info = "-->".join(["【filename=%s, line=%s, function=%s】" % (tb.filename, tb.lineno, tb.name) for tb in tb_list])
+    error_info = "-->".join(["[filename=%s, line=%s, function=%s]" % (tb.filename, tb.lineno, tb.name) for tb in tb_list])
     return "error_info=%s, error_type=%s, error=%s" % (error_info, _type, _value)
 
 

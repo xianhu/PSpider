@@ -19,7 +19,7 @@ class Fetcher(object):
     def __init__(self, max_repeat=3, sleep_time=0):
         """
         constructor
-        :param max_repeat: default 3, maximum repeat fetching time for a url
+        :param max_repeat: default 3, maximum repeat count of fetching for a url
         :param sleep_time: default 0, sleeping time after a fetching for a url
         """
         self._max_repeat = max_repeat
@@ -31,7 +31,7 @@ class Fetcher(object):
         working function, must "try, except" and don't change the parameters and return
         :return (fetch_result, proxies_state, content): fetch_result can be -2(fetch failed, stop thread), -1(fetch failed), 0(need repeat), 1(fetch success)
         :return (fetch_result, proxies_state, content): proxies_state can be True(avaiable), False(unavaiable)
-        :return (fetch_result, proxies_state, content): content can be any object, for example: string, list, etc
+        :return (fetch_result, proxies_state, content): content can be any object, for example string, list, etc
         """
         logging.debug("%s start: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 

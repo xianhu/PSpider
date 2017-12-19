@@ -37,15 +37,15 @@ class ThreadPool(object):
             TPEnum.TASKS_RUNNING: 0,                    # the count of tasks which are running
 
             TPEnum.URL_NOT_FETCH: 0,                    # the count of urls which haven't been fetched
-            TPEnum.HTM_NOT_PARSE: 0,                    # the count of urls which haven't been parsed
-            TPEnum.ITEM_NOT_SAVE: 0,                    # the count of urls which haven't been saved
-
             TPEnum.URL_FETCH_SUCC: 0,                   # the count of urls which have been fetched successfully
-            TPEnum.HTM_PARSE_SUCC: 0,                   # the count of urls which have been parsed successfully
-            TPEnum.ITEM_SAVE_SUCC: 0,                   # the count of urls which have been saved successfully
-
             TPEnum.URL_FETCH_FAIL: 0,                   # the count of urls which have been fetched failed
+
+            TPEnum.HTM_NOT_PARSE: 0,                    # the count of urls which haven't been parsed
+            TPEnum.HTM_PARSE_SUCC: 0,                   # the count of urls which have been parsed successfully
             TPEnum.HTM_PARSE_FAIL: 0,                   # the count of urls which have been parsed failed
+
+            TPEnum.ITEM_NOT_SAVE: 0,                    # the count of urls which haven't been saved
+            TPEnum.ITEM_SAVE_SUCC: 0,                   # the count of urls which have been saved successfully
             TPEnum.ITEM_SAVE_FAIL: 0,                   # the count of urls which have been saved failed
 
             TPEnum.PROXIES_LEFT: 0,                     # the count of proxies which are avaliable

@@ -19,19 +19,18 @@ class TPEnum(enum.Enum):
     TASKS_RUNNING = "tasks_running"         # flag of tasks_running
 
     URL_FETCH = "url_fetch"                 # flag of url_fetch
-    HTM_PARSE = "htm_parse"                 # flag of htm_parse
-    ITEM_SAVE = "item_save"                 # flag of item_save
-
     URL_NOT_FETCH = "url_not_fetch"         # flag of url_not_fetch
-    HTM_NOT_PARSE = "htm_not_parse"         # flag of htm_not_parse
-    ITEM_NOT_SAVE = "item_not_save"         # flag of item_not_save
-
     URL_FETCH_SUCC = "url_fetch_succ"       # flag of url_fetch_succ
-    HTM_PARSE_SUCC = "htm_parse_succ"       # flag of htm_parse_succ
-    ITEM_SAVE_SUCC = "item_save_succ"       # flag of item_save_succ
-
     URL_FETCH_FAIL = "url_fetch_fail"       # flag of url_fetch_fail
+
+    HTM_PARSE = "htm_parse"                 # flag of htm_parse
+    HTM_NOT_PARSE = "htm_not_parse"         # flag of htm_not_parse
+    HTM_PARSE_SUCC = "htm_parse_succ"       # flag of htm_parse_succ
     HTM_PARSE_FAIL = "htm_parse_fail"       # flag of htm_parse_fail
+
+    ITEM_SAVE = "item_save"                 # flag of item_save
+    ITEM_NOT_SAVE = "item_not_save"         # flag of item_not_save
+    ITEM_SAVE_SUCC = "item_save_succ"       # flag of item_save_succ
     ITEM_SAVE_FAIL = "item_save_fail"       # flag of item_save_fail
 
     PROXIES = "proxies"                     # flag of proxies
@@ -130,8 +129,7 @@ def work_monitor(self):
     self._last_save_num = cur_save_all
 
     if self._pool.get_proxies_flag():
-        info += " proxies:[LEFT=%d, FAIL=%d];" % \
-                (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
+        info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
 
     info += " total_seconds=%d" % (time.time() - self._init_time)
     logging.warning(info)

@@ -1,6 +1,6 @@
 # PSpider
 
-A simple spider frame written by Python, which needs Python3.5+
+A simple web spider frame written by Python, which needs Python3.5+
 
 ### Features of PSpider
 1. Support multi-threading crawling mode (using threading and requests)

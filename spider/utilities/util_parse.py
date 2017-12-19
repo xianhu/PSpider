@@ -15,41 +15,13 @@ __all__ = [
 ]
 
 
-def get_string_num(string, base=None, only_num=True):
+def get_string_num(string):
     """
-    get a float number from a string, if base isn't None, K means (base * B), M means (base * K), ...
+    get a float number from a string
     """
     string_temp = get_string_strip(string.upper().replace(",", ""), replace_char="")
-    string_re = re.search(r"(?P<num>\d+(\.\d+)?)(?P<param>.*?)$", string_temp, flags=re.IGNORECASE)
-    if not string_re:
-        return 0.0
-    num, param = float(string_re.group("num")), string_re.group("param")
-    if only_num:
-        return num
-    if param.find("兆") >= 0:
-        num *= 10000000000000
-    if param.find("亿") >= 0:
-        num *= 100000000
-    if param.find("万") >= 0:
-        num *= 10000
-    if param.find("千") >= 0:
-        num *= 1000
-    if param.find("百") >= 0:
-        num *= 100
-    if param.find("十") >= 0:
-        num *= 10
-    if param.find("%") >= 0:
-        num /= 100
-    if base:
-        if param.find("K") >= 0:
-            num *= base
-        if param.find("M") >= 0:
-            num *= base * base
-        if param.find("G") >= 0:
-            num *= base * base * base
-        if param.find("T") >= 0:
-            num *= base * base * base * base
-    return num
+    string_re = re.search(r"(?P<num>\d+(\.\d+)?)", string_temp, flags=re.IGNORECASE)
+    return float(string_re.group("num")) if string_re else 0.0
 
 
 def get_string_strip(string, replace_char=" "):
