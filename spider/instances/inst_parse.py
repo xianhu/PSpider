@@ -27,7 +27,8 @@ class Parser(object):
         """
         working function, must "try, except" and don't change the parameters and return
         :return (parse_result, url_list, save_list): parse_result can be -1(parse failed), 1(parse success)
-        :return (parse_result, url_list, save_list): url_list is [(url, keys, priority), ...], save_list is [item(a list or tuple), ...]
+        :return (parse_result, url_list, save_list): url_list can be [(url, keys, priority), ...]
+        :return (parse_result, url_list, save_list): save_list can be [item(a list or tuple), ...]
         """
         logging.debug("%s start: %s", self.__class__.__name__, CONFIG_PARSE_MESSAGE % (priority, keys, deep, url))
 

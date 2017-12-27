@@ -56,7 +56,7 @@ class Fetcher(object):
         """
         fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
         """
-        response = requests.get(url, headers={}, data=None, proxies=proxies, timeout=(3.05, 10))
+        response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, timeout=(3.05, 10))
         if response.history:
             logging.debug("%s redirect: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 

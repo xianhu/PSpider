@@ -29,7 +29,7 @@ class FetchThread(BaseThread):
         # ----1----
         if self._pool.get_proxies_flag() and (not self._proxies):
             self._proxies = self._pool.get_a_task(TPEnum.PROXIES)
-        priority, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
+        priority, counter, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
 
         # ----2----
         fetch_result, proxies_state, content = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
@@ -37,9 +37,9 @@ class FetchThread(BaseThread):
         # ----3----
         if fetch_result > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
-            self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
+            self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, content))
         elif fetch_result == 0:
-            self._pool.add_a_task(TPEnum.URL_FETCH, (priority+1, url, keys, deep, repeat+1))
+            self._pool.add_a_task(TPEnum.URL_FETCH, (priority+1, counter, url, keys, deep, repeat+1))
         else:
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
 
@@ -52,7 +52,7 @@ class FetchThread(BaseThread):
         self._pool.finish_a_task(TPEnum.URL_FETCH)
 
         # ----5----
-        while (self._pool.get_number_dict(TPEnum.HTM_NOT_PARSE) > 500) or (self._pool.get_number_dict(TPEnum.ITEM_NOT_SAVE) > 500):
-            logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_NOT_PARSE' or 'ITEM_NOT_SAVE'...", self.__class__.__name__, self.getName())
+        while (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) > 500) or (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT) > 500):
+            logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_PARSE_NOT' or 'ITEM_SAVE_NOT'...", self.__class__.__name__, self.getName())
             time.sleep(5)
         return False if fetch_result == -2 else True

@@ -26,8 +26,8 @@ class ThreadPool(object):
         self._inst_saver = saver                        # saver instance, subclass of Saver
         self._url_filter = url_filter                   # default: None, also can be UrlFilter()
 
-        self._fetch_queue = queue.PriorityQueue()       # (priority, url, keys, deep, repeat)
-        self._parse_queue = queue.PriorityQueue()       # (priority, url, keys, deep, content)
+        self._fetch_queue = queue.PriorityQueue()       # (priority, counter, url, keys, deep, repeat)
+        self._parse_queue = queue.PriorityQueue()       # (priority, counter, url, keys, deep, content)
         self._save_queue = queue.Queue()                # (url, keys, item), item can be anything
 
         self._proxieser = proxieser                     # default: None, proxies instance, subclass of Proxieser
@@ -36,15 +36,16 @@ class ThreadPool(object):
         self._number_dict = {
             TPEnum.TASKS_RUNNING: 0,                    # the count of tasks which are running
 
-            TPEnum.URL_NOT_FETCH: 0,                    # the count of urls which haven't been fetched
+            TPEnum.URL_FETCH_NOT: 0,                    # the count of urls which haven't been fetched
             TPEnum.URL_FETCH_SUCC: 0,                   # the count of urls which have been fetched successfully
             TPEnum.URL_FETCH_FAIL: 0,                   # the count of urls which have been fetched failed
+            TPEnum.URL_FETCH_COUNT: 0,                  # the count of urls which appeared in self._fetch_queue
 
-            TPEnum.HTM_NOT_PARSE: 0,                    # the count of urls which haven't been parsed
+            TPEnum.HTM_PARSE_NOT: 0,                    # the count of urls which haven't been parsed
             TPEnum.HTM_PARSE_SUCC: 0,                   # the count of urls which have been parsed successfully
             TPEnum.HTM_PARSE_FAIL: 0,                   # the count of urls which have been parsed failed
 
-            TPEnum.ITEM_NOT_SAVE: 0,                    # the count of urls which haven't been saved
+            TPEnum.ITEM_SAVE_NOT: 0,                    # the count of urls which haven't been saved
             TPEnum.ITEM_SAVE_SUCC: 0,                   # the count of urls which have been saved successfully
             TPEnum.ITEM_SAVE_FAIL: 0,                   # the count of urls which have been saved failed
 
@@ -64,7 +65,7 @@ class ThreadPool(object):
         """
         set start url based on "priority", "keys" and "deep", keys must be a dictionary, and repeat must be 0
         """
-        self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys or {}, deep, 0))
+        self.add_a_task(TPEnum.URL_FETCH, (priority, self.get_number_dict(TPEnum.URL_FETCH_COUNT), url, keys or {}, deep, 0))
         logging.debug("%s set_start_url: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys or {}, deep, 0, url))
         return
 
@@ -72,7 +73,7 @@ class ThreadPool(object):
         """
         start this pool, and wait for finishing
         """
-        logging.warning("%s start: urls_count=%s, fetcher_num=%s, is_over=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_NOT_FETCH), fetcher_num, is_over)
+        logging.warning("%s start: urls_count=%s, fetcher_num=%s, is_over=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num, is_over)
 
         # proxies thread
         proxies_thread = ProxiesThread("proxieser", self._proxieser, self) if self._proxieser else None
@@ -102,8 +103,8 @@ class ThreadPool(object):
                 thread.join()
 
         # clear the variables if all fetcher stoped
-        while self.get_number_dict(TPEnum.URL_NOT_FETCH) > 0:
-            priority, url, keys, deep, repeat = self.get_a_task(TPEnum.URL_FETCH)
+        while self.get_number_dict(TPEnum.URL_FETCH_NOT) > 0:
+            priority, counter, url, keys, deep, repeat = self.get_a_task(TPEnum.URL_FETCH)
             logging.error("%s error: not fetch, %s", self._inst_fetcher.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
             self.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
             self.finish_a_task(TPEnum.URL_FETCH)
@@ -122,6 +123,7 @@ class ThreadPool(object):
             self._monitor_flag = False
             self._monitor.join()
 
+        logging.warning("%s end: %s", self.__class__.__name__, self._number_dict)
         return self._number_dict
 
     # ================================================================================================================================
@@ -156,8 +158,8 @@ class ThreadPool(object):
         """
         check if all tasks are done, according to self._number_dict
         """
-        return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_NOT_FETCH] or \
-                        self._number_dict[TPEnum.HTM_NOT_PARSE] or self._number_dict[TPEnum.ITEM_NOT_SAVE] else True
+        return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_FETCH_NOT] or \
+                        self._number_dict[TPEnum.HTM_PARSE_NOT] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
 
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):
@@ -167,15 +169,16 @@ class ThreadPool(object):
         if task_name == TPEnum.PROXIES:
             self._proxies_queue.put_nowait(task_content)
             self.update_number_dict(TPEnum.PROXIES_LEFT, +1)
-        elif task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[1])):
+        elif task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[2])):
             self._fetch_queue.put_nowait(task_content)
-            self.update_number_dict(TPEnum.URL_NOT_FETCH, +1)
+            self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
+            self.update_number_dict(TPEnum.URL_FETCH_COUNT, +1)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put_nowait(task_content)
-            self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
+            self.update_number_dict(TPEnum.HTM_PARSE_NOT, +1)
         elif task_name == TPEnum.ITEM_SAVE:
             self._save_queue.put_nowait(task_content)
-            self.update_number_dict(TPEnum.ITEM_NOT_SAVE, +1)
+            self.update_number_dict(TPEnum.ITEM_SAVE_NOT, +1)
         return
 
     def get_a_task(self, task_name):
@@ -189,13 +192,13 @@ class ThreadPool(object):
             return task_content
         elif task_name == TPEnum.URL_FETCH:
             task_content = self._fetch_queue.get(block=True, timeout=5)
-            self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
+            self.update_number_dict(TPEnum.URL_FETCH_NOT, -1)
         elif task_name == TPEnum.HTM_PARSE:
             task_content = self._parse_queue.get(block=True, timeout=5)
-            self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
+            self.update_number_dict(TPEnum.HTM_PARSE_NOT, -1)
         elif task_name == TPEnum.ITEM_SAVE:
             task_content = self._save_queue.get(block=True, timeout=5)
-            self.update_number_dict(TPEnum.ITEM_NOT_SAVE, -1)
+            self.update_number_dict(TPEnum.ITEM_SAVE_NOT, -1)
         self.update_number_dict(TPEnum.TASKS_RUNNING, +1)
         return task_content
 

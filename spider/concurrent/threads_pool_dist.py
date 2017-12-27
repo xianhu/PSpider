@@ -25,7 +25,7 @@ class DistThreadPool(ThreadPool):
         self._key_low_priority = None       # redis key, value is a urls list, which wait to fetch, low priority
 
         # make the spider run forever
-        self.update_number_dict(TPEnum.URL_NOT_FETCH, -1)
+        self.update_number_dict(TPEnum.URL_FETCH_NOT, -1)
         return
 
     def init_redis(self, host="localhost", port=6379, db=0, key_high_priority="spider.high", key_low_priority="spider.low"):
@@ -48,12 +48,13 @@ class DistThreadPool(ThreadPool):
             self.update_number_dict(TPEnum.PROXIES_LEFT, +1)
         elif task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check(task_content[1])):
             self._redis_client.lpush(self._key_high_priority if task_content[0] < 100 else self._key_low_priority, task_content)
+            self.update_number_dict(TPEnum.URL_FETCH_COUNT, +1)
         elif task_name == TPEnum.HTM_PARSE:
             self._parse_queue.put_nowait(task_content)
-            self.update_number_dict(TPEnum.HTM_NOT_PARSE, +1)
+            self.update_number_dict(TPEnum.HTM_PARSE_NOT, +1)
         elif task_name == TPEnum.ITEM_SAVE:
             self._save_queue.put_nowait(task_content)
-            self.update_number_dict(TPEnum.ITEM_NOT_SAVE, +1)
+            self.update_number_dict(TPEnum.ITEM_SAVE_NOT, +1)
         return
 
     def get_a_task(self, task_name):
@@ -69,10 +70,10 @@ class DistThreadPool(ThreadPool):
             task_content = eval(self._redis_client.rpop(self._key_high_priority) or self._redis_client.rpop(self._key_low_priority))
         elif task_name == TPEnum.HTM_PARSE:
             task_content = self._parse_queue.get(block=True, timeout=5)
-            self.update_number_dict(TPEnum.HTM_NOT_PARSE, -1)
+            self.update_number_dict(TPEnum.HTM_PARSE_NOT, -1)
         elif task_name == TPEnum.ITEM_SAVE:
             task_content = self._save_queue.get(block=True, timeout=5)
-            self.update_number_dict(TPEnum.ITEM_NOT_SAVE, -1)
+            self.update_number_dict(TPEnum.ITEM_SAVE_NOT, -1)
         self.update_number_dict(TPEnum.TASKS_RUNNING, +1)
         return task_content
 

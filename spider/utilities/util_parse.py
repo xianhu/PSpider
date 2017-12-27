@@ -19,8 +19,7 @@ def get_string_num(string):
     """
     get a float number from a string
     """
-    string_temp = get_string_strip(string.upper().replace(",", ""), replace_char="")
-    string_re = re.search(r"(?P<num>\d+(\.\d+)?)", string_temp, flags=re.IGNORECASE)
+    string_re = re.search(r"(?P<num>\d+(\.\d+)?)", get_string_strip(string.replace(",", ""), replace_char=""), flags=re.IGNORECASE)
     return float(string_re.group("num")) if string_re else 0.0
 
 

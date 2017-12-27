@@ -17,7 +17,7 @@ class ParseThread(BaseThread):
         procedure of parsing, auto running, and only return True
         """
         # ----1----
-        priority, url, keys, deep, content = self._pool.get_a_task(TPEnum.HTM_PARSE)
+        priority, counter, url, keys, deep, content = self._pool.get_a_task(TPEnum.HTM_PARSE)
 
         # ----2----
         parse_result, url_list, save_list = self._worker.working(priority, url, keys, deep, content)
@@ -26,7 +26,7 @@ class ParseThread(BaseThread):
         if parse_result > 0:
             self._pool.update_number_dict(TPEnum.HTM_PARSE_SUCC, +1)
             for _url, _keys, _priority in url_list:
-                self._pool.add_a_task(TPEnum.URL_FETCH, (_priority, _url, _keys, deep+1, 0))
+                self._pool.add_a_task(TPEnum.URL_FETCH, (_priority, self._pool.get_number_dict(TPEnum.URL_FETCH_COUNT), _url, _keys, deep+1, 0))
             for item in save_list:
                 self._pool.add_a_task(TPEnum.ITEM_SAVE, (url, keys, item))
         else:
