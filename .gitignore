@@ -1,4 +1,5 @@
 .*
 *.txt
 *.png
-*.py[co]
+*.pyc
+*.pyo
