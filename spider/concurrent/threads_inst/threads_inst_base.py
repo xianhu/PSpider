@@ -85,7 +85,6 @@ class BaseThread(threading.Thread):
 def init_monitor_thread(self, name, pool, sleep_time=5):
     """
     constructor of MonitorThread
-    :param sleep_time: sleeping time in every loop
     """
     BaseThread.__init__(self, name, None, pool)
 
@@ -130,7 +129,7 @@ def work_monitor(self):
         info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
 
     info += " total_seconds=%d" % (time.time() - self._init_time)
-    logging.warning(info)
+    logging.info(info)
     return self._pool.get_monitor_flag()
 
 

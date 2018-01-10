@@ -73,14 +73,17 @@ class ThreadPool(object):
         """
         start this pool, and wait for finishing
         """
-        logging.warning("%s start: urls_count=%s, fetcher_num=%s, is_over=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num, is_over)
+        logging.info("%s start: urls_count=%s, fetcher_num=%s, is_over=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num, is_over)
 
         # proxies thread
         proxies_thread = ProxiesThread("proxieser", self._proxieser, self) if self._proxieser else None
 
         # fetcher/parser/saver thread list
         fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
-        parser_saver_list = [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
+        parser_saver_list = [
+            ParseThread("parser", self._inst_parser, self),
+            SaveThread("saver", self._inst_saver, self)
+        ]
 
         # ----1----
         if proxies_thread:
@@ -104,7 +107,7 @@ class ThreadPool(object):
 
         # clear the variables if all fetcher stoped
         while self.get_number_dict(TPEnum.URL_FETCH_NOT) > 0:
-            priority, counter, url, keys, deep, repeat = self.get_a_task(TPEnum.URL_FETCH)
+            priority, _, url, keys, deep, repeat = self.get_a_task(TPEnum.URL_FETCH)
             logging.error("%s error: not fetch, %s", self._inst_fetcher.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
             self.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
             self.finish_a_task(TPEnum.URL_FETCH)
@@ -123,7 +126,7 @@ class ThreadPool(object):
             self._monitor_flag = False
             self._monitor.join()
 
-        logging.warning("%s end: %s", self.__class__.__name__, self._number_dict)
+        logging.info("%s end: %s", self.__class__.__name__, self._number_dict)
         return self._number_dict
 
     # ================================================================================================================================

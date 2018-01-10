@@ -15,10 +15,10 @@ def test_spider():
     """
     test spider
     """
-    # initial fetcher / parser / saver, you also can rewrite this three class
+    # initial fetcher / parser / saver, you also can rewrite this three classes
     fetcher = spider.Fetcher(max_repeat=1, sleep_time=0)
     parser = spider.Parser(max_deep=2)
-    saver = spider.Saver(save_pipe=open("out_spider_thread.txt", "w"))
+    saver = spider.Saver(save_pipe=open("out_thread.txt", "w"))
 
     # define url_filter
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
@@ -38,7 +38,7 @@ def test_spider_distributed():
     """
     test distributed spider
     """
-    # initial fetcher / parser / saver, you also can rewrite this three class
+    # initial fetcher / parser / saver, you also can rewrite this three classes
     fetcher = spider.Fetcher(max_repeat=1, sleep_time=0)
     parser = spider.Parser(max_deep=-1)
     saver = spider.Saver(save_pipe=open("out_spider_distributed.txt", "w"))
@@ -56,7 +56,7 @@ def test_spider_distributed():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s\t%(levelname)s\t%(message)s")
     test_spider()
     # test_spider_distributed()
     exit()
