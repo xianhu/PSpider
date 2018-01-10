@@ -41,7 +41,7 @@ def test_spider_distributed():
     # initial fetcher / parser / saver, you also can rewrite this three classes
     fetcher = spider.Fetcher(max_repeat=1, sleep_time=0)
     parser = spider.Parser(max_deep=-1)
-    saver = spider.Saver(save_pipe=open("out_spider_distributed.txt", "w"))
+    saver = spider.Saver(save_pipe=open("out_distributed.txt", "w"))
 
     # define url_filter
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns)
