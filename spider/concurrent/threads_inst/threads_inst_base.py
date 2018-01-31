@@ -18,23 +18,23 @@ class TPEnum(enum.Enum):
     """
     TASKS_RUNNING = "tasks_running"         # flag of tasks_running
 
-    URL_FETCH = "url_fetch"                 # flag of url_fetch
+    URL_FETCH = "url_fetch"                 # flag of url_fetch **
     URL_FETCH_NOT = "url_fetch_not"         # flag of url_fetch_not
     URL_FETCH_SUCC = "url_fetch_succ"       # flag of url_fetch_succ
     URL_FETCH_FAIL = "url_fetch_fail"       # flag of url_fetch_fail
-    URL_FETCH_COUNT = "url_fetch_count"     # flag of url_fetch_count
+    URL_FETCH_COUNT = "url_fetch_count"     # flag of url_fetch_count, for priority_queue
 
-    HTM_PARSE = "htm_parse"                 # flag of htm_parse
+    HTM_PARSE = "htm_parse"                 # flag of htm_parse **
     HTM_PARSE_NOT = "htm_parse_not"         # flag of htm_parse_not
     HTM_PARSE_SUCC = "htm_parse_succ"       # flag of htm_parse_succ
     HTM_PARSE_FAIL = "htm_parse_fail"       # flag of htm_parse_fail
 
-    ITEM_SAVE = "item_save"                 # flag of item_save
+    ITEM_SAVE = "item_save"                 # flag of item_save **
     ITEM_SAVE_NOT = "item_save_not"         # flag of item_save_not
     ITEM_SAVE_SUCC = "item_save_succ"       # flag of item_save_succ
     ITEM_SAVE_FAIL = "item_save_fail"       # flag of item_save_fail
 
-    PROXIES = "proxies"                     # flag of proxies
+    PROXIES = "proxies"                     # flag of proxies **
     PROXIES_LEFT = "proxies_left"           # flag of proxies_left --> URL_FETCH_NOT
     PROXIES_FAIL = "proxies_fail"           # flag of proxies_fail --> URL_FETCH_FAIL
 
@@ -64,7 +64,6 @@ class BaseThread(threading.Thread):
                 if not self.working():
                     break
             except (queue.Empty, TypeError):
-                # caused by queue.get() or eval()
                 if self._pool.is_all_tasks_done():
                     break
             except Exception:
@@ -107,30 +106,26 @@ def work_monitor(self):
     cur_fetch_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
     cur_fetch_fail = self._pool.get_number_dict(TPEnum.URL_FETCH_FAIL)
     cur_fetch_all = cur_fetch_succ + cur_fetch_fail
-    info += " fetch:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];" % \
-            (self._pool.get_number_dict(TPEnum.URL_FETCH_NOT), cur_fetch_succ, cur_fetch_fail, cur_fetch_all-self._last_fetch_num, self._sleep_time)
+    info += " fetch:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];" % (self._pool.get_number_dict(TPEnum.URL_FETCH_NOT), cur_fetch_succ, cur_fetch_fail, cur_fetch_all-self._last_fetch_num, self._sleep_time)
     self._last_fetch_num = cur_fetch_all
 
     cur_parse_succ = self._pool.get_number_dict(TPEnum.HTM_PARSE_SUCC)
     cur_parse_fail = self._pool.get_number_dict(TPEnum.HTM_PARSE_FAIL)
     cur_parse_all = cur_parse_succ + cur_parse_fail
-    info += " parse:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];" % \
-            (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT), cur_parse_succ, cur_parse_fail, cur_parse_all-self._last_parse_num, self._sleep_time)
+    info += " parse:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];" % (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT), cur_parse_succ, cur_parse_fail, cur_parse_all-self._last_parse_num, self._sleep_time)
     self._last_parse_num = cur_parse_all
 
     cur_save_succ = self._pool.get_number_dict(TPEnum.ITEM_SAVE_SUCC)
     cur_save_fail = self._pool.get_number_dict(TPEnum.ITEM_SAVE_FAIL)
     cur_save_all = cur_save_succ + cur_save_fail
-    info += " save:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];" % \
-            (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT), cur_save_succ, cur_save_fail, cur_save_all-self._last_save_num, self._sleep_time)
+    info += " save:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];" % (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT), cur_save_succ, cur_save_fail, cur_save_all-self._last_save_num, self._sleep_time)
     self._last_save_num = cur_save_all
 
-    if self._pool.get_proxies_flag():
-        info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
-
+    info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL)) if self._pool.get_proxies_flag() else ""
     info += " total_seconds=%d" % (time.time() - self._init_time)
+
     logging.info(info)
     return self._pool.get_monitor_flag()
 
 
-MonitorThread = type("MonitorThread", (BaseThread,), dict(__init__=init_monitor_thread, working=work_monitor))
+MonitorThread = type("MonitorThread", (BaseThread, ), dict(__init__=init_monitor_thread, working=work_monitor))

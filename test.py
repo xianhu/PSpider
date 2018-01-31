@@ -30,7 +30,10 @@ def test_spider():
     web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys={"type": "360"}, deep=0)
 
     # start web_spider
-    web_spider.start_work_and_wait_done(fetcher_num=10, is_over=True)
+    web_spider.start_working(fetcher_num=10)
+
+    # wait for finished
+    web_spider.wait_for_finished(is_over=True)
     return
 
 
@@ -51,7 +54,10 @@ def test_spider_distributed():
     web_spider_dist.init_redis(host="localhost", port=6379, key_high_priority="spider.high", key_low_priority="spider.low")
 
     # start web_spider
-    web_spider_dist.start_work_and_wait_done(fetcher_num=10)
+    web_spider_dist.start_working(fetcher_num=10)
+
+    # wait for finished
+    web_spider_dist.wait_for_finished(is_over=True)
     return
 
 

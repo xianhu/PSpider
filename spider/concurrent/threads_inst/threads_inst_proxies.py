@@ -22,9 +22,8 @@ class ProxiesThread(BaseThread):
         proxies_result, proxies_list = self._worker.working()
 
         # ----3----
-        if proxies_result > 0:
-            for proxies in proxies_list:
-                self._pool.add_a_task(TPEnum.PROXIES, proxies)
+        for proxies in proxies_list:
+            self._pool.add_a_task(TPEnum.PROXIES, proxies)
 
         # ----5----
         while (self._pool.get_number_dict(TPEnum.PROXIES_LEFT) > 100) and (not self._pool.is_all_tasks_done()):

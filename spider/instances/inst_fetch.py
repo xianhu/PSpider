@@ -29,9 +29,9 @@ class Fetcher(object):
     def working(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, bool, object):
         """
         working function, must "try, except" and don't change the parameters and return
-        :return (fetch_result, proxies_state, content): fetch_result can be -2(fetch failed, stop thread), -1(fetch failed), 0(need repeat), 1(fetch success)
-        :return (fetch_result, proxies_state, content): proxies_state can be True(avaiable), False(unavaiable)
-        :return (fetch_result, proxies_state, content): content can be any object, for example string, list, etc
+        :return fetch_result: can be -2(fetch failed, stop thread), -1(fetch failed), 0(need repeat), 1(fetch success)
+        :return proxies_state: can be True(avaiable), False(unavaiable)
+        :return content: can be any object, for example string, list, etc
         """
         logging.debug("%s start: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
