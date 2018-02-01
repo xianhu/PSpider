@@ -15,12 +15,12 @@ __all__ = [
 ]
 
 
-def get_string_num(string):
+def get_string_num(string, ignore_sign=False):
     """
     get a float number from a string
     """
-    string_re = re.search(r"(?P<num>\d+(\.\d+)?)", get_string_strip(string.replace(",", ""), replace_char=""), flags=re.IGNORECASE)
-    return float(string_re.group("num")) if string_re else 0.0
+    string_re = re.search(r"(?P<sign>-*?)(?P<num>\d+(\.\d+)?)", get_string_strip(string.replace(",", ""), replace_char=""), flags=re.IGNORECASE)
+    return float((string_re.group("sign") if not ignore_sign else "") + string_re.group("num")) if string_re else 0.0
 
 
 def get_string_strip(string, replace_char=" "):
