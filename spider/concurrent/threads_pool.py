@@ -96,6 +96,8 @@ class ThreadPool(object):
         for thread in self._thread_parsar_list:
             thread.setDaemon(True)
             thread.start()
+
+        logging.info("%s start success", self.__class__.__name__)
         return
 
     def wait_for_finished(self, is_over=True):
@@ -113,9 +115,8 @@ class ThreadPool(object):
             if thread.is_alive():
                 thread.join()
 
-        if self._thread_proxieser:
-            if self._thread_proxieser.is_alive():
-                self._thread_proxieser.join()
+        if self._thread_proxieser and self._thread_proxieser.is_alive():
+            self._thread_proxieser.join()
 
         if is_over and self._monitor.is_alive():
             self._monitor_flag = False

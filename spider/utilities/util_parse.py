@@ -19,7 +19,7 @@ def get_string_num(string, ignore_sign=False):
     """
     get a float number from a string
     """
-    string_re = re.search(r"(?P<sign>-*?)(?P<num>\d+(\.\d+)?)", get_string_strip(string.replace(",", ""), replace_char=""), flags=re.IGNORECASE)
+    string_re = re.search(r"(?P<sign>-?)(?P<num>\d+(\.\d+)?)", get_string_strip(string.replace(",", ""), replace_char=""), flags=re.IGNORECASE)
     return float((string_re.group("sign") if not ignore_sign else "") + string_re.group("num")) if string_re else 0.0
 
 
@@ -42,7 +42,7 @@ def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
     """
     get main_part(a string) and query_part(a dictionary) from a url
     """
-    url_frags = urllib.parse.urlparse(url, allow_fragments=True)
-    main_part = urllib.parse.urlunparse((url_frags.scheme, url_frags.netloc, url_frags.path, url_frags.params, "", ""))
-    query_part = urllib.parse.parse_qs(url_frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
+    frags = urllib.parse.urlparse(url, allow_fragments=True)
+    main_part = urllib.parse.urlunparse((frags.scheme, frags.netloc, frags.path, frags.params, "", ""))
+    query_part = urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
     return main_part, query_part
