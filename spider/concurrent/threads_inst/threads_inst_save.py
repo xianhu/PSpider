@@ -14,7 +14,7 @@ class SaveThread(BaseThread):
 
     def working(self):
         """
-        procedure of saving, auto running, and only return True
+        procedure of saving, auto running, and return False if you need stop thread
         """
         # ----1----
         url, keys, item = self._pool.get_a_task(TPEnum.ITEM_SAVE)
@@ -30,4 +30,6 @@ class SaveThread(BaseThread):
 
         # ----4----
         self._pool.finish_a_task(TPEnum.ITEM_SAVE)
-        return True
+
+        # ----6----
+        return False if self._pool.get_stop_flag() else True

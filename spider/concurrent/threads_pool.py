@@ -35,6 +35,7 @@ class ThreadPool(object):
         self._thread_fetcher_list = []                  # fetcher threads list
         self._thread_parsar_list = []                   # parser and saver threads list
 
+        self._thread_stop_flag = False                  # default: False, stop flag of threads
         self._url_filter = url_filter                   # default: None, also can be UrlFilter()
 
         self._number_dict = {
@@ -100,6 +101,13 @@ class ThreadPool(object):
         logging.info("%s start success", self.__class__.__name__)
         return
 
+    def stop_working(self):
+        """
+        stop this thread pool
+        """
+        self._thread_stop_flag = True
+        return
+
     def wait_for_finished(self, is_over=True):
         """
         wait for the finished of this thread pool
@@ -122,7 +130,7 @@ class ThreadPool(object):
             self._monitor_flag = False
             self._monitor.join()
 
-        logging.info("%s finished: %s", self.__class__.__name__, self._number_dict)
+        logging.info("%s finished: stop_flag=%s", self.__class__.__name__, self._thread_stop_flag)
         return self._number_dict
 
     # ================================================================================================================================
@@ -137,6 +145,12 @@ class ThreadPool(object):
         get the proxies flag of this pool
         """
         return True if self._inst_proxieser else False
+
+    def get_stop_flag(self):
+        """
+        get the stop flag of threads
+        """
+        return self._thread_stop_flag
 
     def get_current_state(self):
         """

@@ -56,4 +56,6 @@ class FetchThread(BaseThread):
         while (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) > 500) or (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT) > 500):
             logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_PARSE_NOT' or 'ITEM_SAVE_NOT'...", self.__class__.__name__, self.getName())
             time.sleep(5)
-        return False if fetch_result == -2 else True
+
+        # ----6----
+        return False if self._pool.get_stop_flag() or (fetch_result == -2) else True

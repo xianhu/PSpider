@@ -14,7 +14,7 @@ class ParseThread(BaseThread):
 
     def working(self):
         """
-        procedure of parsing, auto running, and only return True
+        procedure of parsing, auto running, and return False if you need stop thread
         """
         # ----1----
         priority, counter, url, keys, deep, content = self._pool.get_a_task(TPEnum.HTM_PARSE)
@@ -34,4 +34,6 @@ class ParseThread(BaseThread):
 
         # ----4----
         self._pool.finish_a_task(TPEnum.HTM_PARSE)
-        return True
+
+        # ----6----
+        return False if self._pool.get_stop_flag() else True

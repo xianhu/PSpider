@@ -4,6 +4,7 @@
 test.py by xianhu
 """
 
+import time
 import spider
 import logging
 
@@ -16,7 +17,7 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver, you also can rewrite this three classes
-    fetcher = spider.Fetcher(max_repeat=1, sleep_time=0)
+    fetcher = spider.Fetcher(max_repeat=1, sleep_time=2)
     parser = spider.Parser(max_deep=2)
     saver = spider.Saver(save_pipe=open("out_thread.txt", "w"))
 
@@ -31,6 +32,10 @@ def test_spider():
 
     # start web_spider
     web_spider.start_working(fetcher_num=10)
+
+    # stop web_spider
+    time.sleep(10)
+    web_spider.stop_working()
 
     # wait for finished
     web_spider.wait_for_finished(is_over=True)
