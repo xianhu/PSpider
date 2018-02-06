@@ -40,12 +40,10 @@ class UrlFilter(object):
         """
         check the url based on self._re_black_list and self._re_white_list
         """
-        # if url in black_list, return False
         for re_black in self._re_black_list:
             if re_black.search(url):
                 return False
 
-        # if url in white_list, return True
         for re_white in self._re_white_list:
             if re_white.search(url):
                 return True

@@ -8,7 +8,7 @@ import copy
 import queue
 import logging
 import threading
-from .threads_inst import TPEnum, FetchThread, ParseThread, SaveThread, MonitorThread, ProxiesThread
+from .threads_inst import *
 from ..utilities import CONFIG_FETCH_MESSAGE
 
 
@@ -80,12 +80,10 @@ class ThreadPool(object):
         """
         logging.info("%s start: urls_count=%s, fetcher_num=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
 
-        # initial threads
         self._thread_proxieser = ProxiesThread("proxieser", self._inst_proxieser, self) if self._inst_proxieser else None
         self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
         self._thread_parsar_list = [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
 
-        # start threads
         if self._thread_proxieser:
             self._thread_proxieser.setDaemon(True)
             self._thread_proxieser.start()
@@ -106,6 +104,7 @@ class ThreadPool(object):
         stop this thread pool
         """
         self._thread_stop_flag = True
+        logging.info("%s set thread_stop_flag = True", self.__class__.__name__)
         return
 
     def wait_for_finished(self, is_over=True):
@@ -130,7 +129,7 @@ class ThreadPool(object):
             self._monitor_flag = False
             self._monitor.join()
 
-        logging.info("%s finished: stop_flag=%s", self.__class__.__name__, self._thread_stop_flag)
+        logging.info("%s finished: %s", self.__class__.__name__, self._number_dict)
         return self._number_dict
 
     # ================================================================================================================================
