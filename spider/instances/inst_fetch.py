@@ -29,7 +29,7 @@ class Fetcher(object):
     def working(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, bool, object):
         """
         working function, must "try, except" and don't change the parameters and return
-        :return fetch_result: can be -2(fetch failed, stop thread), -1(fetch failed), 0(need repeat), 1(fetch success)
+        :return fetch_result: can be -1(fetch failed), 0(need repeat), 1(fetch success)
         :return proxies_state: can be False(unavaiable), True(avaiable), default True
         :return content: can be any object, for example string, list, etc
         """
@@ -38,16 +38,13 @@ class Fetcher(object):
         time.sleep(random.randint(0, self._sleep_time))
         try:
             fetch_result, proxies_state, content = self.url_fetch(priority, url, keys, deep, repeat, proxies=proxies)
-        except requests.RequestException:
+        except Exception:
             if repeat >= self._max_repeat:
                 fetch_result, proxies_state, content = -1, True, None
                 logging.error("%s error: %s, %s", self.__class__.__name__, extract_error_info(), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
             else:
                 fetch_result, proxies_state, content = 0, True, None
                 logging.debug("%s repeat: %s, %s", self.__class__.__name__, extract_error_info(), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
-        except Exception:
-            fetch_result, proxies_state, content = -1, True, None
-            logging.error("%s error: %s, %s", self.__class__.__name__, extract_error_info(), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
         logging.debug("%s end: fetch_result=%s, proxies_state=%s, url=%s", self.__class__.__name__, fetch_result, proxies_state, url)
         return fetch_result, proxies_state, content

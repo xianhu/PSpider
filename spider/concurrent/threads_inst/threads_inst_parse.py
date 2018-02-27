@@ -35,5 +35,5 @@ class ParseThread(BaseThread):
         # ----4----
         self._pool.finish_a_task(TPEnum.HTM_PARSE)
 
-        # ----6----
+        # ----5----
         return False if self._pool.get_stop_flag() else True

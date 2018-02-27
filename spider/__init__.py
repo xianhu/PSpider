@@ -4,7 +4,7 @@
 define WebSpider, WebSpiderDist, and also define utilities and instances for web_spider
 """
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 from .utilities import *
 from .instances import Fetcher, Parser, Saver, Proxieser

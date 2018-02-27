@@ -4,21 +4,51 @@
 test.py by xianhu
 """
 
-import time
+import re
 import spider
 import logging
+import datetime
+import requests
 
-black_patterns = (spider.CONFIG_URL_PATTERN, r"binding", r"download",)
-white_patterns = (r"^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)",)
+black_patterns = (spider.CONFIG_URL_PATTERN, r"binding", r"download", )
+white_patterns = (r"^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)", )
+
+
+class MyFetcher(spider.Fetcher):
+    """
+    fetcher module, only rewrite url_fetch()
+    """
+    def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
+        response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, timeout=(3.05, 10))
+        content = (response.status_code, response.url, response.text)
+        return 1, True, content
+
+
+class MyParser(spider.Parser):
+    """
+    parser module, only rewrite htm_parse()
+    """
+    def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
+        status_code, url_now, html_text = content
+
+        url_list = []
+        if (self._max_deep < 0) or (deep < self._max_deep):
+            tmp_list = re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)
+            url_list = [(_url, keys, priority+1) for _url in [spider.get_url_legal(href, url) for href in tmp_list]]
+
+        title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
+        save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
+
+        return 1, url_list, save_list
 
 
 def test_spider():
     """
     test spider
     """
-    # initial fetcher / parser / saver, you also can rewrite this three classes
-    fetcher = spider.Fetcher(max_repeat=1, sleep_time=2)
-    parser = spider.Parser(max_deep=2)
+    # initial fetcher / parser / saver
+    fetcher = MyFetcher(max_repeat=1, sleep_time=2)
+    parser = MyParser(max_deep=2)
     saver = spider.Saver(save_pipe=open("out_thread.txt", "w"))
 
     # define url_filter
@@ -34,8 +64,8 @@ def test_spider():
     web_spider.start_working(fetcher_num=10)
 
     # stop web_spider
-    time.sleep(10)
-    web_spider.stop_working()
+    # time.sleep(10)
+    # web_spider.stop_working()
 
     # wait for finished
     web_spider.wait_for_finished(is_over=True)
@@ -46,9 +76,9 @@ def test_spider_distributed():
     """
     test distributed spider
     """
-    # initial fetcher / parser / saver, you also can rewrite this three classes
-    fetcher = spider.Fetcher(max_repeat=1, sleep_time=0)
-    parser = spider.Parser(max_deep=-1)
+    # initial fetcher / parser / saver
+    fetcher = MyFetcher(max_repeat=1, sleep_time=0)
+    parser = MyParser(max_deep=-1)
     saver = spider.Saver(save_pipe=open("out_distributed.txt", "w"))
 
     # define url_filter

@@ -52,7 +52,7 @@ class UrlFilter(object):
 
     def check_and_add(self, url):
         """
-        check the url to make sure that the url hasn't been fetched, and add url to urlfilter
+        check the url to make sure it hasn't been fetched, and add url to urlfilter
         """
         result = False
         if self.check(url):

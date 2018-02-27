@@ -31,5 +31,5 @@ class SaveThread(BaseThread):
         # ----4----
         self._pool.finish_a_task(TPEnum.ITEM_SAVE)
 
-        # ----6----
+        # ----5----
         return False if self._pool.get_stop_flag() else True

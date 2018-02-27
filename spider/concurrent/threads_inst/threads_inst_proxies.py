@@ -25,10 +25,10 @@ class ProxiesThread(BaseThread):
         for proxies in proxies_list:
             self._pool.add_a_task(TPEnum.PROXIES, proxies)
 
-        # ----5----
+        # ----*----
         while (self._pool.get_number_dict(TPEnum.PROXIES_LEFT) > 100) and (not self._pool.is_all_tasks_done()):
             logging.debug("%s[%s] sleep 5 seconds because of too many 'PROXIES_LEFT' ...", self.__class__.__name__, self.getName())
             time.sleep(5)
 
-        # ----6----
+        # ----5----
         return False if self._pool.get_stop_flag() or self._pool.is_all_tasks_done() else False
