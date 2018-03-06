@@ -60,7 +60,6 @@ class ThreadPool(object):
         self._lock = threading.Lock()                   # the lock which self._number_dict needs
 
         # set monitor thread
-        self._monitor_flag = True
         self._monitor = MonitorThread("monitor", self, sleep_time=monitor_sleep_time)
         self._monitor.setDaemon(True)
         self._monitor.start()
@@ -84,7 +83,7 @@ class ThreadPool(object):
         self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
         self._thread_parsar_list = [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
 
-        if self._thread_proxieser:
+        if self.get_proxies_flag():
             self._thread_proxieser.setDaemon(True)
             self._thread_proxieser.start()
 
@@ -99,53 +98,39 @@ class ThreadPool(object):
         logging.info("%s start success", self.__class__.__name__)
         return
 
-    def stop_working(self):
-        """
-        stop this thread pool
-        """
-        self._thread_stop_flag = True
-        logging.info("%s set thread_stop_flag = True", self.__class__.__name__)
-        return
-
-    def wait_for_finished(self, is_over=True):
+    def wait_for_finished(self):
         """
         wait for the finished of this thread pool
         """
-        logging.info("%s wait for finished: is_over=%s", self.__class__.__name__, is_over)
+        logging.info("%s wait for finished", self.__class__.__name__)
+        self._thread_stop_flag = True
 
         for thread in self._thread_fetcher_list:
             if thread.is_alive():
                 thread.join()
-        self.clear_queue_fetch()
 
         for thread in self._thread_parsar_list:
             if thread.is_alive():
                 thread.join()
 
-        if self._thread_proxieser and self._thread_proxieser.is_alive():
-            self._thread_proxieser.join()
+        if self.get_proxies_flag():
+            if self._thread_proxieser.is_alive():
+                self._thread_proxieser.join()
 
-        if is_over and self._monitor.is_alive():
-            self._monitor_flag = False
+        if self._monitor.is_alive():
             self._monitor.join()
 
         logging.info("%s finished: %s", self.__class__.__name__, self._number_dict)
         return self._number_dict
 
     # ================================================================================================================================
-    def get_monitor_flag(self):
-        """
-        get the monitor flag of this pool
-        """
-        return self._monitor_flag
-
     def get_proxies_flag(self):
         """
         get the proxies flag of this pool
         """
         return True if self._inst_proxieser else False
 
-    def get_stop_flag(self):
+    def get_thread_stop_flag(self):
         """
         get the stop flag of threads
         """
@@ -178,17 +163,6 @@ class ThreadPool(object):
         """
         return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_FETCH_NOT] or \
                         self._number_dict[TPEnum.HTM_PARSE_NOT] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
-
-    def clear_queue_fetch(self):
-        """
-        clear self._queue_fetch
-        """
-        while self.get_number_dict(TPEnum.URL_FETCH_NOT) > 0:
-            priority, _, url, keys, deep, repeat = self.get_a_task(TPEnum.URL_FETCH)
-            logging.error("%s error: not fetch, %s", self._inst_fetcher.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
-            self.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
-            self.finish_a_task(TPEnum.URL_FETCH)
-        return
 
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):

@@ -47,8 +47,8 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver
-    fetcher = MyFetcher(max_repeat=1, sleep_time=2)
-    parser = MyParser(max_deep=2)
+    fetcher = MyFetcher(max_repeat=3, sleep_time=1)
+    parser = MyParser(max_deep=1)
     saver = spider.Saver(save_pipe=open("out_thread.txt", "w"))
 
     # define url_filter
@@ -63,12 +63,8 @@ def test_spider():
     # start web_spider
     web_spider.start_working(fetcher_num=10)
 
-    # stop web_spider
-    # time.sleep(10)
-    # web_spider.stop_working()
-
     # wait for finished
-    web_spider.wait_for_finished(is_over=True)
+    web_spider.wait_for_finished()
     return
 
 
@@ -92,7 +88,7 @@ def test_spider_distributed():
     web_spider_dist.start_working(fetcher_num=10)
 
     # wait for finished
-    web_spider_dist.wait_for_finished(is_over=True)
+    web_spider_dist.wait_for_finished()
     return
 
 

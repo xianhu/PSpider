@@ -64,7 +64,7 @@ class BaseThread(threading.Thread):
                 if not self.working():
                     break
             except (queue.Empty, TypeError):
-                if self._pool.is_all_tasks_done():
+                if self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done():
                     break
             except Exception:
                 logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), extract_error_info())
@@ -128,7 +128,7 @@ def work_monitor(self):
     info += " total_seconds=%d" % (time.time() - self._init_time)
 
     logging.info(info)
-    return self._pool.get_monitor_flag()
+    return not (self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done())
 
 
 MonitorThread = type("MonitorThread", (BaseThread, ), dict(__init__=init_monitor_thread, working=work_monitor))

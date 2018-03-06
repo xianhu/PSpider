@@ -24,11 +24,13 @@ class FetchThread(BaseThread):
 
     def working(self):
         """
-        procedure of fetching, auto running, and return False if you need stop thread
+        procedure of fetching, auto running, and return True
         """
-        # ----1----
+        # ----*----
         if self._pool.get_proxies_flag() and (not self._proxies):
             self._proxies = self._pool.get_a_task(TPEnum.PROXIES)
+
+        # ----1----
         priority, counter, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
 
         # ----2----
@@ -58,4 +60,4 @@ class FetchThread(BaseThread):
             time.sleep(5)
 
         # ----5----
-        return False if self._pool.get_stop_flag() else True
+        return True

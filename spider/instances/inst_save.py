@@ -25,7 +25,7 @@ class Saver(object):
     def working(self, url: str, keys: dict, item: (list, tuple)) -> int:
         """
         working function, must "try, except" and don't change the parameters and return
-        :return save_result: save_result can be -1(save failed), 1(save success)
+        :return save_result: can be -1(save failed), 1(save success)
         """
         logging.debug("%s start: keys=%s, url=%s", self.__class__.__name__, keys, url)
 
