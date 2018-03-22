@@ -9,12 +9,11 @@ import time
 import queue
 import logging
 import threading
-from ...utilities import extract_error_info
 
 
 class TPEnum(enum.Enum):
     """
-    enum of TPEnum, to mark the status of web_spider
+    enum of TPEnum, to mark the status of the web_spider
     """
     TASKS_RUNNING = "tasks_running"         # flag of tasks_running
 
@@ -66,8 +65,8 @@ class BaseThread(threading.Thread):
             except (queue.Empty, TypeError):
                 if self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done():
                     break
-            except Exception:
-                logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), extract_error_info())
+            except Exception as excep:
+                logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), excep)
                 break
 
         logging.debug("%s[%s] end...", self.__class__.__name__, self.getName())

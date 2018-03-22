@@ -8,7 +8,7 @@ import time
 import random
 import logging
 import requests
-from ..utilities import CONFIG_FETCH_MESSAGE, extract_error_info
+from ..utilities import CONFIG_FETCH_MESSAGE
 
 
 class Fetcher(object):
@@ -38,13 +38,13 @@ class Fetcher(object):
         time.sleep(random.randint(0, self._sleep_time))
         try:
             fetch_result, proxies_state, content = self.url_fetch(priority, url, keys, deep, repeat, proxies=proxies)
-        except Exception:
+        except Exception as excep:
             if repeat >= self._max_repeat:
-                fetch_result, proxies_state, content = -1, True, None
-                logging.error("%s error: %s, %s", self.__class__.__name__, extract_error_info(), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+                fetch_result, proxies_state, content = -1, False, None
+                logging.error("%s error: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
             else:
-                fetch_result, proxies_state, content = 0, True, None
-                logging.debug("%s repeat: %s, %s", self.__class__.__name__, extract_error_info(), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+                fetch_result, proxies_state, content = 0, False, None
+                logging.debug("%s repeat: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
         logging.debug("%s end: fetch_result=%s, proxies_state=%s, url=%s", self.__class__.__name__, fetch_result, proxies_state, url)
         return fetch_result, proxies_state, content

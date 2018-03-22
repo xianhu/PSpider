@@ -6,7 +6,6 @@ inst_proxies.py by xianhu
 
 import time
 import logging
-from ..utilities import extract_error_info
 
 
 class Proxieser(object):
@@ -26,16 +25,16 @@ class Proxieser(object):
         """
         working function, must "try, except" and don't change the parameters and return
         :return proxies_result: can be -1(get proxies failed), 1(get proxies success)
-        :return proxies_list: a proxies list which getting from web or database
+        :return proxies_list: can be a proxies list which getting from web or database
         """
         logging.debug("%s start", self.__class__.__name__)
 
         time.sleep(self._sleep_time)
         try:
             proxies_result, proxies_list = self.proxies_get()
-        except Exception:
+        except Exception as excep:
             proxies_result, proxies_list = -1, []
-            logging.error("%s error: %s", self.__class__.__name__, extract_error_info())
+            logging.error("%s error: %s", self.__class__.__name__, excep)
 
         logging.debug("%s end: proxies_result=%s, len(proxies_list)=%s", self.__class__.__name__, proxies_result, len(proxies_list))
         return proxies_result, proxies_list

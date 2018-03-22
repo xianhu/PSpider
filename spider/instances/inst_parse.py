@@ -7,7 +7,7 @@ inst_parse.py by xianhu
 import re
 import logging
 import datetime
-from ..utilities import CONFIG_PARSE_MESSAGE, extract_error_info, get_url_legal
+from ..utilities import CONFIG_PARSE_MESSAGE, get_url_legal
 
 
 class Parser(object):
@@ -27,16 +27,16 @@ class Parser(object):
         """
         working function, must "try, except" and don't change the parameters and return
         :return parse_result: can be -1(parse failed), 1(parse success)
-        :return url_list: a list of [(url, keys, priority), (url, keys, priority), ...]
-        :return save_list: a list of [item(a list or tuple), item(a list or tuple), ...]
+        :return url_list: can be a list of [(url, keys, priority), (url, keys, priority), ...]
+        :return save_list: can be a list of [item(a list or tuple), item(a list or tuple), ...]
         """
         logging.debug("%s start: %s", self.__class__.__name__, CONFIG_PARSE_MESSAGE % (priority, keys, deep, url))
 
         try:
             parse_result, url_list, save_list = self.htm_parse(priority, url, keys, deep, content)
-        except Exception:
+        except Exception as excep:
             parse_result, url_list, save_list = -1, [], []
-            logging.error("%s error: %s, %s", self.__class__.__name__, extract_error_info(), CONFIG_PARSE_MESSAGE % (priority, keys, deep, url))
+            logging.error("%s error: %s, %s", self.__class__.__name__, excep, CONFIG_PARSE_MESSAGE % (priority, keys, deep, url))
 
         logging.debug("%s end: parse_result=%s, len(url_list)=%s, len(save_list)=%s, url=%s", self.__class__.__name__, parse_result, len(url_list), len(save_list), url)
         return parse_result, url_list, save_list

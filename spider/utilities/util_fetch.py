@@ -5,23 +5,10 @@ util_fetch.py by xianhu
 """
 
 import re
-import sys
-import traceback
 
 __all__ = [
-    "extract_error_info",
     "parse_error_info",
 ]
-
-
-def extract_error_info():
-    """
-    extract error information from exception, return a string
-    """
-    _type, _value, _traceback = sys.exc_info()
-    tb_list = traceback.extract_tb(_traceback)
-    error_info = "->".join(["[file=%s, line=%s, func=%s]" % (tb.filename, tb.lineno, tb.name) for tb in tb_list])
-    return "error_info=%s, error_type=%s, error=%s" % (error_info, _type, _value)
 
 
 def parse_error_info(line):
