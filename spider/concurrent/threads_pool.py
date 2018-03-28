@@ -77,7 +77,7 @@ class ThreadPool(object):
         """
         start this thread pool
         """
-        logging.info("%s start: urls_count=%s, fetcher_num=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
+        logging.info("%s start working: urls_count=%s, fetcher_num=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
 
         self._thread_proxieser = ProxiesThread("proxieser", self._inst_proxieser, self) if self._inst_proxieser else None
         self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
@@ -126,19 +126,19 @@ class ThreadPool(object):
     # ================================================================================================================================
     def get_proxies_flag(self):
         """
-        get the proxies flag of this pool
+        get the proxies flag of this thread pool
         """
         return True if self._inst_proxieser else False
 
     def get_thread_stop_flag(self):
         """
-        get the stop flag of threads
+        get the threads' stop flag of this thread pool
         """
         return self._thread_stop_flag
 
     def get_current_state(self):
         """
-        get current state of this pool
+        get current state of this thread pool
         """
         return self._number_dict
 
@@ -186,7 +186,7 @@ class ThreadPool(object):
 
     def get_a_task(self, task_name):
         """
-        get a task based on task_name, if queue is empty, raise queue.Empty, also for proxies
+        get a task based on task_name, also for proxies
         """
         task_content = None
         if task_name == TPEnum.PROXIES:
@@ -207,7 +207,7 @@ class ThreadPool(object):
 
     def finish_a_task(self, task_name):
         """
-        finish a task based on task_name, call queue.task_done(), also for proxies
+        finish a task based on task_name, also for proxies
         """
         if task_name == TPEnum.PROXIES:
             self._queue_proxies.task_done()

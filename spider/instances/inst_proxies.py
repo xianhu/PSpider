@@ -24,7 +24,7 @@ class Proxieser(object):
     def working(self) -> (int, list):
         """
         working function, must "try, except" and don't change the parameters and return
-        :return proxies_result: can be -1(get proxies failed), 1(get proxies success)
+        :return proxies_result: can be -1(get failed), 1(get success)
         :return proxies_list: can be a proxies list which getting from web or database
         """
         logging.debug("%s start", self.__class__.__name__)

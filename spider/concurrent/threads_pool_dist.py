@@ -59,7 +59,7 @@ class DistThreadPool(ThreadPool):
 
     def get_a_task(self, task_name):
         """
-        get a task based on task_name, if queue is empty, raise queue.Empty, also for proxies
+        get a task based on task_name, also for proxies
         """
         task_content = None
         if task_name == TPEnum.PROXIES:
@@ -79,7 +79,7 @@ class DistThreadPool(ThreadPool):
 
     def finish_a_task(self, task_name):
         """
-        finish a task based on task_name, call queue.task_done(), also for proxies
+        finish a task based on task_name, also for proxies
         """
         if task_name == TPEnum.PROXIES:
             self._queue_proxies.task_done()

@@ -7,7 +7,7 @@ inst_parse.py by xianhu
 import re
 import logging
 import datetime
-from ..utilities import CONFIG_PARSE_MESSAGE, get_url_legal
+from ..utilities import CONFIG_PARSE_MESSAGE
 
 
 class Parser(object):
@@ -49,8 +49,7 @@ class Parser(object):
 
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):
-            tmp_list = re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)
-            url_list = [(_url, keys, priority+1) for _url in [get_url_legal(href, url) for href in tmp_list]]
+            url_list = [(_url, keys, priority+1) for _url in re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)]
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
