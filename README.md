@@ -15,10 +15,9 @@ A simple web spider frame written by Python, which needs Python3.5+
 3. concurrent module: define WebSpiderFrame of multi-threading spider and distributed spider
 
 ### Procedure of PSpider
-1. procedure of multi-threading spider
-![](procedure.png)
-
-①: Fetcher gets url from UrlQueue, and makes requests based on this url
+1. procedure of multi-threading spider  
+![](procedure.png)  
+①: Fetcher gets url from UrlQueue, and makes requests based on this url  
 ②: Put the result of ① to HtmlQueue, and so Parser can get it  
 ③: Parser gets item from HtmlQueue, and parses it to get new urls and saved items  
 ④: Put the new urls to UrlQueue, and so Fetcher can get it  
