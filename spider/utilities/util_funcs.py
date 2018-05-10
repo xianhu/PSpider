@@ -1,18 +1,27 @@
 # _*_ coding: utf-8 _*_
 
 """
-util_parse.py by xianhu
+util_funcs.py by xianhu
 """
 
 import re
 import urllib.parse
 
 __all__ = [
+    "parse_error_info",
     "get_string_num",
     "get_string_strip",
     "get_url_legal",
     "get_url_params",
 ]
+
+
+def parse_error_info(line):
+    """
+    parse error information based on CONFIG_***_MESSAGE, return a tuple (priority, keys, deep, url)
+    """
+    regu = re.search(r"priority=(?P<priority>\d+?),\s*?keys=(?P<keys>.+?),\s*?deep=(?P<deep>\d+?),\s*?(repeat=\d+,)?\s*?url=(?P<url>.+?)$", line)
+    return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
 
 
 def get_string_num(string, ignore_sign=False):

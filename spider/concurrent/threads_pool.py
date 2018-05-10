@@ -78,6 +78,7 @@ class ThreadPool(object):
         start this thread pool
         """
         logging.info("%s start working: urls_count=%s, fetcher_num=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
+        self._thread_stop_flag = False
 
         self._thread_proxieser = ProxiesThread("proxieser", self._inst_proxieser, self) if self._inst_proxieser else None
         self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
@@ -136,17 +137,11 @@ class ThreadPool(object):
         """
         return self._thread_stop_flag
 
-    def get_current_state(self):
-        """
-        get current state of this thread pool
-        """
-        return self._number_dict
-
-    def get_number_dict(self, key):
+    def get_number_dict(self, key=None):
         """
         get the value of self._number_dict based on key
         """
-        return self._number_dict[key]
+        return self._number_dict[key] if key else self._number_dict
 
     def update_number_dict(self, key, value):
         """
