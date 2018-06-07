@@ -94,6 +94,6 @@ def test_spider_distributed():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s\t%(levelname)s\t%(message)s")
-    test_spider()
+    # test_spider()
     # test_spider_distributed()
     exit()
