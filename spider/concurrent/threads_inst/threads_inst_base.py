@@ -100,7 +100,7 @@ def work_monitor(self):
     monitor the pool, auto running, and return False if you need stop thread
     """
     time.sleep(self._sleep_time)
-    info = "%s status: running_tasks=%s;" % (self._pool.__class__.__name__, self._pool.get_number_dict(TPEnum.TASKS_RUNNING))
+    info = "running_tasks=%s;" % self._pool.get_number_dict(TPEnum.TASKS_RUNNING)
 
     cur_fetch_not = self._pool.get_number_dict(TPEnum.URL_FETCH_NOT)
     cur_fetch_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
