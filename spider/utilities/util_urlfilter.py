@@ -6,7 +6,7 @@ util_urlfilter.py by xianhu
 
 import re
 import pybloom_live
-from .util_config import CONFIG_URL_PATTERN
+from .util_config import CONFIG_URL_LEGAL_PATTERN, CONFIG_URL_ILLEGAL_PATTERN
 
 
 class UrlFilter(object):
@@ -14,7 +14,7 @@ class UrlFilter(object):
     class of UrlFilter, to filter url by regexs and (bloomfilter or set)
     """
 
-    def __init__(self, black_patterns=(CONFIG_URL_PATTERN,), white_patterns=(r"^http",), capacity=None):
+    def __init__(self, black_patterns=(CONFIG_URL_ILLEGAL_PATTERN,), white_patterns=(CONFIG_URL_LEGAL_PATTERN,), capacity=None):
         """
         constructor, use instance of BloomFilter if capacity else instance of set
         """

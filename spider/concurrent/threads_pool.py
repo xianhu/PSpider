@@ -9,7 +9,7 @@ import queue
 import logging
 import threading
 from .threads_inst import *
-from ..utilities import CONFIG_FETCH_MESSAGE
+from ..utilities import CONFIG_FETCH_MESSAGE, check_url_legal
 
 
 class ThreadPool(object):
@@ -156,7 +156,8 @@ class ThreadPool(object):
         """
         check if all tasks are done, according to self._number_dict
         """
-        return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_FETCH_NOT] or self._number_dict[TPEnum.HTM_PARSE_NOT] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
+        return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_FETCH_NOT] or \
+                        self._number_dict[TPEnum.HTM_PARSE_NOT] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
 
     # ================================================================================================================================
     def add_a_task(self, task_name, task_content):
@@ -166,7 +167,8 @@ class ThreadPool(object):
         if task_name == TPEnum.PROXIES:
             self._queue_proxies.put_nowait(task_content)
             self.update_number_dict(TPEnum.PROXIES_LEFT, +1)
-        elif task_name == TPEnum.URL_FETCH and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[2])):
+        elif task_name == TPEnum.URL_FETCH and check_url_legal(task_content[2]) and \
+                ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[2])):
             self._queue_fetch.put_nowait(task_content)
             self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
             self.update_number_dict(TPEnum.URL_FETCH_COUNT, +1)

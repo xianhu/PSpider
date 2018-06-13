@@ -6,6 +6,7 @@ util_funcs.py by xianhu
 
 import re
 import urllib.parse
+from .util_config import CONFIG_URL_LEGAL_PATTERN
 
 __all__ = [
     "parse_error_info",
@@ -13,6 +14,7 @@ __all__ = [
     "get_string_strip",
     "get_url_legal",
     "get_url_params",
+    "check_url_legal",
 ]
 
 
@@ -55,3 +57,10 @@ def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
     main_part = urllib.parse.urlunparse((frags.scheme, frags.netloc, frags.path, frags.params, "", ""))
     query_part = urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
     return main_part, query_part
+
+
+def check_url_legal(url):
+    """
+    check whether a url is legal
+    """
+    return True if re.match(CONFIG_URL_LEGAL_PATTERN, url, flags=re.IGNORECASE) else False

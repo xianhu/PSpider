@@ -10,7 +10,7 @@ import logging
 import datetime
 import requests
 
-black_patterns = (spider.CONFIG_URL_PATTERN, r"binding", r"download", )
+black_patterns = (spider.CONFIG_URL_ILLEGAL_PATTERN, r"binding", r"download", )
 white_patterns = (r"^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)", )
 
 
@@ -94,6 +94,6 @@ def test_spider_distributed():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s\t%(levelname)s\t%(message)s")
-    # test_spider()
+    test_spider()
     # test_spider_distributed()
     exit()
