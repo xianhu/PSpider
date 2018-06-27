@@ -17,13 +17,13 @@ class ThreadPool(object):
     class of ThreadPool
     """
 
-    def __init__(self, fetcher, parser, saver, proxieser=None, url_filter=None, monitor_sleep_time=5):
+    def __init__(self, fetcher, parser=None, saver=None, proxieser=None, url_filter=None, monitor_sleep_time=5):
         """
         constructor
         """
         self._inst_fetcher = fetcher                    # fetcher instance, subclass of Fetcher
-        self._inst_parser = parser                      # parser instance, subclass of Parser
-        self._inst_saver = saver                        # saver instance, subclass of Saver
+        self._inst_parser = parser                      # parser instance, subclass of Parser or None
+        self._inst_saver = saver                        # saver instance, subclass of Saver or None
         self._inst_proxieser = proxieser                # default: None, proxieser instance, subclass of Proxieser
 
         self._queue_fetch = queue.PriorityQueue()       # (priority, counter, url, keys, deep, repeat)
@@ -33,7 +33,8 @@ class ThreadPool(object):
 
         self._thread_proxieser = None                   # proxieser thread
         self._thread_fetcher_list = []                  # fetcher threads list
-        self._thread_parsar_list = []                   # parser and saver threads list
+        self._thread_parser = None                      # parser thread
+        self._thread_saver = None                       # saver thread
 
         self._thread_stop_flag = False                  # default: False, stop flag of threads
         self._url_filter = url_filter                   # default: None, also can be UrlFilter()
@@ -82,9 +83,10 @@ class ThreadPool(object):
 
         self._thread_proxieser = ProxiesThread("proxieser", self._inst_proxieser, self) if self._inst_proxieser else None
         self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
-        self._thread_parsar_list = [ParseThread("parser", self._inst_parser, self), SaveThread("saver", self._inst_saver, self)]
+        self._thread_parser = ParseThread("parser", self._inst_parser, self) if self._inst_parser else None
+        self._thread_saver = SaveThread("saver", self._inst_saver, self) if self._inst_saver else None
 
-        if self.get_proxies_flag():
+        if self._thread_proxieser:
             self._thread_proxieser.setDaemon(True)
             self._thread_proxieser.start()
 
@@ -92,9 +94,13 @@ class ThreadPool(object):
             thread.setDaemon(True)
             thread.start()
 
-        for thread in self._thread_parsar_list:
-            thread.setDaemon(True)
-            thread.start()
+        if self._thread_parser:
+            self._thread_parser.setDaemon(True)
+            self._thread_parser.start()
+
+        if self._thread_saver:
+            self._thread_saver.setDaemon(True)
+            self._thread_saver.start()
 
         logging.info("%s start success", self.__class__.__name__)
         return
@@ -110,15 +116,16 @@ class ThreadPool(object):
             if thread.is_alive():
                 thread.join()
 
-        for thread in self._thread_parsar_list:
-            if thread.is_alive():
-                thread.join()
+        if self._thread_parser and self._thread_parser.is_alive():
+            self._thread_parser.join()
 
-        if self.get_proxies_flag():
-            if self._thread_proxieser.is_alive():
-                self._thread_proxieser.join()
+        if self._thread_saver and self._thread_saver.is_alive():
+            self._thread_saver.join()
 
-        if self._monitor.is_alive():
+        if self._thread_proxieser and self._thread_proxieser.is_alive():
+            self._thread_proxieser.join()
+
+        if self._monitor and self._monitor.is_alive():
             self._monitor.join()
 
         logging.info("%s finished: %s", self.__class__.__name__, self._number_dict)

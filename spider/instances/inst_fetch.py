@@ -31,7 +31,7 @@ class Fetcher(object):
         working function, must "try, except" and don't change the parameters and return
         :return fetch_result: can be -1(fetch failed), 0(need repeat), 1(fetch success)
         :return proxies_state: can be False(unavaiable), True(avaiable)
-        :return content: can be any object, for example string, list, etc
+        :return content: can be any object, for example string, list, None, etc
         """
         logging.debug("%s start: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 

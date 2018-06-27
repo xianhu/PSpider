@@ -15,7 +15,7 @@ class DistThreadPool(ThreadPool):
     class of DistThreadPool, as the subclass of ThreadPool
     """
 
-    def __init__(self, fetcher, parser, saver, proxieser=None, url_filter=None, monitor_sleep_time=5):
+    def __init__(self, fetcher, parser=None, saver=None, proxieser=None, url_filter=None, monitor_sleep_time=5):
         """
         constructor
         """

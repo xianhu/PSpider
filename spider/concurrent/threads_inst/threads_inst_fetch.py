@@ -39,7 +39,8 @@ class FetchThread(BaseThread):
         # ----3----
         if fetch_result > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
-            self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, content))
+            if content is not None:
+                self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, content))
         elif fetch_result == 0:
             self._pool.add_a_task(TPEnum.URL_FETCH, (priority+1, counter, url, keys, deep, repeat+1))
         else:
