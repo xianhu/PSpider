@@ -16,7 +16,7 @@ CONFIG_FETCH_MESSAGE = "priority=%s, keys=%s, deep=%s, repeat=%s, url=%s"
 CONFIG_PARSE_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
 
 # define url_legal_pattern and url_illegal_pattern
-CONFIG_URL_LEGAL_PATTERN = r"^https?:[\w\W]{5,}"
+CONFIG_URL_LEGAL_PATTERN = r"^https?:[\w\W]+?\.[\w\W]+?"
 CONFIG_URL_ILLEGAL_PATTERN = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|" \
                              "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|" \
                              "jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|" \

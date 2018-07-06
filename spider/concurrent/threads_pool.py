@@ -24,7 +24,7 @@ class ThreadPool(object):
         self._inst_fetcher = fetcher                    # fetcher instance, subclass of Fetcher
         self._inst_parser = parser                      # parser instance, subclass of Parser or None
         self._inst_saver = saver                        # saver instance, subclass of Saver or None
-        self._inst_proxieser = proxieser                # default: None, proxieser instance, subclass of Proxieser
+        self._inst_proxieser = proxieser                # proxieser instance, subclass of Proxieser
 
         self._queue_fetch = queue.PriorityQueue()       # (priority, counter, url, keys, deep, repeat)
         self._queue_parse = queue.PriorityQueue()       # (priority, counter, url, keys, deep, content)
@@ -64,12 +64,14 @@ class ThreadPool(object):
         self._thread_monitor = MonitorThread("monitor", self, sleep_time=monitor_sleep_time)
         self._thread_monitor.setDaemon(True)
         self._thread_monitor.start()
+        logging.info("%s has been initialized", self.__class__.__name__)
         return
 
     def set_start_url(self, url, priority=0, keys=None, deep=0):
         """
         set start url based on "priority", "keys" and "deep", keys must be a dictionary, and repeat must be 0
         """
+        assert check_url_legal(url), "set_start_url error, please pass legal url to this function"
         self.add_a_task(TPEnum.URL_FETCH, (priority, self.get_number_dict(TPEnum.URL_FETCH_COUNT), url, keys or {}, deep, 0))
         logging.debug("%s set_start_url: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys or {}, deep, 0, url))
         return
@@ -78,7 +80,7 @@ class ThreadPool(object):
         """
         start this thread pool
         """
-        logging.info("%s start working: urls_count=%s, fetcher_num=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
+        logging.info("%s starts working: urls_count=%s, fetcher_num=%s", self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
         self._thread_stop_flag = False
 
         self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
@@ -102,14 +104,14 @@ class ThreadPool(object):
             self._thread_proxieser.setDaemon(True)
             self._thread_proxieser.start()
 
-        logging.info("%s start success", self.__class__.__name__)
+        logging.info("%s starts success", self.__class__.__name__)
         return
 
     def wait_for_finished(self):
         """
         wait for the finished of this thread pool
         """
-        logging.info("%s wait for finished", self.__class__.__name__)
+        logging.info("%s waits for finished", self.__class__.__name__)
         self._thread_stop_flag = True
 
         for thread in self._thread_fetcher_list:
@@ -128,7 +130,7 @@ class ThreadPool(object):
         if self._thread_monitor and self._thread_monitor.is_alive():
             self._thread_monitor.join()
 
-        logging.info("%s finished: %s", self.__class__.__name__, self._number_dict)
+        logging.info("%s has finished", self.__class__.__name__)
         return self._number_dict
 
     # ================================================================================================================================

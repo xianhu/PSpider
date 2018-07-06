@@ -16,7 +16,7 @@ class UrlFilter(object):
 
     def __init__(self, black_patterns=(CONFIG_URL_ILLEGAL_PATTERN,), white_patterns=(CONFIG_URL_LEGAL_PATTERN,), capacity=None):
         """
-        constructor, use instance of BloomFilter if capacity else instance of set
+        constructor, use the instance of BloomFilter if capacity else the instance of set
         """
         self._re_black_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in black_patterns] if black_patterns else []
         self._re_white_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in white_patterns] if white_patterns else []
@@ -27,7 +27,7 @@ class UrlFilter(object):
 
     def update(self, url_list):
         """
-        update this urlfilter using url_list
+        update this urlfilter using a url_list
         """
         if self._url_set is not None:
             self._url_set.update(url_list)
@@ -52,7 +52,7 @@ class UrlFilter(object):
 
     def check_and_add(self, url):
         """
-        check the url to make sure it hasn't been fetched, and add url to urlfilter
+        check the url to make sure it hasn't been fetched, and add url to this urlfilter
         """
         result = False
         if self.check(url):

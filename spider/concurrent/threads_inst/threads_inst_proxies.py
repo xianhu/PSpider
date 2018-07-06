@@ -32,7 +32,7 @@ class ProxiesThread(BaseThread):
 
         # ----*----
         while (not self._pool.get_thread_stop_flag()) and self._pool.is_all_tasks_done():
-            logging.debug("%s[%s] sleep 5 seconds because all tasks are done but not stop thread...", self.__class__.__name__, self.getName())
+            logging.debug("%s[%s] sleep 5 seconds because all tasks are done but not stop threads...", self.__class__.__name__, self.getName())
             time.sleep(5)
 
         # ----5----

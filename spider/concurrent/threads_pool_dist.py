@@ -5,6 +5,7 @@ threads_pool_dist.py by xianhu
 """
 
 import redis
+import logging
 from .threads_inst import TPEnum
 from .threads_pool import ThreadPool
 from ..utilities import check_url_legal
@@ -27,6 +28,7 @@ class DistThreadPool(ThreadPool):
 
         # make the spider run forever
         self.update_number_dict(TPEnum.URL_FETCH_NOT, -1)
+        logging.info("%s has been initialized", self.__class__.__name__)
         return
 
     def init_redis(self, host="localhost", port=6379, db=0, key_high_priority="spider.high", key_low_priority="spider.low"):
