@@ -19,8 +19,8 @@ class Fetcher(object):
     def __init__(self, max_repeat=3, sleep_time=0):
         """
         constructor
-        :param max_repeat: default 3, maximum repeat count of fetching for a url
-        :param sleep_time: default 0, sleeping time after a fetching for a url
+        :param max_repeat: default 3, maximum repeat count of a fetching
+        :param sleep_time: default 0, sleeping time after a fetching
         """
         self._max_repeat = max_repeat
         self._sleep_time = sleep_time

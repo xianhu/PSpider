@@ -16,7 +16,7 @@ class Proxieser(object):
     def __init__(self, sleep_time=10):
         """
         constructor
-        :param sleep_time: default 10, sleeping time after a fetching for proxies
+        :param sleep_time: default 10, sleeping time after a fetching
         """
         self._sleep_time = sleep_time
         return

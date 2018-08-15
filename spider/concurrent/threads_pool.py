@@ -56,7 +56,7 @@ class ThreadPool(object):
             TPEnum.ITEM_SAVE_FAIL: 0,                   # the count of urls which have been saved failed
 
             TPEnum.PROXIES_LEFT: 0,                     # the count of proxies which are avaliable
-            TPEnum.PROXIES_FAIL: 0,                     # the count of proxies which banned by website
+            TPEnum.PROXIES_FAIL: 0,                     # the count of proxies which are unavaliable
         }
         self._lock = threading.Lock()                   # the lock which self._number_dict needs
 
@@ -173,8 +173,7 @@ class ThreadPool(object):
         """
         add a task based on task_name, also for proxies
         """
-        if task_name == TPEnum.URL_FETCH and check_url_legal(task_content[2]) and \
-                ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[2])):
+        if task_name == TPEnum.URL_FETCH and check_url_legal(task_content[2]) and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[2])):
             self._queue_fetch.put_nowait(task_content)
             self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
             self.update_number_dict(TPEnum.URL_FETCH_COUNT, +1)
