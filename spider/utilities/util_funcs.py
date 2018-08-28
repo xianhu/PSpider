@@ -61,6 +61,6 @@ def get_url_legal(url, base_url, encoding=None):
 
 def check_url_legal(url):
     """
-    check whether a url is legal
+    check that a url is legal or not
     """
     return True if re.match(CONFIG_URL_LEGAL_PATTERN, url, flags=re.IGNORECASE) else False

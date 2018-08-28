@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 """
-define threads instances of url_fetch, htm_parse, item_save and proxies for thread_pool
+define thread-instances of url_fetch, htm_parse, item_save and proxies for thread_pool
 """
 
 from .threads_inst_base import TPEnum, MonitorThread
