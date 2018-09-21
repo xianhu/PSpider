@@ -1,11 +1,11 @@
 # _*_ coding: utf-8 _*_
 
 """
-define WebSpider, WebSpiderDist, and also define utilities and instances for web_spider
+define WebSpider, and also define utilities and instances for web_spider
 """
 
-__version__ = "1.4.5"
+__version__ = "1.5.0"
 
 from .utilities import *
+from .concurrent import TPEnum, WebSpider
 from .instances import Fetcher, Parser, Saver, Proxieser
-from .concurrent import TPEnum, WebSpider, WebSpiderDist

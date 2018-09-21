@@ -14,11 +14,12 @@ class FetchThread(BaseThread):
     class of FetchThread, as the subclass of BaseThread
     """
 
-    def __init__(self, name, worker, pool):
+    def __init__(self, name, worker, pool, max_count=500):
         """
         constructor
         """
         BaseThread.__init__(self, name, worker, pool)
+        self._max_count = max_count
         self._proxies = None
         return
 
@@ -56,7 +57,7 @@ class FetchThread(BaseThread):
         self._pool.finish_a_task(TPEnum.URL_FETCH)
 
         # ----*----
-        while (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) > 500) or (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT) > 500):
+        while (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) > self._max_count) or (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT) > self._max_count):
             logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_PARSE_NOT' or 'ITEM_SAVE_NOT'...", self.__class__.__name__, self.getName())
             time.sleep(5)
 

@@ -55,7 +55,7 @@ def test_spider():
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
 
     # initial web_spider
-    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, monitor_sleep_time=5)
+    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, max_count_in_fetch=500, max_count_in_proxies=100)
 
     # add start url
     web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys={"type": "360"}, deep=0)
@@ -68,32 +68,7 @@ def test_spider():
     return
 
 
-def test_spider_distributed():
-    """
-    test distributed spider
-    """
-    # initial fetcher / parser / saver
-    fetcher = MyFetcher(max_repeat=1, sleep_time=0)
-    parser = MyParser(max_deep=-1)
-    saver = spider.Saver(save_pipe=open("out_distributed.txt", "w"))
-
-    # define url_filter
-    url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns)
-
-    # initial web_spider
-    web_spider_dist = spider.WebSpiderDist(fetcher, parser, saver, proxieser=None, url_filter=url_filter, monitor_sleep_time=5)
-    web_spider_dist.init_redis(host="localhost", port=6379, key_high_priority="spider.high", key_low_priority="spider.low")
-
-    # start web_spider
-    web_spider_dist.start_working(fetcher_num=10)
-
-    # wait for finished
-    web_spider_dist.wait_for_finished()
-    return
-
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s\t%(levelname)s\t%(message)s")
     test_spider()
-    # test_spider_distributed()
     exit()

@@ -45,7 +45,7 @@ def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
     """
     get main_part(a string) and query_part(a dictionary) from a url
     """
-    frags = urllib.parse.urlparse(url, allow_fragments=True)
+    frags = urllib.parse.urlparse(url)
     main_part = urllib.parse.urlunparse((frags.scheme, frags.netloc, frags.path, frags.params, "", ""))
     query_part = urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
     return main_part, query_part
@@ -55,8 +55,7 @@ def get_url_legal(url, base_url, encoding=None):
     """
     get a legal url from a url, based on base_url
     """
-    url_join = urllib.parse.urljoin(base_url, url, allow_fragments=True)
-    return urllib.parse.quote(url_join, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
+    return urllib.parse.quote(urllib.parse.urljoin(base_url, url), safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
 
 
 def check_url_legal(url):

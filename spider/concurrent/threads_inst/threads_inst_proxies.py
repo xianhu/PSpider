@@ -14,6 +14,14 @@ class ProxiesThread(BaseThread):
     class of ProxiesThread, as the subclass of BaseThread
     """
 
+    def __init__(self, name, worker, pool, max_count=100):
+        """
+        constructor
+        """
+        BaseThread.__init__(self, name, worker, pool)
+        self._max_count = max_count
+        return
+
     def working(self):
         """
         procedure of proxies, auto running, and return False if you need stop thread
@@ -26,7 +34,7 @@ class ProxiesThread(BaseThread):
             self._pool.add_a_task(TPEnum.PROXIES, proxies)
 
         # ----*----
-        while (self._pool.get_number_dict(TPEnum.PROXIES_LEFT) > 100) and (not self._pool.is_all_tasks_done()):
+        while (self._pool.get_number_dict(TPEnum.PROXIES_LEFT) > self._max_count) and (not self._pool.is_all_tasks_done()):
             logging.debug("%s[%s] sleep 5 seconds because of too many 'PROXIES_LEFT'...", self.__class__.__name__, self.getName())
             time.sleep(5)
 
