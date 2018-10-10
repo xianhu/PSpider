@@ -107,14 +107,14 @@ class ThreadPool(object):
             self._thread_proxieser.setDaemon(True)
             self._thread_proxieser.start()
 
-        logging.info("%s starts success", self.__class__.__name__)
+        logging.info("%s starts working: success", self.__class__.__name__)
         return
 
     def wait_for_finished(self):
         """
         wait for the finished of this thread pool
         """
-        logging.info("%s waits for finished", self.__class__.__name__)
+        logging.info("%s waits for finishing", self.__class__.__name__)
         self._thread_stop_flag = True
 
         for thread in self._thread_fetcher_list:

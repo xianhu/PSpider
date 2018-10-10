@@ -8,7 +8,7 @@ import time
 import random
 import logging
 import requests
-from ..utilities import CONFIG_FETCH_MESSAGE
+from ..utilities import CONFIG_FETCH_MESSAGE, get_dict_buildin
 
 
 class Fetcher(object):
@@ -41,7 +41,7 @@ class Fetcher(object):
         except Exception as excep:
             if repeat >= self._max_repeat:
                 fetch_result, proxies_state, content = -1, False, None
-                logging.error("%s error: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+                logging.error("%s error: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, get_dict_buildin(keys), deep, repeat, url))
             else:
                 fetch_result, proxies_state, content = 0, False, None
                 logging.debug("%s repeat: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))

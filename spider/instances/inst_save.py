@@ -6,6 +6,7 @@ inst_save.py by xianhu
 
 import sys
 import logging
+from ..utilities import get_dict_buildin
 
 
 class Saver(object):
@@ -32,7 +33,7 @@ class Saver(object):
             save_result = self.item_save(url, keys, item)
         except Exception as excep:
             save_result = -1
-            logging.error("%s error: %s, keys=%s, url=%s", self.__class__.__name__, excep, keys, url)
+            logging.error("%s error: %s, keys=%s, url=%s", self.__class__.__name__, excep, get_dict_buildin(keys), url)
 
         logging.debug("%s end: save_result=%s, url=%s", self.__class__.__name__, save_result, url)
         return save_result

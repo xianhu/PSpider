@@ -9,21 +9,21 @@ import urllib.parse
 from .util_config import CONFIG_URL_LEGAL_PATTERN
 
 __all__ = [
-    "parse_error_info",
+    "check_url_legal",
     "get_string_num",
     "get_string_strip",
     "get_url_params",
     "get_url_legal",
-    "check_url_legal",
+    "get_dict_buildin",
+    "parse_error_info",
 ]
 
 
-def parse_error_info(line):
+def check_url_legal(url):
     """
-    parse error information based on CONFIG_***_MESSAGE, return a tuple (priority, keys, deep, url)
+    check that a url is legal or not
     """
-    regu = re.search(r"priority=(?P<priority>\d+?),\s*?keys=(?P<keys>.+?),\s*?deep=(?P<deep>\d+?),\s*?(repeat=\d+,)?\s*?url=(?P<url>.+?)$", line)
-    return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
+    return True if re.match(CONFIG_URL_LEGAL_PATTERN, url, flags=re.IGNORECASE) else False
 
 
 def get_string_num(string, ignore_sign=False):
@@ -46,9 +46,8 @@ def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
     get main_part(a string) and query_part(a dictionary) from a url
     """
     frags = urllib.parse.urlparse(url)
-    main_part = urllib.parse.urlunparse((frags.scheme, frags.netloc, frags.path, frags.params, "", ""))
-    query_part = urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
-    return main_part, query_part
+    components = (frags.scheme, frags.netloc, frags.path, frags.params, "", "")
+    return urllib.parse.urlunparse(components), urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
 
 
 def get_url_legal(url, base_url, encoding=None):
@@ -58,8 +57,16 @@ def get_url_legal(url, base_url, encoding=None):
     return urllib.parse.quote(urllib.parse.urljoin(base_url, url), safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
 
 
-def check_url_legal(url):
+def get_dict_buildin(dict_obj, _type=(int, float, bool, str, list, tuple, set, dict)):
     """
-    check that a url is legal or not
+    get a dictionary from value, ignore non-build-in object
     """
-    return True if re.match(CONFIG_URL_LEGAL_PATTERN, url, flags=re.IGNORECASE) else False
+    return {key: value for key, value in dict_obj.items() if isinstance(value, _type)}
+
+
+def parse_error_info(line):
+    """
+    parse error information based on CONFIG_***_MESSAGE, return a tuple (priority, keys, deep, url)
+    """
+    regu = re.search(r"priority=(?P<priority>\d+?),\s*?keys=(?P<keys>.+?),\s*?deep=(?P<deep>\d+?),\s*?(repeat=\d+,)?\s*?url=(?P<url>.+?)$", line)
+    return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
