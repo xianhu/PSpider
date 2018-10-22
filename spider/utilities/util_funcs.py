@@ -12,8 +12,8 @@ __all__ = [
     "check_url_legal",
     "get_string_num",
     "get_string_strip",
-    "get_url_params",
     "get_url_legal",
+    "get_url_params",
     "get_dict_buildin",
     "parse_error_info",
 ]
@@ -30,7 +30,7 @@ def get_string_num(string, ignore_sign=False):
     """
     get a float number from a string
     """
-    string_re = re.search(r"(?P<sign>-?)(?P<num>\d+(\.\d+)?)", get_string_strip(string.replace(",", ""), replace_char=""), flags=re.IGNORECASE)
+    string_re = re.search(r"(?P<sign>-?)(?P<num>\d+(\.\d+)?)", string.replace(",", ""), flags=re.IGNORECASE)
     return float((string_re.group("sign") if not ignore_sign else "") + string_re.group("num")) if string_re else None
 
 
@@ -39,6 +39,13 @@ def get_string_strip(string, replace_char=" "):
     get a string which striped \t, \r, \n from a string, also change None to ""
     """
     return re.sub(r"\s+", replace_char, string, flags=re.IGNORECASE).strip() if string else ""
+
+
+def get_url_legal(url, base_url, encoding=None):
+    """
+    get a legal url from a url, based on base_url
+    """
+    return urllib.parse.quote(urllib.parse.urljoin(base_url, url), safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
 
 
 def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
@@ -50,18 +57,12 @@ def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
     return urllib.parse.urlunparse(components), urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
 
 
-def get_url_legal(url, base_url, encoding=None):
-    """
-    get a legal url from a url, based on base_url
-    """
-    return urllib.parse.quote(urllib.parse.urljoin(base_url, url), safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
-
-
 def get_dict_buildin(dict_obj, _type=(int, float, bool, str, list, tuple, set, dict)):
     """
-    get a dictionary from value, ignore non-build-in object
+    get a dictionary from value, ignore non-buildin object
     """
-    return {key: value for key, value in dict_obj.items() if isinstance(value, _type)}
+    non_buildin = {key for key in dict_obj if not isinstance(dict_obj[key], _type)}
+    return dict_obj if not non_buildin else {key: dict_obj[key] for key in dict_obj if key not in non_buildin}
 
 
 def parse_error_info(line):

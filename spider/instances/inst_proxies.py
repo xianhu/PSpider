@@ -25,7 +25,7 @@ class Proxieser(object):
         """
         working function, must "try, except" and don't change the parameters and return
         :return proxies_result: can be -1(get failed), 1(get success)
-        :return proxies_list: can be a proxies list which getting from web or database
+        :return proxies_list: [{"http": "http://auth@ip:port", "https": "https://auth@ip:port"}, ...]
         """
         logging.debug("%s start", self.__class__.__name__)
 

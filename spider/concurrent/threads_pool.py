@@ -117,9 +117,8 @@ class ThreadPool(object):
         logging.info("%s waits for finishing", self.__class__.__name__)
         self._thread_stop_flag = True
 
-        for thread in self._thread_fetcher_list:
-            if thread.is_alive():
-                thread.join()
+        for thread in filter(lambda x: x.is_alive(), self._thread_fetcher_list):
+            thread.join()
 
         if self._thread_parser and self._thread_parser.is_alive():
             self._thread_parser.join()
