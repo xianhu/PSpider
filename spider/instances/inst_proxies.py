@@ -24,20 +24,20 @@ class Proxieser(object):
     def working(self) -> (int, list):
         """
         working function, must "try, except" and don't change the parameters and return
-        :return proxies_result: can be -1(get failed), 1(get success)
+        :return proxies_state: can be -1(get failed), 1(get success)
         :return proxies_list: [{"http": "http://auth@ip:port", "https": "https://auth@ip:port"}, ...]
         """
         logging.debug("%s start", self.__class__.__name__)
 
         time.sleep(self._sleep_time)
         try:
-            proxies_result, proxies_list = self.proxies_get()
+            proxies_state, proxies_list = self.proxies_get()
         except Exception as excep:
-            proxies_result, proxies_list = -1, []
+            proxies_state, proxies_list = -1, []
             logging.error("%s error: %s", self.__class__.__name__, excep)
 
-        logging.debug("%s end: proxies_result=%s, len(proxies_list)=%s", self.__class__.__name__, proxies_result, len(proxies_list))
-        return proxies_result, proxies_list
+        logging.debug("%s end: proxies_state=%s, len(proxies_list)=%s", self.__class__.__name__, proxies_state, len(proxies_list))
+        return proxies_state, proxies_list
 
     def proxies_get(self) -> (int, list):
         """

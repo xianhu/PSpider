@@ -20,10 +20,10 @@ class SaveThread(BaseThread):
         url, keys, item = self._pool.get_a_task(TPEnum.ITEM_SAVE)
 
         # ----2----
-        save_result = self._worker.working(url, keys, item)
+        save_state = self._worker.working(url, keys, item)
 
         # ----3----
-        if save_result > 0:
+        if save_state > 0:
             self._pool.update_number_dict(TPEnum.ITEM_SAVE_SUCC, +1)
         else:
             self._pool.update_number_dict(TPEnum.ITEM_SAVE_FAIL, +1)

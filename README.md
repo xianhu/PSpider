@@ -14,8 +14,7 @@ A simple web spider frame written by Python, which needs Python3.5+
 3. concurrent module: define WebSpiderFrame of multi-threading spider
 
 ### Procedure of PSpider
-1. procedure of multi-threading spider  
-![](procedure.png)  
+![](procedure.png)
 ①: Fetcher gets url from UrlQueue, and makes requests based on this url  
 ②: Put the result of ① to HtmlQueue, and so Parser can get it  
 ③: Parser gets item from HtmlQueue, and parses it to get new urls and saved items  
@@ -25,14 +24,16 @@ A simple web spider frame written by Python, which needs Python3.5+
 ⑦: Proxieser gets proxies from web or database and puts proxies to ProxiesQueue  
 ⑧: Fetcher gets proxies from ProxiesQueue if needed, and makes requests based on this proxies  
 
-2. procedure of distributed spider  
-Similar with multi-threading spider. The only difference is getting url from redis instead of queue.  
-
 ### Tutorials of PSpider
 **Installation: you'd better use the first method**  
 （1）Copy the "spider" directory to your project directory, and `import spider`  
 （2）Install spider to your python system using `python3 setup.py install`  
 
 **See test.py**  
+
+### TodoList
+1. Distribute Spider
+2. Execute JavaScript
+3. More Demos
 
 ### If you have any questions or advices, you can commit "Issues" or "Pull requests"

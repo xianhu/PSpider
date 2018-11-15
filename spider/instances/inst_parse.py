@@ -26,20 +26,20 @@ class Parser(object):
     def working(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, list):
         """
         working function, must "try, except" and don't change the parameters and return
-        :return parse_result: can be -1(parse failed), 1(parse success)
+        :return parse_state: can be -1(parse failed), 1(parse success)
         :return url_list: [(url, keys, priority), (url, keys, priority), ...]
         :return save_list: [item(a list or tuple), item(a list or tuple), ...]
         """
         logging.debug("%s start: %s", self.__class__.__name__, CONFIG_PARSE_MESSAGE % (priority, keys, deep, url))
 
         try:
-            parse_result, url_list, save_list = self.htm_parse(priority, url, keys, deep, content)
+            parse_state, url_list, save_list = self.htm_parse(priority, url, keys, deep, content)
         except Exception as excep:
-            parse_result, url_list, save_list = -1, [], []
+            parse_state, url_list, save_list = -1, [], []
             logging.error("%s error: %s, %s", self.__class__.__name__, excep, CONFIG_PARSE_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
 
-        logging.debug("%s end: parse_result=%s, len(url_list)=%s, len(save_list)=%s, url=%s", self.__class__.__name__, parse_result, len(url_list), len(save_list), url)
-        return parse_result, url_list, save_list
+        logging.debug("%s end: parse_state=%s, len(url_list)=%s, len(save_list)=%s, url=%s", self.__class__.__name__, parse_state, len(url_list), len(save_list), url)
+        return parse_state, url_list, save_list
 
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, list):
         """

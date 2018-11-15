@@ -25,18 +25,18 @@ class Saver(object):
     def working(self, url: str, keys: dict, item: (list, tuple)) -> int:
         """
         working function, must "try, except" and don't change the parameters and return
-        :return save_result: can be -1(save failed), 1(save success)
+        :return save_state: can be -1(save failed), 1(save success)
         """
         logging.debug("%s start: keys=%s, url=%s", self.__class__.__name__, keys, url)
 
         try:
-            save_result = self.item_save(url, keys, item)
+            save_state = self.item_save(url, keys, item)
         except Exception as excep:
-            save_result = -1
+            save_state = -1
             logging.error("%s error: %s, keys=%s, url=%s", self.__class__.__name__, excep, get_dict_buildin(keys), url)
 
-        logging.debug("%s end: save_result=%s, url=%s", self.__class__.__name__, save_result, url)
-        return save_result
+        logging.debug("%s end: save_state=%s, url=%s", self.__class__.__name__, save_state, url)
+        return save_state
 
     def item_save(self, url: str, keys: dict, item: (list, tuple)) -> int:
         """

@@ -35,14 +35,14 @@ class FetchThread(BaseThread):
         priority, counter, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
 
         # ----2----
-        fetch_result, proxies_state, content = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
+        fetch_state, fetch_result, proxies_state = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
 
         # ----3----
-        if fetch_result > 0:
+        if fetch_state > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
-            if content is not None:
-                self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, content))
-        elif fetch_result == 0:
+            if fetch_result is not None:
+                self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, fetch_result))
+        elif fetch_state == 0:
             self._pool.add_a_task(TPEnum.URL_FETCH, (priority, counter, url, keys, deep, repeat+1))
         else:
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)

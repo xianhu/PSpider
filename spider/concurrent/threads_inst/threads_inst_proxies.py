@@ -27,7 +27,7 @@ class ProxiesThread(BaseThread):
         procedure of proxies, auto running, and return False if you need stop thread
         """
         # ----2----
-        proxies_result, proxies_list = self._worker.working()
+        proxies_state, proxies_list = self._worker.working()
 
         # ----3----
         for proxies in proxies_list:
