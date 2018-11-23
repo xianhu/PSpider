@@ -40,8 +40,7 @@ class FetchThread(BaseThread):
         # ----3----
         if fetch_state > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
-            if fetch_result is not None:
-                self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, fetch_result))
+            self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, fetch_result))
         elif fetch_state == 0:
             self._pool.add_a_task(TPEnum.URL_FETCH, (priority, counter, url, keys, deep, repeat+1))
         else:
@@ -57,7 +56,7 @@ class FetchThread(BaseThread):
         self._pool.finish_a_task(TPEnum.URL_FETCH)
 
         # ----*----
-        while (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) > self._max_count) or (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT) > self._max_count):
+        while (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) >= self._max_count) or (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT) >= self._max_count):
             logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_PARSE_NOT' or 'ITEM_SAVE_NOT'...", self.__class__.__name__, self.getName())
             time.sleep(5)
 

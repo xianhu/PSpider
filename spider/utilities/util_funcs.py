@@ -16,6 +16,7 @@ __all__ = [
     "get_url_params",
     "get_dict_buildin",
     "parse_error_info",
+    "parse_raw_request",
 ]
 
 
@@ -71,3 +72,18 @@ def parse_error_info(line):
     """
     regu = re.search(r"priority=(?P<priority>\d+?),\s*?keys=(?P<keys>.+?),\s*?deep=(?P<deep>\d+?),\s*?(repeat=\d+,)?\s*?url=(?P<url>.+?)$", line)
     return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
+
+
+def parse_raw_request(raw_request_string, _type="charles"):
+    """
+    parse headers and cookies from a raw string, which copied from charles or fiddler
+    """
+    headers, cookies = {}, {}
+    assert _type in ("charles", "fiddler")
+    for frags in [line.strip().split(":") for line in raw_request_string.strip().split("\n") if line.strip()]:
+        if frags[0].strip() in ("Host", "Origin", "Referer", "Connection", "Etag", "User-Agent", "Cache-Control", "Content-Type", "Content-Length",
+                                "Accept", "Accept-Encoding", "Accept-Charset", "Accept-Language", "If-Modified-Since", "If-None-Match", "Last-Modified"):
+            headers[frags[0].strip()] = ":".join(frags[1:]).strip()
+        if frags[0].strip() == "Cookie":
+            cookies = {pair[0].strip(): "=".join(pair[1:]).strip() for pair in [c.strip().split("=") for c in ":".join(frags[1:]).split(";")]}
+    return headers, cookies

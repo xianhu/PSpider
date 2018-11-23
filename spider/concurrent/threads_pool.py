@@ -31,7 +31,7 @@ class ThreadPool(object):
         self._queue_save = queue.Queue()                    # (url, keys, item), item can be anything
         self._queue_proxies = queue.Queue()                 # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
 
-        self._thread_fetcher_list = []                      # fetcher threads list
+        self._thread_fetcher_list = []                      # fetcher thread list
         self._thread_parser = None                          # parser thread
         self._thread_saver = None                           # saver thread
         self._thread_proxieser = None                       # proxieser thread
@@ -175,7 +175,8 @@ class ThreadPool(object):
         """
         add a task based on task_name, also for proxies
         """
-        if task_name == TPEnum.URL_FETCH and check_url_legal(task_content[2]) and ((task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[2])):
+        if task_name == TPEnum.URL_FETCH and check_url_legal(task_content[2]) and (
+                (task_content[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[2])):
             self._queue_fetch.put_nowait(task_content)
             self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
             self.update_number_dict(TPEnum.URL_FETCH_COUNT, +1)
