@@ -47,8 +47,11 @@ class FetchThread(BaseThread):
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
 
         # ----*----
-        if self._proxies and (not proxies_state):
-            self._pool.update_number_dict(TPEnum.PROXIES_FAIL, +1)
+        if self._proxies and (proxies_state <= 0):
+            if proxies_state == 0:
+                self._pool.add_a_task(TPEnum.PROXIES, self._proxies)
+            else:
+                self._pool.update_number_dict(TPEnum.PROXIES_FAIL, +1)
             self._pool.finish_a_task(TPEnum.PROXIES)
             self._proxies = None
 

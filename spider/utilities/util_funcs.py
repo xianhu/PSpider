@@ -6,7 +6,7 @@ util_funcs.py by xianhu
 
 import re
 import urllib.parse
-from .util_config import CONFIG_URL_LEGAL_PATTERN
+from .util_config import CONFIG_URL_LEGAL_PATTERN, CONFIG_MESSAGE_PATTERN
 
 __all__ = [
     "check_url_legal",
@@ -70,7 +70,7 @@ def parse_error_info(line):
     """
     parse error information based on CONFIG_***_MESSAGE, return a tuple (priority, keys, deep, url)
     """
-    regu = re.search(r"priority=(?P<priority>\d+?),\s*?keys=(?P<keys>.+?),\s*?deep=(?P<deep>\d+?),\s*?(repeat=\d+,)?\s*?url=(?P<url>.+?)$", line)
+    regu = re.search(CONFIG_MESSAGE_PATTERN, line, flags=re.IGNORECASE)
     return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
 
 
@@ -80,9 +80,12 @@ def parse_raw_request(raw_request_string, _type="charles"):
     """
     headers, cookies = {}, {}
     assert _type in ("charles", "fiddler")
+    header_set = {
+        "Host", "Origin", "Referer", "Connection", "Etag", "User-Agent", "Cache-Control", "Content-Type", "Content-Length",
+        "Accept", "Accept-Encoding", "Accept-Charset", "Accept-Language", "If-Modified-Since", "If-None-Match", "Last-Modified"
+    }
     for frags in [line.strip().split(":") for line in raw_request_string.strip().split("\n") if line.strip()]:
-        if frags[0].strip() in ("Host", "Origin", "Referer", "Connection", "Etag", "User-Agent", "Cache-Control", "Content-Type", "Content-Length",
-                                "Accept", "Accept-Encoding", "Accept-Charset", "Accept-Language", "If-Modified-Since", "If-None-Match", "Last-Modified"):
+        if frags[0].strip() in header_set:
             headers[frags[0].strip()] = ":".join(frags[1:]).strip()
         if frags[0].strip() == "Cookie":
             cookies = {pair[0].strip(): "=".join(pair[1:]).strip() for pair in [c.strip().split("=") for c in ":".join(frags[1:]).split(";")]}

@@ -26,12 +26,12 @@ class Fetcher(object):
         self._sleep_time = sleep_time
         return
 
-    def working(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, bool):
+    def working(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, int):
         """
-        working function, must "try, except" and don't change the parameters and return
+        working function, must "try, except" and don't change the parameters and returns
         :return fetch_state: can be -1(fetch failed), 0(need repeat), 1(fetch success)
         :return fetch_result: can be any object, for example string, list, None, etc
-        :return proxies_state: can be False(unavaiable), True(avaiable)
+        :return proxies_state: can be -1(unavaiable), 0(return to queue), 1(avaiable)
         """
         logging.debug("%s start: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
@@ -40,22 +40,22 @@ class Fetcher(object):
             fetch_state, fetch_result, proxies_state = self.url_fetch(priority, url, keys, deep, repeat, proxies=proxies)
         except Exception as excep:
             if repeat >= self._max_repeat:
-                fetch_state, fetch_result, proxies_state = -1, None, False
+                fetch_state, fetch_result, proxies_state = -1, None, -1
                 logging.error("%s error: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, get_dict_buildin(keys), deep, repeat, url))
             else:
-                fetch_state, fetch_result, proxies_state = 0, None, False
+                fetch_state, fetch_result, proxies_state = 0, None, -1
                 logging.debug("%s repeat: %s, %s", self.__class__.__name__, excep, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
         logging.debug("%s end: fetch_state=%s, proxies_state=%s, url=%s", self.__class__.__name__, fetch_state, proxies_state, url)
         return fetch_state, fetch_result, proxies_state
 
-    def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, bool):
+    def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, int):
         """
-        fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
+        fetch the content of a url, you can rewrite this function, parameters and returns refer to self.working()
         """
         response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, timeout=(3.05, 10))
         if response.history:
             logging.debug("%s redirect: %s", self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
         result = (response.status_code, response.url, response.text)
-        return 1, result, True
+        return 1, result, 1

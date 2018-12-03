@@ -24,7 +24,7 @@ class Saver(object):
 
     def working(self, url: str, keys: dict, item: (list, tuple)) -> int:
         """
-        working function, must "try, except" and don't change the parameters and return
+        working function, must "try, except" and don't change the parameters and returns
         :return save_state: can be -1(save failed), 1(save success)
         """
         logging.debug("%s start: keys=%s, url=%s", self.__class__.__name__, keys, url)
@@ -40,7 +40,7 @@ class Saver(object):
 
     def item_save(self, url: str, keys: dict, item: (list, tuple)) -> int:
         """
-        save the item of a url, you can rewrite this function, parameters and return refer to self.working()
+        save the item of a url, you can rewrite this function, parameters and returns refer to self.working()
         """
         self._save_pipe.write("\t".join([str(col) for col in item]) + "\n")
         self._save_pipe.flush()

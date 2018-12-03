@@ -25,7 +25,7 @@ class Parser(object):
 
     def working(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, list):
         """
-        working function, must "try, except" and don't change the parameters and return
+        working function, must "try, except" and don't change the parameters and returns
         :return parse_state: can be -1(parse failed), 1(parse success)
         :return url_list: [(url1, keys1, priority1), (url2, keys2, priority2), ...]
         :return save_list: [item1(a list or tuple), item2(a list or tuple), ...]
@@ -43,7 +43,7 @@ class Parser(object):
 
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, list):
         """
-        parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
+        parse the content of a url, you can rewrite this function, parameters and returns refer to self.working()
         """
         status_code, url_now, html_text = content
 

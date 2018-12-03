@@ -7,6 +7,7 @@ util_config.py by xianhu
 __all__ = [
     "CONFIG_FETCH_MESSAGE",
     "CONFIG_PARSE_MESSAGE",
+    "CONFIG_MESSAGE_PATTERN",
     "CONFIG_URL_LEGAL_PATTERN",
     "CONFIG_URL_ILLEGAL_PATTERN",
 ]
@@ -14,6 +15,7 @@ __all__ = [
 # define the structure of message, used in Fetcher and Parser
 CONFIG_FETCH_MESSAGE = "priority=%s, keys=%s, deep=%s, repeat=%s, url=%s"
 CONFIG_PARSE_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
+CONFIG_MESSAGE_PATTERN = r"priority=(?P<priority>\d+),\s*keys=(?P<keys>.+?),\s*deep=(?P<deep>\d+),\s*(repeat=(?P<repeat>\d+),\s*)?url=(?P<url>.+)$"
 
 # define url_legal_pattern and url_illegal_pattern
 CONFIG_URL_LEGAL_PATTERN = r"^https?:[^\s]+?\.[^\s]+?"
