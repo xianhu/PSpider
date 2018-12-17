@@ -9,6 +9,7 @@ import spider
 import logging
 import datetime
 import requests
+from bs4 import BeautifulSoup
 
 black_patterns = (spider.CONFIG_URL_ILLEGAL_PATTERN, r"binding", r"download", )
 white_patterns = (r"^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)", )
@@ -30,6 +31,9 @@ class MyParser(spider.Parser):
     """
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
         status_code, url_now, html_text = content
+        # test multi-process
+        for i in range(10):
+            BeautifulSoup(html_text + " "*i, "lxml")
 
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):
@@ -38,7 +42,6 @@ class MyParser(spider.Parser):
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
-
         return 1, url_list, save_list
 
 
@@ -48,7 +51,7 @@ class MyProxies(spider.Proxieser):
     """
     def proxies_get(self):
         response = requests.get("http://xxxx.com/proxies")
-        return 1, [{"http": "http://%s" % ipport, "https": "https://%s" % ipport} for ipport in response.text.strip().split("\n")]
+        return 1, [{"http": "http://%s" % ipport, "https": "https://%s" % ipport} for ipport in response.text.split("\n")]
 
 
 def test_spider():
@@ -65,13 +68,13 @@ def test_spider():
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
 
     # initial web_spider
-    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, max_count_parsave=500, max_count_proxies=50)
+    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, max_count_parsave=100, max_count_proxies=50)
 
     # add start url
     web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys={"type": "360"}, deep=0)
 
     # start web_spider
-    web_spider.start_working(fetcher_num=10)
+    web_spider.start_working(fetcher_num=50)
 
     # wait for finished
     web_spider.wait_for_finished()

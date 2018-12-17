@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 """
-threads_inst_base.py by xianhu
+base.py by xianhu
 """
 
 import enum
@@ -86,10 +86,6 @@ def init_monitor_thread(self, name, pool):
     """
     BaseThread.__init__(self, name, None, pool)
     self._init_time = time.time()
-
-    self._last_fetch_num = 0
-    self._last_parse_num = 0
-    self._last_save_num = 0
     return
 
 
@@ -103,28 +99,22 @@ def work_monitor(self):
     cur_fetch_not = self._pool.get_number_dict(TPEnum.URL_FETCH_NOT)
     cur_fetch_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
     cur_fetch_fail = self._pool.get_number_dict(TPEnum.URL_FETCH_FAIL)
-    cur_fetch_all = cur_fetch_succ + cur_fetch_fail
-    info += " fetch:[NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (cur_fetch_not, cur_fetch_succ, cur_fetch_fail, cur_fetch_all-self._last_fetch_num)
-    self._last_fetch_num = cur_fetch_all
+    info += " fetch:[NOT=%d, SUCC=%d, FAIL=%d];" % (cur_fetch_not, cur_fetch_succ, cur_fetch_fail)
 
     cur_parse_not = self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT)
     cur_parse_succ = self._pool.get_number_dict(TPEnum.HTM_PARSE_SUCC)
     cur_parse_fail = self._pool.get_number_dict(TPEnum.HTM_PARSE_FAIL)
-    cur_parse_all = cur_parse_succ + cur_parse_fail
-    info += " parse:[NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (cur_parse_not, cur_parse_succ, cur_parse_fail, cur_parse_all-self._last_parse_num)
-    self._last_parse_num = cur_parse_all
+    info += " parse:[NOT=%d, SUCC=%d, FAIL=%d];" % (cur_parse_not, cur_parse_succ, cur_parse_fail)
 
     cur_save_not = self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT)
     cur_save_succ = self._pool.get_number_dict(TPEnum.ITEM_SAVE_SUCC)
     cur_save_fail = self._pool.get_number_dict(TPEnum.ITEM_SAVE_FAIL)
-    cur_save_all = cur_save_succ + cur_save_fail
-    info += " save:[NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (cur_save_not, cur_save_succ, cur_save_fail, cur_save_all-self._last_save_num)
-    self._last_save_num = cur_save_all
+    info += " save:[NOT=%d, SUCC=%d, FAIL=%d];" % (cur_save_not, cur_save_succ, cur_save_fail)
 
-    info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL)) if self._pool.get_proxies_flag() else ""
-    info += " total_seconds=%d" % (time.time() - self._init_time)
+    if self._pool.get_proxies_flag():
+        info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
 
-    logging.info(info)
+    logging.info(info + " total_seconds=%d" % (time.time() - self._init_time))
     return not (self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done())
 
 

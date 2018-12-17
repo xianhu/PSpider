@@ -1,12 +1,12 @@
 # _*_ coding: utf-8 _*_
 
 """
-threads_inst_fetch.py by xianhu
+fetch.py by xianhu
 """
 
 import time
 import logging
-from .threads_inst_base import TPEnum, BaseThread
+from .base import TPEnum, BaseThread
 
 
 class FetchThread(BaseThread):
@@ -14,7 +14,7 @@ class FetchThread(BaseThread):
     class of FetchThread, as the subclass of BaseThread
     """
 
-    def __init__(self, name, worker, pool, max_count=500):
+    def __init__(self, name, worker, pool, max_count=100):
         """
         constructor
         """
@@ -60,7 +60,7 @@ class FetchThread(BaseThread):
 
         # ----*----
         while (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) >= self._max_count) or (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT) >= self._max_count):
-            logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_PARSE_NOT' or 'ITEM_SAVE_NOT'...", self.__class__.__name__, self.getName())
+            logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_PARSE_NOT' or 'ITEM_SAVE_NOT'", self.__class__.__name__, self.getName())
             time.sleep(5)
 
         # ----5----

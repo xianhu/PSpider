@@ -1,12 +1,12 @@
 # _*_ coding: utf-8 _*_
 
 """
-threads_inst_proxies.py by xianhu
+proxies.py by xianhu
 """
 
 import time
 import logging
-from .threads_inst_base import TPEnum, BaseThread
+from .base import TPEnum, BaseThread
 
 
 class ProxiesThread(BaseThread):
@@ -35,12 +35,12 @@ class ProxiesThread(BaseThread):
 
         # ----*----
         while (not self._pool.is_all_tasks_done()) and (self._pool.get_number_dict(TPEnum.PROXIES_LEFT) >= self._max_count):
-            logging.debug("%s[%s] sleep 5 seconds because of too many 'PROXIES_LEFT'...", self.__class__.__name__, self.getName())
+            logging.debug("%s[%s] sleep 5 seconds because of too many 'PROXIES_LEFT'", self.__class__.__name__, self.getName())
             time.sleep(5)
 
         # ----*----
         while self._pool.is_all_tasks_done() and (not self._pool.get_thread_stop_flag()):
-            logging.debug("%s[%s] sleep 5 seconds because all tasks are done but not stop threads...", self.__class__.__name__, self.getName())
+            logging.debug("%s[%s] sleep 5 seconds because all tasks are done but not stop threads", self.__class__.__name__, self.getName())
             time.sleep(5)
 
         # ----5----

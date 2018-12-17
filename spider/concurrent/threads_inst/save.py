@@ -1,10 +1,10 @@
 # _*_ coding: utf-8 _*_
 
 """
-threads_inst_save.py by xianhu
+save.py by xianhu
 """
 
-from .threads_inst_base import TPEnum, BaseThread
+from .base import TPEnum, BaseThread
 
 
 class SaveThread(BaseThread):
