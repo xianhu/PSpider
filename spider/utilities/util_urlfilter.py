@@ -5,7 +5,7 @@ util_urlfilter.py by xianhu
 """
 
 import re
-import pybloom_live
+from pybloom_live import ScalableBloomFilter
 from .util_config import CONFIG_URL_LEGAL_PATTERN, CONFIG_URL_ILLEGAL_PATTERN
 
 
@@ -21,19 +21,19 @@ class UrlFilter(object):
         self._re_black_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in black_patterns] if black_patterns else []
         self._re_white_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in white_patterns] if white_patterns else []
 
-        self._url_set = set() if not capacity else None
-        self._bloom_filter = pybloom_live.ScalableBloomFilter(capacity, error_rate=0.001) if capacity else None
+        self._urlfilter = set() if not capacity else ScalableBloomFilter(capacity, error_rate=0.001)
+        self._urlfilter_type = 0 if not capacity else 1
         return
 
     def update(self, url_list):
         """
         update this urlfilter using a url_list
         """
-        if self._url_set is not None:
-            self._url_set.update(url_list)
+        if self._urlfilter_type == 0:
+            self._urlfilter.update(url_list)
         else:
             for url in url_list:
-                self._bloom_filter.add(url)
+                self._urlfilter.add(url)
         return
 
     def check(self, url):
@@ -56,9 +56,9 @@ class UrlFilter(object):
         """
         result = False
         if self.check(url):
-            if self._url_set is not None:
-                result = url not in self._url_set
-                self._url_set.add(url)
+            if self._urlfilter_type == 0:
+                result = (url not in self._urlfilter)
+                self._urlfilter.add(url)
             else:
-                result = not self._bloom_filter.add(url)
+                result = (not self._urlfilter.add(url))
         return result

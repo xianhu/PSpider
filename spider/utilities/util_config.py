@@ -10,6 +10,7 @@ __all__ = [
     "CONFIG_MESSAGE_PATTERN",
     "CONFIG_URL_LEGAL_PATTERN",
     "CONFIG_URL_ILLEGAL_PATTERN",
+    "CONFIG_HEADERS_SET",
 ]
 
 # define the structure of message, used in Fetcher and Parser
@@ -23,3 +24,9 @@ CONFIG_URL_ILLEGAL_PATTERN = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|
                              "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|csv|tsv|" \
                              "jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|" \
                              "mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$"
+
+# define key set of headers
+CONFIG_HEADERS_SET = {
+    "Host", "Origin", "Referer", "Connection", "Etag", "User-Agent", "Cache-Control", "Content-Type", "Content-Length",
+    "Accept", "Accept-Encoding", "Accept-Charset", "Accept-Language", "If-Modified-Since", "If-None-Match", "Last-Modified"
+}

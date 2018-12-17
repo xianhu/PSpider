@@ -6,7 +6,7 @@ util_funcs.py by xianhu
 
 import re
 import urllib.parse
-from .util_config import CONFIG_URL_LEGAL_PATTERN, CONFIG_MESSAGE_PATTERN
+from .util_config import CONFIG_URL_LEGAL_PATTERN, CONFIG_MESSAGE_PATTERN, CONFIG_HEADERS_SET
 
 __all__ = [
     "check_url_legal",
@@ -46,7 +46,8 @@ def get_url_legal(url, base_url, encoding=None):
     """
     get a legal url from a url, based on base_url
     """
-    return urllib.parse.quote(urllib.parse.urljoin(base_url, url), safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
+    legal_url = urllib.parse.urljoin(base_url, url)
+    return urllib.parse.quote(legal_url, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
 
 
 def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
@@ -63,7 +64,7 @@ def get_dict_buildin(dict_obj, _type=(int, float, bool, str, list, tuple, set, d
     get a dictionary from value, ignore non-buildin object
     """
     non_buildin = {key for key in dict_obj if not isinstance(dict_obj[key], _type)}
-    return dict_obj if not non_buildin else {key: dict_obj[key] for key in dict_obj if key not in non_buildin}
+    return {key: dict_obj[key] for key in dict_obj if key not in non_buildin}
 
 
 def parse_error_info(line):
@@ -80,12 +81,8 @@ def parse_raw_request(raw_request_string, _type="charles"):
     """
     headers, cookies = {}, {}
     assert _type in ("charles", "fiddler")
-    header_set = {
-        "Host", "Origin", "Referer", "Connection", "Etag", "User-Agent", "Cache-Control", "Content-Type", "Content-Length",
-        "Accept", "Accept-Encoding", "Accept-Charset", "Accept-Language", "If-Modified-Since", "If-None-Match", "Last-Modified"
-    }
     for frags in [line.strip().split(":") for line in raw_request_string.strip().split("\n") if line.strip()]:
-        if frags[0].strip() in header_set:
+        if frags[0].strip() in CONFIG_HEADERS_SET:
             headers[frags[0].strip()] = ":".join(frags[1:]).strip()
         if frags[0].strip() == "Cookie":
             cookies = {pair[0].strip(): "=".join(pair[1:]).strip() for pair in [c.strip().split("=") for c in ":".join(frags[1:]).split(";")]}
