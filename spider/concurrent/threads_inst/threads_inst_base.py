@@ -15,13 +15,13 @@ class TPEnum(enum.Enum):
     """
     enum of TPEnum, to mark the status of the web_spider
     """
+    COUNTER = "counter"                     # flag of counter, for priority_queue
     TASKS_RUNNING = "tasks_running"         # flag of tasks_running
 
     URL_FETCH = "url_fetch"                 # flag of url_fetch **
     URL_FETCH_NOT = "url_fetch_not"         # flag of url_fetch_not
     URL_FETCH_SUCC = "url_fetch_succ"       # flag of url_fetch_succ
     URL_FETCH_FAIL = "url_fetch_fail"       # flag of url_fetch_fail
-    URL_FETCH_COUNT = "url_fetch_count"     # flag of url_fetch_count, for priority_queue
 
     HTM_PARSE = "htm_parse"                 # flag of htm_parse **
     HTM_PARSE_NOT = "htm_parse_not"         # flag of htm_parse_not
@@ -62,7 +62,7 @@ class BaseThread(threading.Thread):
             try:
                 if not self.working():
                     break
-            except (queue.Empty, TypeError):
+            except queue.Empty:
                 if self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done():
                     break
             except Exception as excep:
