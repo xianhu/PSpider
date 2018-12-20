@@ -6,8 +6,6 @@ inst_fetch.py by xianhu
 
 import time
 import random
-import logging
-from ..utilities import CONFIG_FETCH_MESSAGE, get_dict_buildin
 
 
 class Fetcher(object):
@@ -30,7 +28,7 @@ class Fetcher(object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return fetch_state: can be -1(fetch failed), 0(need repeat), 1(fetch success)
-        :return fetch_result: can be any object, for example string, list, None, etc
+        :return fetch_result: can be any object, or exception_info[name, excep]
         :return proxies_state: can be -1(unavaiable), 0(return to queue), 1(avaiable)
         """
         time.sleep(random.randint(0, self._sleep_time))
@@ -38,11 +36,7 @@ class Fetcher(object):
         try:
             fetch_state, fetch_result, proxies_state = self.url_fetch(priority, url, keys, deep, repeat, proxies=proxies)
         except Exception as excep:
-            if repeat >= self._max_repeat:
-                fetch_state, fetch_result, proxies_state = -1, None, -1
-                logging.error("%s error: %s, %s", self._name, excep, CONFIG_FETCH_MESSAGE % (priority, get_dict_buildin(keys), deep, repeat, url))
-            else:
-                fetch_state, fetch_result, proxies_state = 0, None, -1
+            fetch_state, fetch_result, proxies_state = (-1 if repeat >= self._max_repeat else 0), [self._name, str(excep)], -1
 
         return fetch_state, fetch_result, proxies_state
 

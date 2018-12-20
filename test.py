@@ -6,6 +6,7 @@ test.py by xianhu
 
 import re
 import spider
+import random
 import datetime
 import requests
 from bs4 import BeautifulSoup
@@ -21,6 +22,7 @@ class MyFetcher(spider.Fetcher):
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
         response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, timeout=(3.05, 10))
         result = (response.status_code, response.url, response.text)
+        assert random.randint(0, 100) != 8, "------"
         return 1, result, 1
 
 
@@ -41,6 +43,7 @@ class MyParser(spider.Parser):
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
+        assert random.randint(0, 100) != 8, "******"
         return 1, url_list, save_list
 
 
@@ -51,7 +54,7 @@ class MySaver(spider.Saver):
     def item_save(self, url: str, keys: dict, item: (list, tuple)):
         self._save_pipe.write("\t".join([str(col) for col in item]) + "\n")
         self._save_pipe.flush()
-        return 1
+        return 1, []
 
 
 class MyProxies(spider.Proxieser):
@@ -68,7 +71,7 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver / proxieser
-    fetcher = MyFetcher(max_repeat=3, sleep_time=1)
+    fetcher = MyFetcher(max_repeat=0, sleep_time=1)
     parser = MyParser(max_deep=2)
     saver = MySaver(save_pipe=open("out_thread.txt", "w"))
     # proxieser = MyProxies(sleep_time=1)

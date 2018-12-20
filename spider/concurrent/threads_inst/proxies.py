@@ -4,6 +4,7 @@
 proxies.py by xianhu
 """
 
+import logging
 from .base import TPEnum, BaseThread
 
 
@@ -20,8 +21,11 @@ class ProxiesThread(BaseThread):
         proxies_state, proxies_list = self._worker.working()
 
         # ----3----
-        for proxies in proxies_list:
-            self._pool.add_a_task(TPEnum.PROXIES, proxies)
+        if proxies_state > 0:
+            for proxies in proxies_list:
+                self._pool.add_a_task(TPEnum.PROXIES, proxies)
+        else:
+            logging.error("%s error: %s", proxies_list[0], proxies_list[1])
 
         # ----5----
         return not (self._pool.is_all_tasks_done() and self._pool.get_thread_stop_flag())

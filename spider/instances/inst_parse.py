@@ -4,9 +4,6 @@
 inst_parse.py by xianhu
 """
 
-import logging
-from ..utilities import CONFIG_PARSE_MESSAGE, get_dict_buildin
-
 
 class Parser(object):
     """
@@ -26,14 +23,13 @@ class Parser(object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return parse_state: can be -1(parse failed), 1(parse success)
-        :return url_list: [(url1, keys1, priority1), (url2, keys2, priority2), ...]
+        :return url_list: [(url1, keys1, priority1), ...], or exception_info[name, excep]
         :return save_list: [item1(a list or tuple), item2(a list or tuple), ...]
         """
         try:
             parse_state, url_list, save_list = self.htm_parse(priority, url, keys, deep, content)
         except Exception as excep:
-            parse_state, url_list, save_list = -1, [], []
-            logging.error("%s error: %s, %s", self._name, excep, CONFIG_PARSE_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
+            parse_state, url_list, save_list = -1, [self._name, str(excep)], []
 
         return parse_state, url_list, save_list
 

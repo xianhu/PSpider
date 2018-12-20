@@ -5,8 +5,6 @@ inst_save.py by xianhu
 """
 
 import sys
-import logging
-from ..utilities import get_dict_buildin
 
 
 class Saver(object):
@@ -23,20 +21,20 @@ class Saver(object):
         self._name = self.__class__.__name__
         return
 
-    def working(self, url: str, keys: dict, item: (list, tuple)) -> int:
+    def working(self, url: str, keys: dict, item: (list, tuple)) -> (int, object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return save_state: can be -1(save failed), 1(save success)
+        :return save_result: can be any object, or exception_info[name, excep]
         """
         try:
-            save_state = self.item_save(url, keys, item)
+            save_state, save_result = self.item_save(url, keys, item)
         except Exception as excep:
-            save_state = -1
-            logging.error("%s error: %s, keys=%s, url=%s", self._name, excep, get_dict_buildin(keys), url)
+            save_state, save_result = -1, [self._name, str(excep)]
 
-        return save_state
+        return save_state, save_result
 
-    def item_save(self, url: str, keys: dict, item: (list, tuple)) -> int:
+    def item_save(self, url: str, keys: dict, item: (list, tuple)) -> (int, object):
         """
         save the item of a url, you must rewrite this function, parameters and returns refer to self.working()
         """

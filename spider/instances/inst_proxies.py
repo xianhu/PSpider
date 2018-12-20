@@ -5,7 +5,6 @@ inst_proxies.py by xianhu
 """
 
 import time
-import logging
 
 
 class Proxieser(object):
@@ -26,15 +25,14 @@ class Proxieser(object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return proxies_state: can be -1(get failed), 1(get success)
-        :return proxies_list: [{"http": "http://auth@ip:port", "https": "https://auth@ip:port"}, ...]
+        :return proxies_list: [{"http(s)": "http(s)://auth@ip:port", ...], or exception_info[name, excep]
         """
         time.sleep(self._sleep_time)
 
         try:
             proxies_state, proxies_list = self.proxies_get()
         except Exception as excep:
-            proxies_state, proxies_list = -1, []
-            logging.error("%s error: %s", self._name, excep)
+            proxies_state, proxies_list = -1, [self._name, str(excep)]
 
         return proxies_state, proxies_list
 
