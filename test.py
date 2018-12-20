@@ -6,10 +6,8 @@ test.py by xianhu
 
 import re
 import spider
-import logging
 import datetime
 import requests
-from bs4 import BeautifulSoup
 
 black_patterns = (spider.CONFIG_URL_ILLEGAL_PATTERN, r"binding", r"download", )
 white_patterns = (r"^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)", )
@@ -31,18 +29,25 @@ class MyParser(spider.Parser):
     """
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
         status_code, url_now, html_text = content
-        # test multi-process
-        for i in range(10):
-            BeautifulSoup(html_text + " "*i, "lxml")
 
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):
-            tmp_list = re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)
-            url_list = [(_url, keys, priority+1) for _url in [spider.get_url_legal(href, url) for href in tmp_list]]
+            for _url in re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE):
+                url_list.append((spider.get_url_legal(_url, base_url=url), keys, priority+1))
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
         return 1, url_list, save_list
+
+
+class MySaver(spider.Saver):
+    """
+    saver module, only rewrite item_save()
+    """
+    def item_save(self, url: str, keys: dict, item: (list, tuple)):
+        self._save_pipe.write("\t".join([str(col) for col in item]) + "\n")
+        self._save_pipe.flush()
+        return 1
 
 
 class MyProxies(spider.Proxieser):
@@ -61,14 +66,15 @@ def test_spider():
     # initial fetcher / parser / saver / proxieser
     fetcher = MyFetcher(max_repeat=3, sleep_time=1)
     parser = MyParser(max_deep=2)
-    saver = spider.Saver(save_pipe=open("out_thread.txt", "w"))
+    saver = MySaver(save_pipe=open("out_thread.txt", "w"))
     # proxieser = MyProxies(sleep_time=1)
 
     # define url_filter
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
 
     # initial web_spider
-    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, max_count_parsave=100, max_count_proxies=50)
+    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=500)
+    # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
     # add start url
     web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys={"type": "360"}, deep=0)
@@ -82,6 +88,5 @@ def test_spider():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s\t%(levelname)s\t%(message)s")
     test_spider()
     exit()

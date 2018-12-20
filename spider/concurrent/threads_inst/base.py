@@ -13,8 +13,9 @@ import threading
 
 class TPEnum(enum.Enum):
     """
-    enum of TPEnum, to mark the status of the web_spider
+    enum of TPEnum, to mark the status of the threads_pool
     """
+
     COUNTER = "counter"                     # flag of counter, for priority_queue
     TASKS_RUNNING = "tasks_running"         # flag of tasks_running
 
@@ -56,8 +57,6 @@ class BaseThread(threading.Thread):
         """
         rewrite run function, auto running and must call self.working()
         """
-        logging.debug("%s[%s] start...", self.__class__.__name__, self.getName())
-
         while True:
             try:
                 if not self.working():
@@ -68,8 +67,6 @@ class BaseThread(threading.Thread):
             except Exception as excep:
                 logging.error("%s[%s] error: %s", self.__class__.__name__, self.getName(), excep)
                 break
-
-        logging.debug("%s[%s] end...", self.__class__.__name__, self.getName())
         return
 
     def working(self):
@@ -114,7 +111,7 @@ def work_monitor(self):
     if self._pool.get_proxies_flag():
         info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
 
-    logging.info(info + " total_seconds=%d" % (time.time() - self._init_time))
+    logging.warning(info + " total_seconds=%d" % (time.time() - self._init_time))
     return not (self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done())
 
 

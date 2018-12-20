@@ -4,8 +4,6 @@
 fetch.py by xianhu
 """
 
-import time
-import logging
 from .base import TPEnum, BaseThread
 
 
@@ -14,12 +12,11 @@ class FetchThread(BaseThread):
     class of FetchThread, as the subclass of BaseThread
     """
 
-    def __init__(self, name, worker, pool, max_count=100):
+    def __init__(self, name, worker, pool):
         """
         constructor
         """
         BaseThread.__init__(self, name, worker, pool)
-        self._max_count = max_count
         self._proxies = None
         return
 
@@ -27,12 +24,10 @@ class FetchThread(BaseThread):
         """
         procedure of fetching, auto running, and return True
         """
-        # ----*----
-        if self._pool.get_proxies_flag() and (not self._proxies):
-            self._proxies = self._pool.get_a_task(TPEnum.PROXIES)
-
         # ----1----
         priority, counter, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
+        if self._pool.get_proxies_flag() and (not self._proxies):
+            self._proxies = self._pool.get_a_task(TPEnum.PROXIES)
 
         # ----2----
         fetch_state, fetch_result, proxies_state = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
@@ -57,11 +52,6 @@ class FetchThread(BaseThread):
 
         # ----4----
         self._pool.finish_a_task(TPEnum.URL_FETCH)
-
-        # ----*----
-        while (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) >= self._max_count) or (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT) >= self._max_count):
-            logging.debug("%s[%s] sleep 5 seconds because of too many 'HTM_PARSE_NOT' or 'ITEM_SAVE_NOT'", self.__class__.__name__, self.getName())
-            time.sleep(5)
 
         # ----5----
         return True
