@@ -83,6 +83,10 @@ def init_monitor_thread(self, name, pool):
     """
     BaseThread.__init__(self, name, None, pool)
     self._init_time = time.time()
+
+    self._last_fetch_num = 0
+    self._last_parse_num = 0
+    self._last_save_num = 0
     return
 
 
@@ -96,17 +100,23 @@ def work_monitor(self):
     cur_fetch_not = self._pool.get_number_dict(TPEnum.URL_FETCH_NOT)
     cur_fetch_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
     cur_fetch_fail = self._pool.get_number_dict(TPEnum.URL_FETCH_FAIL)
-    info += " fetch:[NOT=%d, SUCC=%d, FAIL=%d];" % (cur_fetch_not, cur_fetch_succ, cur_fetch_fail)
+    cur_fetch_all = cur_fetch_succ + cur_fetch_fail
+    info += " fetch:[NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (cur_fetch_not, cur_fetch_succ, cur_fetch_fail, cur_fetch_all - self._last_fetch_num)
+    self._last_fetch_num = cur_fetch_all
 
     cur_parse_not = self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT)
     cur_parse_succ = self._pool.get_number_dict(TPEnum.HTM_PARSE_SUCC)
     cur_parse_fail = self._pool.get_number_dict(TPEnum.HTM_PARSE_FAIL)
-    info += " parse:[NOT=%d, SUCC=%d, FAIL=%d];" % (cur_parse_not, cur_parse_succ, cur_parse_fail)
+    cur_parse_all = cur_parse_succ + cur_parse_fail
+    info += " parse:[NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (cur_parse_not, cur_parse_succ, cur_parse_fail, cur_parse_all - self._last_parse_num)
+    self._last_parse_num = cur_parse_all
 
     cur_save_not = self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT)
     cur_save_succ = self._pool.get_number_dict(TPEnum.ITEM_SAVE_SUCC)
     cur_save_fail = self._pool.get_number_dict(TPEnum.ITEM_SAVE_FAIL)
-    info += " save:[NOT=%d, SUCC=%d, FAIL=%d];" % (cur_save_not, cur_save_succ, cur_save_fail)
+    cur_save_all = cur_save_succ + cur_save_fail
+    info += " save:[NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (cur_save_not, cur_save_succ, cur_save_fail, cur_save_all - self._last_save_num)
+    self._last_save_num = cur_save_all
 
     if self._pool.get_proxies_flag():
         info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
