@@ -19,7 +19,7 @@ class ParseThread(BaseThread):
         """
         procedure of parsing, auto running, and return True
         """
-        if self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) <= self._pool.get_fetcher_number():
+        if self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) <= self._pool.get_fetcher_number() / 2:
             # ----1----
             task_list = [self._pool.get_a_task(TPEnum.HTM_PARSE) for _ in range(1)]
             # ----2----
@@ -35,7 +35,7 @@ class ParseThread(BaseThread):
 
         for index in range(len(task_list)):
             priority, counter, url, keys, deep, content = task_list[index]
-            parse_state, url_list, save_list = result_list[index] if pool is None else result_list[index].get(timeout=None)
+            parse_state, url_list, save_list = result_list[index] if (pool is None) else result_list[index].get(timeout=None)
 
             # ----3----
             if parse_state > 0:

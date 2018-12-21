@@ -26,7 +26,7 @@ CONFIG_URL_ILLEGAL_PATTERN = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|
                              "mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$"
 
 # define key set of headers
-CONFIG_HEADERS_SET = {
+CONFIG_HEADERS_SET = {item.lower() for item in {
     "Host", "Origin", "Referer", "Connection", "Etag", "User-Agent", "Cache-Control", "Content-Type", "Content-Length",
     "Accept", "Accept-Encoding", "Accept-Charset", "Accept-Language", "If-Modified-Since", "If-None-Match", "Last-Modified"
-}
+}}

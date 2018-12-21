@@ -56,7 +56,8 @@ def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
     """
     frags = urllib.parse.urlparse(url)
     components = (frags.scheme, frags.netloc, frags.path, frags.params, "", "")
-    return urllib.parse.urlunparse(components), urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
+    query_part = urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
+    return urllib.parse.urlunparse(components), query_part
 
 
 def get_dict_buildin(dict_obj, _type=(int, float, bool, str, list, tuple, set, dict)):
@@ -82,8 +83,8 @@ def parse_raw_request(raw_request_string, _type="charles"):
     headers, cookies = {}, {}
     assert _type in ("charles", "fiddler")
     for frags in [line.strip().split(":") for line in raw_request_string.strip().split("\n") if line.strip()]:
-        if frags[0].strip() in CONFIG_HEADERS_SET:
+        if frags[0].strip().lower() in CONFIG_HEADERS_SET:
             headers[frags[0].strip()] = ":".join(frags[1:]).strip()
-        if frags[0].strip() == "Cookie":
-            cookies = {pair[0].strip(): "=".join(pair[1:]).strip() for pair in [c.strip().split("=") for c in ":".join(frags[1:]).split(";")]}
+        if frags[0].strip().lower() == "Cookie":
+            cookies = {pair[0].strip(): "=".join(pair[1:]).strip() for pair in ":".join(frags[1:]).strip().split("=")}
     return headers, cookies

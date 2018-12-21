@@ -22,6 +22,8 @@ class MyFetcher(spider.Fetcher):
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
         response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, timeout=(3.05, 10))
         result = (response.status_code, response.url, response.text)
+
+        # test error-logging
         assert random.randint(0, 100) != 8, "------"
         return 1, result, 1
 
@@ -32,9 +34,8 @@ class MyParser(spider.Parser):
     """
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
         status_code, url_now, html_text = content
-        # test multiprocess
-        for i in range(10):
-            BeautifulSoup(html_text, "lxml")
+        # test multi-processing
+        [BeautifulSoup(html_text, "lxml") for _ in range(10)]
 
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):
@@ -43,6 +44,8 @@ class MyParser(spider.Parser):
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
+
+        # test error-logging
         assert random.randint(0, 100) != 8, "******"
         return 1, url_list, save_list
 
@@ -63,7 +66,8 @@ class MyProxies(spider.Proxieser):
     """
     def proxies_get(self):
         response = requests.get("http://xxxx.com/proxies")
-        return 1, [{"http": "http://%s" % ipport, "https": "https://%s" % ipport} for ipport in response.text.split("\n")]
+        proxies_result = [{"http": "http://%s" % ipport, "https": "https://%s" % ipport} for ipport in response.text.split("\n")]
+        return 1, proxies_result
 
 
 def test_spider():
@@ -71,10 +75,10 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver / proxieser
-    fetcher = MyFetcher(max_repeat=0, sleep_time=1)
+    fetcher = MyFetcher(sleep_time=1, max_repeat=0)
     parser = MyParser(max_deep=2)
     saver = MySaver(save_pipe=open("out_thread.txt", "w"))
-    # proxieser = MyProxies(sleep_time=1)
+    # proxieser = MyProxies(sleep_time=5)
 
     # define url_filter
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
@@ -87,7 +91,7 @@ def test_spider():
     web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys={"type": "360"}, deep=0)
 
     # start web_spider
-    web_spider.start_working(fetcher_num=50)
+    web_spider.start_working(fetcher_num=20)
 
     # wait for finished
     web_spider.wait_for_finished()
