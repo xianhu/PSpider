@@ -16,7 +16,6 @@ class Parser(object):
         :param max_deep: default 0, if -1, spider will not stop until all urls are fetched
         """
         self._max_deep = max_deep
-        self._name = self.__class__.__name__
         return
 
     def working(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, list):
@@ -29,12 +28,12 @@ class Parser(object):
         try:
             parse_state, url_list, save_list = self.htm_parse(priority, url, keys, deep, content)
         except Exception as excep:
-            parse_state, url_list, save_list = -1, [self._name, str(excep)], []
+            parse_state, url_list, save_list = -1, [self.__class__.__name__, str(excep)], []
 
         return parse_state, url_list, save_list
 
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, list):
         """
-        parse the content of a url, you must rewrite this function, parameters and returns refer to self.working()
+        parse the content of a url, you must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

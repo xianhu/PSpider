@@ -60,12 +60,12 @@ def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
     return urllib.parse.urlunparse(components), query_part
 
 
-def get_dict_buildin(dict_obj, _type=(int, float, bool, str, list, tuple, set, dict)):
+def get_dict_buildin(dict_obj, _types=(int, float, bool, str, list, tuple, set, dict)):
     """
     get a dictionary from value, ignore non-buildin object
     """
-    non_buildin = {key for key in dict_obj if not isinstance(dict_obj[key], _type)}
-    return {key: dict_obj[key] for key in dict_obj if key not in non_buildin}
+    ignore = {key for key in dict_obj if not isinstance(dict_obj[key], _types)}
+    return {key: dict_obj[key] for key in dict_obj if key not in ignore}
 
 
 def parse_error_info(line):

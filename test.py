@@ -24,7 +24,7 @@ class MyFetcher(spider.Fetcher):
         result = (response.status_code, response.url, response.text)
 
         # test error-logging
-        assert random.randint(0, 100) != 8, "------"
+        # assert random.randint(0, 100) != 8, "error-in-fetcher"
         return 1, result, 1
 
 
@@ -46,7 +46,7 @@ class MyParser(spider.Parser):
         save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
 
         # test error-logging
-        assert random.randint(0, 100) != 8, "******"
+        # assert random.randint(0, 100) != 8, "error-in-parser"
         return 1, url_list, save_list
 
 
@@ -55,7 +55,7 @@ class MySaver(spider.Saver):
     saver module, only rewrite item_save()
     """
     def item_save(self, url: str, keys: dict, item: (list, tuple)):
-        self._save_pipe.write("\t".join([str(col) for col in item]) + "\n")
+        self._save_pipe.write("\t".join([str(col) for col in item] + [url, ]) + "\n")
         self._save_pipe.flush()
         return 1, []
 

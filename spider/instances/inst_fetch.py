@@ -21,7 +21,6 @@ class Fetcher(object):
         """
         self._sleep_time = sleep_time
         self._max_repeat = max_repeat
-        self._name = self.__class__.__name__
         return
 
     def working(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, int):
@@ -36,12 +35,12 @@ class Fetcher(object):
         try:
             fetch_state, fetch_result, proxies_state = self.url_fetch(priority, url, keys, deep, repeat, proxies=proxies)
         except Exception as excep:
-            fetch_state, fetch_result, proxies_state = (-1 if repeat >= self._max_repeat else 0), [self._name, str(excep)], -1
+            fetch_state, fetch_result, proxies_state = (-1 if repeat >= self._max_repeat else 0), [self.__class__.__name__, str(excep)], -1
 
         return fetch_state, fetch_result, proxies_state
 
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, int):
         """
-        fetch the content of a url, you must rewrite this function, parameters and returns refer to self.working()
+        fetch the content of a url, you must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

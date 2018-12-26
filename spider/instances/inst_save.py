@@ -18,7 +18,6 @@ class Saver(object):
         :param save_pipe: default sys.stdout, also can be a file handler
         """
         self._save_pipe = save_pipe
-        self._name = self.__class__.__name__
         return
 
     def working(self, url: str, keys: dict, item: (list, tuple)) -> (int, object):
@@ -30,12 +29,12 @@ class Saver(object):
         try:
             save_state, save_result = self.item_save(url, keys, item)
         except Exception as excep:
-            save_state, save_result = -1, [self._name, str(excep)]
+            save_state, save_result = -1, [self.__class__.__name__, str(excep)]
 
         return save_state, save_result
 
     def item_save(self, url: str, keys: dict, item: (list, tuple)) -> (int, object):
         """
-        save the item of a url, you must rewrite this function, parameters and returns refer to self.working()
+        save the item of a url, you must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

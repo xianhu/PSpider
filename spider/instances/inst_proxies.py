@@ -18,7 +18,6 @@ class Proxieser(object):
         :param sleep_time: default 10, sleeping time after a fetching
         """
         self._sleep_time = sleep_time
-        self._name = self.__class__.__name__
         return
 
     def working(self) -> (int, list):
@@ -32,12 +31,12 @@ class Proxieser(object):
         try:
             proxies_state, proxies_result = self.proxies_get()
         except Exception as excep:
-            proxies_state, proxies_result = -1, [self._name, str(excep)]
+            proxies_state, proxies_result = -1, [self.__class__.__name__, str(excep)]
 
         return proxies_state, proxies_result
 
     def proxies_get(self) -> (int, list):
         """
-        get proxies from web or database, you must rewrite this function, parameters and returns refer to self.working()
+        get proxies from web or database, you must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError
