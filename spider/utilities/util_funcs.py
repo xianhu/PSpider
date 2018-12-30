@@ -76,7 +76,7 @@ def parse_error_info(line):
     return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
 
 
-def parse_raw_request(raw_request_string, _type="charles"):
+def parse_raw_request(raw_request_string, _type="charles", header_keys=None):
     """
     parse headers and cookies from a raw string, which copied from charles or fiddler
     """
@@ -84,6 +84,8 @@ def parse_raw_request(raw_request_string, _type="charles"):
     assert _type in ("charles", "fiddler")
     for frags in [line.strip().split(":") for line in raw_request_string.strip().split("\n") if line.strip()]:
         if frags[0].strip().lower() in CONFIG_HEADERS_SET:
+            headers[frags[0].strip()] = ":".join(frags[1:]).strip()
+        if header_keys and (frags[0].strip() in header_keys):
             headers[frags[0].strip()] = ":".join(frags[1:]).strip()
         if frags[0].strip().lower() == "Cookie":
             cookies = {pair[0].strip(): "=".join(pair[1:]).strip() for pair in ":".join(frags[1:]).strip().split("=")}

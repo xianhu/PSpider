@@ -27,6 +27,6 @@ CONFIG_URL_ILLEGAL_PATTERN = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|
 
 # define key set of headers
 CONFIG_HEADERS_SET = {item.lower() for item in {
-    "Host", "Origin", "Referer", "Connection", "Etag", "User-Agent", "Cache-Control", "Content-Type", "Content-Length",
+    "Host", "Origin", "Referer", "Connection", "Etag", "Pragma", "User-Agent", "Cache-Control", "Content-Type", "Content-Length",
     "Accept", "Accept-Encoding", "Accept-Charset", "Accept-Language", "If-Modified-Since", "If-None-Match", "Last-Modified"
 }}
