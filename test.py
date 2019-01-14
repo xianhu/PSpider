@@ -24,7 +24,7 @@ class MyFetcher(spider.Fetcher):
         result = (response.status_code, response.url, response.text)
 
         # test error-logging
-        # assert random.randint(0, 100) != 8, "error-in-fetcher"
+        assert random.randint(0, 100) != 8, "error-in-fetcher"
         return 1, result, 1
 
 
@@ -46,7 +46,7 @@ class MyParser(spider.Parser):
         save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
 
         # test error-logging
-        # assert random.randint(0, 100) != 8, "error-in-parser"
+        assert random.randint(0, 100) != 8, "error-in-parser"
         return 1, url_list, save_list
 
 
@@ -84,8 +84,8 @@ def test_spider():
     url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
 
     # initial web_spider
-    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1)
-    # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
+    # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1)
+    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
     # add start url
     web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys={"type": "360"}, deep=0)

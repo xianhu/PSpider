@@ -22,7 +22,7 @@ class Parser(object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return parse_state: can be -1(parse failed), 1(parse success)
-        :return url_list: [(url1, keys1, priority1), ...], or exception_info[name, excep]
+        :return url_list: [(url1, keys1, priority1), ...], or exception information[class_name, excep]
         :return save_list: [item1(a list or tuple), item2(a list or tuple), ...]
         """
         try:

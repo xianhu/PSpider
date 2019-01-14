@@ -15,7 +15,7 @@ class TPEnum(enum.Enum):
     """
     enum of TPEnum, to mark the status of the threads_pool
     """
-    COUNTER = "counter"                     # flag of counter, for priority_queue
+    URL_COUNTER = "url_counter"             # flag of url_counter, for priority_queue
     TASKS_RUNNING = "tasks_running"         # flag of tasks_running
 
     URL_FETCH = "url_fetch"                 # flag of url_fetch **

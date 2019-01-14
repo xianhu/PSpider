@@ -24,7 +24,7 @@ class Proxieser(object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return proxies_state: can be -1(get failed), 1(get success)
-        :return proxies_result: [{"http(s)": "http(s)://auth@ip:port", ...], or exception_info[name, excep]
+        :return proxies_result: [{"http(s)": "http(s)://auth@ip:port", ...], or exception information[class_name, excep]
         """
         time.sleep(self._sleep_time)
 

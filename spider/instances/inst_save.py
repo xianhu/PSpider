@@ -24,7 +24,7 @@ class Saver(object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return save_state: can be -1(save failed), 1(save success)
-        :return save_result: can be any object, or exception_info[name, excep]
+        :return save_result: can be any object, or exception information[class_name, excep]
         """
         try:
             save_state, save_result = self.item_save(url, keys, item)

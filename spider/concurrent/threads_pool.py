@@ -41,7 +41,7 @@ class ThreadPool(object):
         self._queue_proxies = queue.Queue(queue_proxies_size)               # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
 
         self._number_dict = {
-            TPEnum.COUNTER: 0,                                              # the count of urls which appeared in self._queue_fetch
+            TPEnum.URL_COUNTER: 0,                                          # the count of urls which appeared in self._queue_fetch
             TPEnum.TASKS_RUNNING: 0,                                        # the count of tasks which are running
 
             TPEnum.URL_FETCH_NOT: 0,                                        # the count of urls which haven't been fetched
@@ -72,7 +72,7 @@ class ThreadPool(object):
         set start url based on "priority", "keys" and "deep", keys must be a dictionary, and repeat must be 0
         """
         assert check_url_legal(url), "set_start_url error, please pass legal url to this function"
-        self.add_a_task(TPEnum.URL_FETCH, (priority, self.get_number_dict(TPEnum.COUNTER), url, keys or {}, deep, 0))
+        self.add_a_task(TPEnum.URL_FETCH, (priority, self.get_number_dict(TPEnum.URL_COUNTER), url, keys or {}, deep, 0))
         return
 
     def start_working(self, fetcher_num=10):
@@ -113,8 +113,8 @@ class ThreadPool(object):
         wait for the finished of this thread pool
         """
         logging.warning("ThreadPool waits for finishing")
-        self._thread_stop_flag = True
 
+        self._thread_stop_flag = True
         for thread_fetcher in filter(lambda x: x.is_alive(), self._thread_fetcher_list):
             thread_fetcher.join()
 
@@ -176,10 +176,10 @@ class ThreadPool(object):
         """
         add a task based on task_name, also for proxies
         """
-        if (task_name == TPEnum.URL_FETCH) and check_url_legal(task[2]) and ((task[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task[2])):
+        if (task_name == TPEnum.URL_FETCH) and ((task[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task[2])):
             self._queue_fetch.put(task, block=False)
             self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
-            self.update_number_dict(TPEnum.COUNTER, +1)
+            self.update_number_dict(TPEnum.URL_COUNTER, +1)
         elif (task_name == TPEnum.HTM_PARSE) and self._thread_parser:
             self._queue_parse.put(task, block=True, timeout=None)
             self.update_number_dict(TPEnum.HTM_PARSE_NOT, +1)

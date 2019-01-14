@@ -7,7 +7,7 @@ parse.py by xianhu
 import logging
 import multiprocessing
 from .base import TPEnum, BaseThread
-from ...utilities import CONFIG_PARSE_MESSAGE, get_dict_buildin
+from ...utilities import CONFIG_PARSE_MESSAGE, check_url_legal, get_dict_buildin
 
 
 class ParseThread(BaseThread):
@@ -40,8 +40,8 @@ class ParseThread(BaseThread):
             # ----3----
             if parse_state > 0:
                 self._pool.update_number_dict(TPEnum.HTM_PARSE_SUCC, +1)
-                for _url, _keys, _priority in url_list:
-                    self._pool.add_a_task(TPEnum.URL_FETCH, (_priority, self._pool.get_number_dict(TPEnum.COUNTER), _url, _keys, deep+1, 0))
+                for _url, _keys, _priority in filter(lambda x: check_url_legal(x[0]), url_list):
+                    self._pool.add_a_task(TPEnum.URL_FETCH, (_priority, self._pool.get_number_dict(TPEnum.URL_COUNTER), _url, _keys, deep+1, 0))
                 for item in save_list:
                     self._pool.add_a_task(TPEnum.ITEM_SAVE, (url, keys, item))
             else:

@@ -46,18 +46,16 @@ def get_url_legal(url, base_url, encoding=None):
     """
     get a legal url from a url, based on base_url
     """
-    legal_url = urllib.parse.urljoin(base_url, url)
-    return urllib.parse.quote(legal_url, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
+    return urllib.parse.quote(urllib.parse.urljoin(base_url, url), safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding)
 
 
-def get_url_params(url, keep_blank_value=False, encoding="utf-8"):
+def get_url_params(url, encoding="utf-8"):
     """
     get main_part(a string) and query_part(a dictionary) from a url
     """
     frags = urllib.parse.urlparse(url)
     components = (frags.scheme, frags.netloc, frags.path, frags.params, "", "")
-    query_part = urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
-    return urllib.parse.urlunparse(components), query_part
+    return urllib.parse.urlunparse(components), urllib.parse.parse_qs(frags.query, encoding=encoding)
 
 
 def get_dict_buildin(dict_obj, _types=(int, float, bool, str, list, tuple, set, dict)):

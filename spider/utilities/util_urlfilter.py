@@ -31,9 +31,10 @@ class UrlFilter(object):
         """
         if self._urlfilter_type == 0:
             self._urlfilter.update(url_list)
-        else:
-            for url in url_list:
-                self._urlfilter.add(url)
+            return
+
+        for url in url_list:
+            self._urlfilter.add(url)
         return
 
     def check(self, url):
