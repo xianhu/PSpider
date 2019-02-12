@@ -39,8 +39,8 @@ class MyParser(spider.Parser):
 
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):
-            for _url in re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE):
-                url_list.append((spider.get_url_legal(_url, base_url=url), keys, priority+1))
+            re_group = re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)
+            url_list = [(spider.get_url_legal(_url, base_url=url), keys, priority+1) for _url in re_group]
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []

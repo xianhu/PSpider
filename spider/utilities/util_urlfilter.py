@@ -20,19 +20,13 @@ class UrlFilter(object):
         """
         self._re_black_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in black_patterns] if black_patterns else []
         self._re_white_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in white_patterns] if white_patterns else []
-
         self._urlfilter = set() if not capacity else ScalableBloomFilter(capacity, error_rate=0.001)
-        self._urlfilter_type = 0 if not capacity else 1
         return
 
     def update(self, url_list):
         """
         update this urlfilter using a url_list
         """
-        if self._urlfilter_type == 0:
-            self._urlfilter.update(url_list)
-            return
-
         for url in url_list:
             self._urlfilter.add(url)
         return
@@ -57,7 +51,7 @@ class UrlFilter(object):
         """
         result = False
         if self.check(url):
-            if self._urlfilter_type == 0:
+            if isinstance(self._urlfilter, set):
                 result = (url not in self._urlfilter)
                 self._urlfilter.add(url)
             else:

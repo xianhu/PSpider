@@ -130,7 +130,6 @@ class ThreadPool(object):
         logging.warning("ThreadPool has finished")
         return self._number_dict
 
-    # ================================================================================================================================
     def get_proxies_flag(self):
         """
         get proxies flag of this thread pool
@@ -171,7 +170,6 @@ class ThreadPool(object):
         return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_FETCH_NOT] or \
                         self._number_dict[TPEnum.HTM_PARSE_NOT] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
 
-    # ================================================================================================================================
     def add_a_task(self, task_name, task):
         """
         add a task based on task_name, also for proxies
@@ -227,4 +225,3 @@ class ThreadPool(object):
             self._queue_save.task_done()
         self.update_number_dict(TPEnum.TASKS_RUNNING, -1)
         return
-    # ================================================================================================================================
