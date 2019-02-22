@@ -16,6 +16,7 @@ __all__ = [
     "get_url_params",
     "get_dict_buildin",
     "parse_error_info",
+    "parse_raw_form",
     "parse_raw_request",
 ]
 
@@ -74,12 +75,25 @@ def parse_error_info(line):
     return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
 
 
-def parse_raw_request(raw_request_string, _type="charles", header_keys=None):
+def parse_raw_form(raw_form_string, ignore_none=False):
+    """
+    parse form from a raw string, which copied from charles or fiddler
+    """
+    forms = {}
+    for item in raw_form_string.strip().split("&"):
+        frags = [i.strip() for i in item.strip().split("=")]
+        assert len(frags) == 2
+        if ignore_none and (not frags[1]):
+            continue
+        forms[frags[0]] = frags[1]
+    return forms
+
+
+def parse_raw_request(raw_request_string, header_keys=None):
     """
     parse headers and cookies from a raw string, which copied from charles or fiddler
     """
     headers, cookies = {}, {}
-    assert _type in ("charles", "fiddler")
     for frags in [line.strip().split(":") for line in raw_request_string.strip().split("\n") if line.strip()]:
         if frags[0].strip().lower() in CONFIG_HEADERS_SET:
             headers[frags[0].strip()] = ":".join(frags[1:]).strip()
