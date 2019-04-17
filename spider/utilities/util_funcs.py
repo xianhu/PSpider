@@ -5,7 +5,6 @@ util_funcs.py by xianhu
 """
 
 import re
-import pprint
 import urllib.parse
 from .util_config import CONFIG_URL_LEGAL_PATTERN, CONFIG_MESSAGE_PATTERN, CONFIG_HEADERS_SET
 
@@ -86,8 +85,7 @@ def parse_raw_form(raw_form_string, ignore_none=False):
         assert len(frags) == 2
         if ignore_none and (not frags[1]):
             continue
-        forms[frags[0]] = frags[1]
-    pprint.pprint(forms)
+        forms[frags[0]] = urllib.parse.unquote(frags[1])
     return forms
 
 
@@ -101,8 +99,6 @@ def parse_raw_request(raw_request_string, header_keys=None):
             headers[frags[0].strip()] = ":".join(frags[1:]).strip()
         if header_keys and (frags[0].strip() in header_keys):
             headers[frags[0].strip()] = ":".join(frags[1:]).strip()
-        if frags[0].strip().lower() == "Cookie":
-            cookies = {pair[0].strip(): "=".join(pair[1:]).strip() for pair in ":".join(frags[1:]).strip().split("=")}
-    pprint.pprint(headers)
-    pprint.pprint(cookies)
+        if frags[0].strip().lower() == "cookie":
+            cookies = {pair[0]: "=".join(pair[1:]) for pair in [cookie.strip().split("=") for cookie in ":".join(frags[1:]).strip().split(";")]}
     return headers, cookies
