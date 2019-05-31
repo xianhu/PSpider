@@ -34,7 +34,7 @@ class MyParser(spider.Parser):
     """
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
         status_code, url_now, html_text = content
-        # test multi-processing
+        # test multi-processing(heavy time)
         [BeautifulSoup(html_text, "lxml") for _ in range(10)]
 
         url_list = []
@@ -57,7 +57,7 @@ class MySaver(spider.Saver):
     def item_save(self, url: str, keys: dict, item: (list, tuple)):
         self._save_pipe.write("\t".join([str(col) for col in item] + [url, ]) + "\n")
         self._save_pipe.flush()
-        return 1, []
+        return 1, None
 
 
 class MyProxies(spider.Proxieser):

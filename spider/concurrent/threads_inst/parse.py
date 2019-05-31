@@ -35,7 +35,7 @@ class ParseThread(BaseThread):
 
         for index in range(len(task_list)):
             priority, counter, url, keys, deep, content = task_list[index]
-            parse_state, url_list, save_list = result_list[index] if (pool is None) else result_list[index].get(timeout=None)
+            parse_state, url_list, save_list = result_list[index] if (not pool) else result_list[index].get(timeout=None)
 
             # ----3----
             if parse_state > 0:

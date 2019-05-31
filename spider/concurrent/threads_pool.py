@@ -33,7 +33,6 @@ class ThreadPool(object):
         self._thread_proxieser = None                                       # proxieser thread, be None if not proxieser
 
         self._thread_stop_flag = False                                      # default: False, stop flag of threads
-        self._fetcher_number = 0                                            # default: 0, fetcher number in thread pool
 
         self._queue_fetch = queue.PriorityQueue(-1)                         # (priority, counter, url, keys, deep, repeat)
         self._queue_parse = queue.PriorityQueue(queue_parse_size)           # (priority, counter, url, keys, deep, content)
@@ -82,8 +81,6 @@ class ThreadPool(object):
         logging.warning("ThreadPool starts working: urls_count=%s, fetcher_num=%s", self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
 
         self._thread_stop_flag = False
-        self._fetcher_number = fetcher_num
-
         self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
         self._thread_parser = ParseThread("parser", self._inst_parser, self) if self._inst_parser else None
         self._thread_saver = SaveThread("saver", self._inst_saver, self) if self._inst_saver else None
@@ -140,7 +137,7 @@ class ThreadPool(object):
         """
         get fetcher number of this thread pool
         """
-        return self._fetcher_number
+        return len(self._thread_fetcher_list)
 
     def get_thread_stop_flag(self):
         """
