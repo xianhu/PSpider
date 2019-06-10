@@ -11,8 +11,8 @@ import datetime
 import requests
 from bs4 import BeautifulSoup
 
-black_patterns = (spider.CONFIG_URL_ILLEGAL_PATTERN, r"binding", r"download", )
-white_patterns = (r"^http[s]{0,1}://(www\.){0,1}(zhushou\.360)\.(com|cn)", )
+black_patterns = (spider.CONFIG_URL_ILLEGAL_RE, re.compile(r"binding"), re.compile(r"download"), )
+white_patterns = (re.compile(r"^http[s]?://(www\.)?(zhushou\.360)\.(com|cn)"), )
 
 
 class MyFetcher(spider.Fetcher):

@@ -27,7 +27,7 @@ class ThreadPool(object):
         self._inst_proxieser = proxieser                                    # proxieser instance, subclass of Proxieser
         self._url_filter = url_filter                                       # default: None, also can be UrlFilter()
 
-        self._thread_fetcher_list = []                                      # fetcher thread list
+        self._thread_fetcher_list = []                                      # fetcher threads list
         self._thread_parser = None                                          # parser thread, be None if not parser
         self._thread_saver = None                                           # saver thread, be None if not saver
         self._thread_proxieser = None                                       # proxieser thread, be None if not proxieser
@@ -110,8 +110,8 @@ class ThreadPool(object):
         wait for the finished of this thread pool
         """
         logging.warning("ThreadPool waits for finishing")
-
         self._thread_stop_flag = True
+
         for thread_fetcher in filter(lambda x: x.is_alive(), self._thread_fetcher_list):
             thread_fetcher.join()
 
@@ -127,17 +127,17 @@ class ThreadPool(object):
         logging.warning("ThreadPool has finished")
         return self._number_dict
 
-    def get_proxies_flag(self):
-        """
-        get proxies flag of this thread pool
-        """
-        return True if self._inst_proxieser else False
-
     def get_fetcher_number(self):
         """
         get fetcher number of this thread pool
         """
         return len(self._thread_fetcher_list)
+
+    def get_proxies_flag(self):
+        """
+        get proxies flag of this thread pool
+        """
+        return True if self._inst_proxieser else False
 
     def get_thread_stop_flag(self):
         """

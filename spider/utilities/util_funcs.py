@@ -6,14 +6,14 @@ util_funcs.py by xianhu
 
 import re
 import urllib.parse
-from .util_config import CONFIG_URL_LEGAL_PATTERN, CONFIG_MESSAGE_PATTERN, CONFIG_HEADERS_SET
+from .util_config import CONFIG_URL_LEGAL_RE, CONFIG_MESSAGE_RE, CONFIG_HEADERS_SET
 
 __all__ = [
     "check_url_legal",
-    "get_string_num",
-    "get_string_strip",
     "get_url_legal",
     "get_url_params",
+    "get_string_num",
+    "get_string_strip",
     "get_dict_buildin",
     "parse_error_info",
     "parse_raw_form",
@@ -25,22 +25,7 @@ def check_url_legal(url):
     """
     check that a url is legal or not
     """
-    return True if re.match(CONFIG_URL_LEGAL_PATTERN, url, flags=re.IGNORECASE) else False
-
-
-def get_string_num(string, ignore_sign=False):
-    """
-    get a float number from a string
-    """
-    string_re = re.search(r"(?P<sign>-?)(?P<num>\d+(\.\d+)?)", string.replace(",", ""), flags=re.IGNORECASE)
-    return float((string_re.group("sign") if not ignore_sign else "") + string_re.group("num")) if string_re else None
-
-
-def get_string_strip(string, replace_char=" "):
-    """
-    get a string which striped \t, \r, \n from a string, also change None to ""
-    """
-    return re.sub(r"\s+", replace_char, string, flags=re.IGNORECASE).strip() if string else ""
+    return True if CONFIG_URL_LEGAL_RE.match(url) else False
 
 
 def get_url_legal(url, base_url, encoding=None):
@@ -59,6 +44,21 @@ def get_url_params(url, encoding="utf-8"):
     return urllib.parse.urlunparse(components), urllib.parse.parse_qs(frags.query, encoding=encoding)
 
 
+def get_string_num(string, ignore_sign=False):
+    """
+    get a float number from a string
+    """
+    string_re = re.search(r"(?P<sign>-?)(?P<num>\d+(\.\d+)?)", string.replace(",", ""), flags=re.IGNORECASE)
+    return float((string_re.group("sign") if not ignore_sign else "") + string_re.group("num")) if string_re else None
+
+
+def get_string_strip(string, replace_char=" "):
+    """
+    get a string which striped \t, \r, \n from a string, also change None to ""
+    """
+    return re.sub(r"\s+", replace_char, string, flags=re.IGNORECASE).strip() if string else ""
+
+
 def get_dict_buildin(dict_obj, _types=(int, float, bool, str, list, tuple, set, dict)):
     """
     get a dictionary from value, ignore non-buildin object
@@ -71,7 +71,7 @@ def parse_error_info(line):
     """
     parse error information based on CONFIG_***_MESSAGE, return a tuple (priority, keys, deep, url)
     """
-    regu = re.search(CONFIG_MESSAGE_PATTERN, line, flags=re.IGNORECASE)
+    regu = CONFIG_MESSAGE_RE.search(line)
     return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
 
 

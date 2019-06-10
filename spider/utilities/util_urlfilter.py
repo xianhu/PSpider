@@ -4,9 +4,8 @@
 util_urlfilter.py by xianhu
 """
 
-import re
 from pybloom_live import ScalableBloomFilter
-from .util_config import CONFIG_URL_LEGAL_PATTERN, CONFIG_URL_ILLEGAL_PATTERN
+from .util_config import CONFIG_URL_LEGAL_RE, CONFIG_URL_ILLEGAL_RE
 
 
 class UrlFilter(object):
@@ -14,12 +13,12 @@ class UrlFilter(object):
     class of UrlFilter, to filter url by regexs and (bloomfilter or set)
     """
 
-    def __init__(self, black_patterns=(CONFIG_URL_ILLEGAL_PATTERN,), white_patterns=(CONFIG_URL_LEGAL_PATTERN,), capacity=None):
+    def __init__(self, black_patterns=(CONFIG_URL_ILLEGAL_RE,), white_patterns=(CONFIG_URL_LEGAL_RE,), capacity=None):
         """
         constructor, use the instance of BloomFilter if capacity else the instance of set
         """
-        self._re_black_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in black_patterns] if black_patterns else []
-        self._re_white_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in white_patterns] if white_patterns else []
+        self._re_black_list = [item for item in black_patterns]
+        self._re_white_list = [item for item in white_patterns]
         self._urlfilter = set() if not capacity else ScalableBloomFilter(capacity, error_rate=0.001)
         return
 

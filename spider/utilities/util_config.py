@@ -4,29 +4,28 @@
 util_config.py by xianhu
 """
 
+import re
+
 __all__ = [
     "CONFIG_FETCH_MESSAGE",
     "CONFIG_PARSE_MESSAGE",
-    "CONFIG_MESSAGE_PATTERN",
-    "CONFIG_URL_LEGAL_PATTERN",
-    "CONFIG_URL_ILLEGAL_PATTERN",
+    "CONFIG_MESSAGE_RE",
+    "CONFIG_URL_LEGAL_RE",
+    "CONFIG_URL_ILLEGAL_RE",
     "CONFIG_HEADERS_SET",
 ]
 
 # define the structure of message, used in Fetcher and Parser
 CONFIG_FETCH_MESSAGE = "priority=%s, keys=%s, deep=%s, repeat=%s, url=%s"
 CONFIG_PARSE_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
-CONFIG_MESSAGE_PATTERN = r"priority=(?P<priority>\d+),\s*keys=(?P<keys>.+?),\s*deep=(?P<deep>\d+),\s*(repeat=(?P<repeat>\d+),\s*)?url=(?P<url>.+)$"
+CONFIG_MESSAGE_RE = re.compile(r"priority=(?P<priority>\d+),\s*keys=(?P<keys>.+?),\s*deep=(?P<deep>\d+),\s*(repeat=(?P<repeat>\d+),\s*)?url=(?P<url>.+)$", flags=re.IGNORECASE)
 
-# define url_legal_pattern and url_illegal_pattern
-CONFIG_URL_LEGAL_PATTERN = r"^https?:[^\s]+?\.[^\s]+?"
-CONFIG_URL_ILLEGAL_PATTERN = r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|" \
-                             "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|csv|tsv|" \
-                             "jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|" \
-                             "mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$"
+# define url_legal_re and url_illegal_re
+CONFIG_URL_LEGAL_RE = re.compile(r"^https?:[^\s]+?\.[^\s]+?", flags=re.IGNORECASE)
+CONFIG_URL_ILLEGAL_RE = re.compile(r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|"
+                                   "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|csv|tsv|"
+                                   "jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|"
+                                   "mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$", flags=re.IGNORECASE)
 
 # define key set of headers
-CONFIG_HEADERS_SET = {item.lower() for item in {
-    "Host", "Referer", "Etag", "Pragma", "User-Agent", "Content-Type",
-    "Accept", "Accept-Encoding", "Accept-Charset", "Accept-Language",
-}}
+CONFIG_HEADERS_SET = {item.lower() for item in {"Host", "Referer", "User-Agent", "Content-Type", "Accept", "Accept-Encoding", "Accept-Charset", "Accept-Language"}}
