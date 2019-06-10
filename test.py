@@ -5,6 +5,7 @@ test.py by xianhu
 """
 
 import re
+import sys
 import spider
 import random
 import datetime
@@ -17,7 +18,7 @@ white_patterns = (re.compile(r"^http[s]?://(www\.)?(zhushou\.360)\.(com|cn)"), )
 
 class MyFetcher(spider.Fetcher):
     """
-    fetcher module, only rewrite url_fetch()
+    fetcher module, rewrite url_fetch()
     """
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
         response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, timeout=(3.05, 10))
@@ -30,10 +31,18 @@ class MyFetcher(spider.Fetcher):
 
 class MyParser(spider.Parser):
     """
-    parser module, only rewrite htm_parse()
+    parser module, rewrite htm_parse()
     """
+    def __init__(self, max_deep=0):
+        """
+        constructor
+        """
+        self._max_deep = max_deep
+        return
+
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
         status_code, url_now, html_text = content
+
         # test multi-processing(heavy time)
         [BeautifulSoup(html_text, "lxml") for _ in range(10)]
 
@@ -43,7 +52,8 @@ class MyParser(spider.Parser):
             url_list = [(spider.get_url_legal(_url, base_url=url), keys, priority+1) for _url in re_group]
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
-        save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
+        # save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
+        save_list = [{"url": url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()}, ] if title else {}
 
         # test error-logging
         assert random.randint(0, 100) != 8, "error-in-parser"
@@ -52,10 +62,18 @@ class MyParser(spider.Parser):
 
 class MySaver(spider.Saver):
     """
-    saver module, only rewrite item_save()
+    saver module, rewrite item_save()
     """
-    def item_save(self, url: str, keys: dict, item: (list, tuple)):
-        self._save_pipe.write("\t".join([str(col) for col in item] + [url, ]) + "\n")
+    def __init__(self, save_pipe=sys.stdout):
+        """
+        constructor
+        """
+        self._save_pipe = save_pipe
+        return
+
+    def item_save(self, url: str, keys: dict, item: (list, tuple, dict)):
+        # self._save_pipe.write("\t".join([str(col) for col in item]) + "\n")
+        self._save_pipe.write("\t".join([item["url"], item["title"], str(item["datetime"])]) + "\n")
         self._save_pipe.flush()
         return 1, None
 
@@ -76,7 +94,7 @@ def test_spider():
     """
     # initial fetcher / parser / saver / proxieser
     fetcher = MyFetcher(sleep_time=1, max_repeat=0)
-    parser = MyParser(max_deep=2)
+    parser = MyParser(max_deep=1)
     saver = MySaver(save_pipe=open("out_thread.txt", "w"))
     # proxieser = MyProxies(sleep_time=5)
 
