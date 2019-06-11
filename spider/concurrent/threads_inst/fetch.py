@@ -26,10 +26,12 @@ class FetchThread(BaseThread):
         """
         procedure of fetching, auto running, and return True
         """
-        # ----1----
-        priority, counter, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
+        # ----0----
         if self._pool.get_proxies_flag() and (not self._proxies):
             self._proxies = self._pool.get_a_task(TPEnum.PROXIES)
+
+        # ----1----
+        priority, counter, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
 
         # ----2----
         fetch_state, fetch_result, proxies_state = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)

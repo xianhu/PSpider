@@ -8,12 +8,11 @@ import re
 import sys
 import spider
 import random
+import logging
 import datetime
 import requests
 from bs4 import BeautifulSoup
-
-black_patterns = (spider.CONFIG_URL_ILLEGAL_RE, re.compile(r"binding"), re.compile(r"download"), )
-white_patterns = (re.compile(r"^http[s]?://(www\.)?(zhushou\.360)\.(com|cn)"), )
+requests.packages.urllib3.disable_warnings()
 
 
 class MyFetcher(spider.Fetcher):
@@ -21,12 +20,12 @@ class MyFetcher(spider.Fetcher):
     fetcher module, rewrite url_fetch()
     """
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
-        response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, timeout=(3.05, 10))
-        result = (response.status_code, response.url, response.text)
+        response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, verify=False, allow_redirects=True, timeout=(3.05, 10))
+        response.raise_for_status()
 
         # test error-logging
         assert random.randint(0, 100) != 8, "error-in-fetcher"
-        return 1, result, 1
+        return 1, (response.status_code, response.url, response.text), 1
 
 
 class MyParser(spider.Parser):
@@ -42,7 +41,6 @@ class MyParser(spider.Parser):
 
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
         status_code, url_now, html_text = content
-
         # test multi-processing(heavy time)
         [BeautifulSoup(html_text, "lxml") for _ in range(10)]
 
@@ -51,6 +49,7 @@ class MyParser(spider.Parser):
             re_group = re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)
             url_list = [(spider.get_url_legal(_url, base_url=url), keys, priority+1) for _url in re_group]
 
+        # save_list can be list / tuple / dict
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         # save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
         save_list = [{"url": url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()}, ] if title else {}
@@ -72,6 +71,7 @@ class MySaver(spider.Saver):
         return
 
     def item_save(self, url: str, keys: dict, item: (list, tuple, dict)):
+        # item can be list / tuple / dict
         # self._save_pipe.write("\t".join([str(col) for col in item]) + "\n")
         self._save_pipe.write("\t".join([item["url"], item["title"], str(item["datetime"])]) + "\n")
         self._save_pipe.flush()
@@ -93,20 +93,20 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver / proxieser
-    fetcher = MyFetcher(sleep_time=1, max_repeat=0)
-    parser = MyParser(max_deep=1)
-    saver = MySaver(save_pipe=open("out_thread.txt", "w"))
-    # proxieser = MyProxies(sleep_time=5)
+    fetcher = MyFetcher(sleep_time=0, max_repeat=3)
+    parser = MyParser(max_deep=2)
+    saver = MySaver(save_pipe=open("out.txt", "w"))
+    proxieser = MyProxies(sleep_time=5)
 
     # define url_filter
-    url_filter = spider.UrlFilter(black_patterns=black_patterns, white_patterns=white_patterns, capacity=None)
+    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://(www\.)?appinn\.com"), ), capacity=None)
 
     # initial web_spider
     # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1)
-    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
+    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
     # add start url
-    web_spider.set_start_url("http://zhushou.360.cn/", priority=0, keys={"type": "360"}, deep=0)
+    web_spider.set_start_url("https://www.appinn.com/", priority=0, keys={"type": "index"}, deep=0)
 
     # start web_spider
     web_spider.start_working(fetcher_num=20)
@@ -117,5 +117,6 @@ def test_spider():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
     test_spider()
     exit()
