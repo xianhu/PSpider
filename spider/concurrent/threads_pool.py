@@ -79,8 +79,8 @@ class ThreadPool(object):
         start this thread pool
         """
         logging.warning("ThreadPool starts working: urls_count=%s, fetcher_num=%s", self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
-
         self._thread_stop_flag = False
+
         self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
         self._thread_parser = ParseThread("parser", self._inst_parser, self) if self._inst_parser else None
         self._thread_saver = SaveThread("saver", self._inst_saver, self) if self._inst_saver else None

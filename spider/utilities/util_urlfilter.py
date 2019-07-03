@@ -17,8 +17,8 @@ class UrlFilter(object):
         """
         constructor, use the instance of BloomFilter if capacity else the instance of set
         """
-        self._re_black_list = [item for item in black_patterns]
-        self._re_white_list = [item for item in white_patterns]
+        self._re_black_list = [item_re for item_re in black_patterns]
+        self._re_white_list = [item_re for item_re in white_patterns]
         self._urlfilter = set() if not capacity else ScalableBloomFilter(capacity, error_rate=0.001)
         return
 

@@ -23,7 +23,7 @@ __all__ = [
 
 def check_url_legal(url):
     """
-    check that a url is legal or not
+    check a url is legal or not
     """
     return True if CONFIG_URL_LEGAL_RE.match(url) else False
 

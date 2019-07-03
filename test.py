@@ -93,17 +93,17 @@ def test_spider():
     test spider
     """
     # initial fetcher / parser / saver / proxieser
-    fetcher = MyFetcher(sleep_time=0, max_repeat=3)
-    parser = MyParser(max_deep=2)
+    fetcher = MyFetcher(sleep_time=0, max_repeat=1)
+    parser = MyParser(max_deep=1)
     saver = MySaver(save_pipe=open("out.txt", "w"))
-    proxieser = MyProxies(sleep_time=5)
+    # proxieser = MyProxies(sleep_time=5)
 
     # define url_filter
     url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://(www\.)?appinn\.com"), ), capacity=None)
 
     # initial web_spider
-    # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1)
-    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
+    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1)
+    # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
     # add start url
     web_spider.set_start_url("https://www.appinn.com/", priority=0, keys={"type": "index"}, deep=0)
