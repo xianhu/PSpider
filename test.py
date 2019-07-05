@@ -41,8 +41,6 @@ class MyParser(spider.Parser):
 
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
         status_code, url_now, html_text = content
-        # test multi-processing(heavy time)
-        [BeautifulSoup(html_text, "lxml") for _ in range(10)]
 
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):
@@ -56,6 +54,8 @@ class MyParser(spider.Parser):
 
         # test error-logging
         assert random.randint(0, 100) != 8, "error-in-parser"
+        # test multi-processing(heavy time)
+        [BeautifulSoup(html_text, "lxml") for _ in range(10)]
         return 1, url_list, save_list
 
 
@@ -119,4 +119,3 @@ def test_spider():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING, format="%(asctime)s\t%(levelname)s\t%(message)s")
     test_spider()
-    exit()

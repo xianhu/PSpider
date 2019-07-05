@@ -41,16 +41,18 @@ class ThreadPool(object):
 
         self._number_dict = {
             TPEnum.URL_COUNTER: 0,                                          # the count of urls which appeared in self._queue_fetch
-            TPEnum.TASKS_RUNNING: 0,                                        # the count of tasks which are running
 
+            TPEnum.URL_FETCH_RUN: 0,                                        # the count of fetch tasks which are running
             TPEnum.URL_FETCH_NOT: 0,                                        # the count of urls which haven't been fetched
             TPEnum.URL_FETCH_SUCC: 0,                                       # the count of urls which have been fetched successfully
             TPEnum.URL_FETCH_FAIL: 0,                                       # the count of urls which have been fetched failed
 
+            TPEnum.HTM_PARSE_RUN: 0,                                        # the count of parse tasks which are running
             TPEnum.HTM_PARSE_NOT: 0,                                        # the count of urls which haven't been parsed
             TPEnum.HTM_PARSE_SUCC: 0,                                       # the count of urls which have been parsed successfully
             TPEnum.HTM_PARSE_FAIL: 0,                                       # the count of urls which have been parsed failed
 
+            TPEnum.ITEM_SAVE_RUN: 0,                                        # the count of save tasks which are running
             TPEnum.ITEM_SAVE_NOT: 0,                                        # the count of urls which haven't been saved
             TPEnum.ITEM_SAVE_SUCC: 0,                                       # the count of urls which have been saved successfully
             TPEnum.ITEM_SAVE_FAIL: 0,                                       # the count of urls which have been saved failed
@@ -164,8 +166,9 @@ class ThreadPool(object):
         """
         check if all tasks are done, according to self._number_dict
         """
-        return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_FETCH_NOT] or \
-                        self._number_dict[TPEnum.HTM_PARSE_NOT] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
+        return False if self._number_dict[TPEnum.URL_FETCH_RUN] or self._number_dict[TPEnum.URL_FETCH_NOT] or \
+                        self._number_dict[TPEnum.HTM_PARSE_RUN] or self._number_dict[TPEnum.HTM_PARSE_NOT] or \
+                        self._number_dict[TPEnum.ITEM_SAVE_RUN] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
 
     def add_a_task(self, task_name, task):
         """
@@ -191,34 +194,36 @@ class ThreadPool(object):
         get a task based on task_name, also for proxies
         """
         task = None
-        if task_name == TPEnum.PROXIES:
-            task = self._queue_proxies.get(block=True, timeout=5)
-            self.update_number_dict(TPEnum.PROXIES_LEFT, -1)
-            return task
         if task_name == TPEnum.URL_FETCH:
             task = self._queue_fetch.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.URL_FETCH_NOT, -1)
+            self.update_number_dict(TPEnum.URL_FETCH_RUN, +1)
         elif task_name == TPEnum.HTM_PARSE:
             task = self._queue_parse.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.HTM_PARSE_NOT, -1)
+            self.update_number_dict(TPEnum.HTM_PARSE_RUN, +1)
         elif task_name == TPEnum.ITEM_SAVE:
             task = self._queue_save.get(block=True, timeout=5)
             self.update_number_dict(TPEnum.ITEM_SAVE_NOT, -1)
-        self.update_number_dict(TPEnum.TASKS_RUNNING, +1)
+            self.update_number_dict(TPEnum.ITEM_SAVE_RUN, +1)
+        elif task_name == TPEnum.PROXIES:
+            task = self._queue_proxies.get(block=True, timeout=5)
+            self.update_number_dict(TPEnum.PROXIES_LEFT, -1)
         return task
 
     def finish_a_task(self, task_name):
         """
         finish a task based on task_name, also for proxies
         """
-        if task_name == TPEnum.PROXIES:
-            self._queue_proxies.task_done()
-            return
         if task_name == TPEnum.URL_FETCH:
             self._queue_fetch.task_done()
+            self.update_number_dict(TPEnum.URL_FETCH_RUN, -1)
         elif task_name == TPEnum.HTM_PARSE:
             self._queue_parse.task_done()
+            self.update_number_dict(TPEnum.HTM_PARSE_RUN, -1)
         elif task_name == TPEnum.ITEM_SAVE:
             self._queue_save.task_done()
-        self.update_number_dict(TPEnum.TASKS_RUNNING, -1)
+            self.update_number_dict(TPEnum.ITEM_SAVE_RUN, -1)
+        elif task_name == TPEnum.PROXIES:
+            self._queue_proxies.task_done()
         return
