@@ -6,7 +6,7 @@ util_funcs.py by xianhu
 
 import re
 import urllib.parse
-from .util_config import CONFIG_URL_LEGAL_RE, CONFIG_MESSAGE_RE, CONFIG_HEADERS_SET
+from .util_config import CONFIG_URL_LEGAL_RE, CONFIG_ERROR_MESSAGE_RE, CONFIG_HEADERS_SET
 
 __all__ = [
     "check_url_legal",
@@ -15,7 +15,7 @@ __all__ = [
     "get_string_num",
     "get_string_strip",
     "get_dict_buildin",
-    "parse_error_info",
+    "parse_error_message",
     "parse_raw_form",
     "parse_raw_request",
 ]
@@ -67,11 +67,11 @@ def get_dict_buildin(dict_obj, _types=(int, float, bool, str, list, tuple, set, 
     return {key: dict_obj[key] for key in dict_obj if key not in ignore}
 
 
-def parse_error_info(line):
+def parse_error_message(line):
     """
-    parse error information based on CONFIG_***_MESSAGE, return a tuple (priority, keys, deep, url)
+    parse error message based on CONFIG_ERROR_MESSAGE, return a tuple (priority, keys, deep, url)
     """
-    regu = CONFIG_MESSAGE_RE.search(line)
+    regu = CONFIG_ERROR_MESSAGE_RE.search(line)
     return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
 
 

@@ -25,7 +25,7 @@ class ProxiesThread(BaseThread):
             for proxies in proxies_result:
                 self._pool.add_a_task(TPEnum.PROXIES, proxies)
         else:
-            logging.error("%s error: %s", proxies_result[0], proxies_result[1])
+            logging.warning("%s warning: %s", proxies_result[0], proxies_result[1])
 
         # ----5----
         return not (self._pool.is_all_tasks_done() and self._pool.get_thread_stop_flag())

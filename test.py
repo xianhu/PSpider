@@ -19,12 +19,13 @@ class MyFetcher(spider.Fetcher):
     """
     fetcher module, rewrite url_fetch()
     """
-    def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
-        response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, verify=False, allow_redirects=True, timeout=(3.05, 10))
-        response.raise_for_status()
 
+    def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
         # test error-logging
         assert random.randint(0, 100) != 8, "error-in-fetcher"
+
+        response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, verify=False, allow_redirects=True, timeout=(3.05, 10))
+        response.raise_for_status()
         return 1, (response.status_code, response.url, response.text), 1
 
 
@@ -32,14 +33,19 @@ class MyParser(spider.Parser):
     """
     parser module, rewrite htm_parse()
     """
+
     def __init__(self, max_deep=0):
         """
         constructor
         """
+        spider.Parser.__init__(self)
         self._max_deep = max_deep
         return
 
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
+        # test error-logging
+        assert random.randint(0, 100) != 8, "error-in-parser"
+
         status_code, url_now, html_text = content
 
         url_list = []
@@ -52,8 +58,6 @@ class MyParser(spider.Parser):
         # save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
         save_list = [{"url": url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()}, ] if title else {}
 
-        # test error-logging
-        assert random.randint(0, 100) != 8, "error-in-parser"
         # test multi-processing(heavy time)
         [BeautifulSoup(html_text, "lxml") for _ in range(10)]
         return 1, url_list, save_list
@@ -67,10 +71,14 @@ class MySaver(spider.Saver):
         """
         constructor
         """
+        spider.Saver.__init__(self)
         self._save_pipe = save_pipe
         return
 
-    def item_save(self, url: str, keys: dict, item: (list, tuple, dict)):
+    def item_save(self, priority: int, url: str, keys: dict, deep: int, item: (list, tuple, dict)):
+        # test error-logging
+        assert random.randint(0, 100) != 8, "error-in-saver"
+
         # item can be list / tuple / dict
         # self._save_pipe.write("\t".join([str(col) for col in item]) + "\n")
         self._save_pipe.write("\t".join([item["url"], item["title"], str(item["datetime"])]) + "\n")
@@ -102,7 +110,7 @@ def test_spider():
     url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://(www\.)?appinn\.com"), ), capacity=None)
 
     # initial web_spider
-    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1)
+    web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1, queue_save_size=-1)
     # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
     # add start url

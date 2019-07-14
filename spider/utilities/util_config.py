@@ -7,18 +7,16 @@ util_config.py by xianhu
 import re
 
 __all__ = [
-    "CONFIG_FETCH_MESSAGE",
-    "CONFIG_PARSE_MESSAGE",
-    "CONFIG_MESSAGE_RE",
+    "CONFIG_ERROR_MESSAGE",
+    "CONFIG_ERROR_MESSAGE_RE",
     "CONFIG_URL_LEGAL_RE",
     "CONFIG_URL_ILLEGAL_RE",
     "CONFIG_HEADERS_SET",
 ]
 
-# define the structure of message, used in Fetcher and Parser
-CONFIG_FETCH_MESSAGE = "priority=%s, keys=%s, deep=%s, repeat=%s, url=%s"
-CONFIG_PARSE_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
-CONFIG_MESSAGE_RE = re.compile(r"priority=(?P<priority>\d+),\s*keys=(?P<keys>.+?),\s*deep=(?P<deep>\d+),\s*(repeat=(?P<repeat>\d+),\s*)?url=(?P<url>.+)$", flags=re.IGNORECASE)
+# define the structure of error message, used in Fetcher, Parser and Saver
+CONFIG_ERROR_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
+CONFIG_ERROR_MESSAGE_RE = re.compile(r"priority=(?P<priority>\d+),\s*keys=(?P<keys>.+?),\s*deep=(?P<deep>\d+),\s*url=(?P<url>.+)$", flags=re.IGNORECASE)
 
 # define url_legal_re and url_illegal_re
 CONFIG_URL_LEGAL_RE = re.compile(r"^https?:[^\s]+?\.[^\s]+?", flags=re.IGNORECASE)

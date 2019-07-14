@@ -17,7 +17,7 @@ class ThreadPool(object):
     class of ThreadPool
     """
 
-    def __init__(self, fetcher, parser=None, saver=None, proxieser=None, url_filter=None, queue_parse_size=-1, queue_proxies_size=-1):
+    def __init__(self, fetcher, parser=None, saver=None, proxieser=None, url_filter=None, queue_parse_size=-1, queue_save_size=-1, queue_proxies_size=-1):
         """
         constructor
         """
@@ -36,7 +36,7 @@ class ThreadPool(object):
 
         self._queue_fetch = queue.PriorityQueue(-1)                         # (priority, counter, url, keys, deep, repeat)
         self._queue_parse = queue.PriorityQueue(queue_parse_size)           # (priority, counter, url, keys, deep, content)
-        self._queue_save = queue.Queue(-1)                                  # (url, keys, item), item can be anything
+        self._queue_save = queue.PriorityQueue(queue_save_size)             # (priority, counter, url, keys, deep, item), item can be anything
         self._queue_proxies = queue.Queue(queue_proxies_size)               # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
 
         self._number_dict = {
@@ -182,7 +182,7 @@ class ThreadPool(object):
             self._queue_parse.put(task, block=True, timeout=None)
             self.update_number_dict(TPEnum.HTM_PARSE_NOT, +1)
         elif (task_name == TPEnum.ITEM_SAVE) and self._thread_saver:
-            self._queue_save.put(task, block=False)
+            self._queue_save.put(task, block=True, timeout=None)
             self.update_number_dict(TPEnum.ITEM_SAVE_NOT, +1)
         elif (task_name == TPEnum.PROXIES) and self._thread_proxieser:
             self._queue_proxies.put(task, block=True, timeout=None)

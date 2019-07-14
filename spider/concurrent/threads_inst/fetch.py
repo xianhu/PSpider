@@ -6,7 +6,7 @@ fetch.py by xianhu
 
 import logging
 from .base import TPEnum, BaseThread
-from ...utilities import CONFIG_FETCH_MESSAGE, get_dict_buildin
+from ...utilities import CONFIG_ERROR_MESSAGE, get_dict_buildin
 
 
 class FetchThread(BaseThread):
@@ -44,7 +44,7 @@ class FetchThread(BaseThread):
             self._pool.add_a_task(TPEnum.URL_FETCH, (priority, counter, url, keys, deep, repeat+1))
         else:
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
-            logging.error("%s error: %s, %s", fetch_result[0], fetch_result[1], CONFIG_FETCH_MESSAGE % (priority, get_dict_buildin(keys), deep, repeat, url))
+            logging.error("%s error: %s, %s", fetch_result[0], fetch_result[1], CONFIG_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
 
         # ----*----
         if self._proxies and (proxies_state <= 0):
