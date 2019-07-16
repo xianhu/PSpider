@@ -34,17 +34,17 @@ class FetchThread(BaseThread):
         priority, counter, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
 
         # ----2----
-        fetch_state, fetch_result, proxies_state = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
+        fetch_state, content, proxies_state = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
 
         # ----3----
         if fetch_state > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
-            self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, fetch_result))
+            self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, content))
         elif fetch_state == 0:
             self._pool.add_a_task(TPEnum.URL_FETCH, (priority, counter, url, keys, deep, repeat+1))
         else:
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
-            logging.error("%s error: %s, %s", fetch_result[0], fetch_result[1], CONFIG_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
+            logging.error("%s error: %s, %s", content[0], content[1], CONFIG_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
 
         # ----*----
         if self._proxies and (proxies_state <= 0):

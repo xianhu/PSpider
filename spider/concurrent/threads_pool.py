@@ -36,7 +36,7 @@ class ThreadPool(object):
 
         self._queue_fetch = queue.PriorityQueue(-1)                         # (priority, counter, url, keys, deep, repeat)
         self._queue_parse = queue.PriorityQueue(queue_parse_size)           # (priority, counter, url, keys, deep, content)
-        self._queue_save = queue.PriorityQueue(queue_save_size)             # (priority, counter, url, keys, deep, item), item can be anything
+        self._queue_save = queue.PriorityQueue(queue_save_size)             # (priority, counter, url, keys, deep, item)
         self._queue_proxies = queue.Queue(queue_proxies_size)               # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
 
         self._number_dict = {

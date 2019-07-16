@@ -55,12 +55,12 @@ class MyParser(spider.Parser):
 
         # save_list can be list / tuple / dict
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
-        # save_list = [(url, title.group("title").strip(), datetime.datetime.now()), ] if title else []
-        save_list = [{"url": url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()}, ] if title else {}
+        # item = (url, title.group("title").strip(), datetime.datetime.now()) if title else []
+        item = {"url": url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()} if title else {}
 
         # test multi-processing(heavy time)
         [BeautifulSoup(html_text, "lxml") for _ in range(10)]
-        return 1, url_list, save_list
+        return 1, url_list, item
 
 
 class MySaver(spider.Saver):
@@ -75,7 +75,7 @@ class MySaver(spider.Saver):
         self._save_pipe = save_pipe
         return
 
-    def item_save(self, priority: int, url: str, keys: dict, deep: int, item: (list, tuple, dict)):
+    def item_save(self, priority: int, url: str, keys: dict, deep: int, item: object):
         # test error-logging
         assert random.randint(0, 100) != 8, "error-in-saver"
 
@@ -92,8 +92,8 @@ class MyProxies(spider.Proxieser):
     """
     def proxies_get(self):
         response = requests.get("http://xxxx.com/proxies")
-        proxies_result = [{"http": "http://%s" % ipport, "https": "https://%s" % ipport} for ipport in response.text.split("\n")]
-        return 1, proxies_result
+        proxies_list = [{"http": "http://%s" % ipport, "https": "https://%s" % ipport} for ipport in response.text.split("\n")]
+        return 1, proxies_list
 
 
 def test_spider():

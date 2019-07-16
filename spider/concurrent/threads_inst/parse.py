@@ -35,14 +35,14 @@ class ParseThread(BaseThread):
 
         for index in range(len(task_list)):
             priority, counter, url, keys, deep, content = task_list[index]
-            parse_state, url_list, save_list = result_list[index].get(timeout=None)
+            parse_state, url_list, item = result_list[index].get(timeout=None)
 
             # ----3----
             if parse_state > 0:
                 self._pool.update_number_dict(TPEnum.HTM_PARSE_SUCC, +1)
                 for _url, _keys, _priority in filter(lambda x: check_url_legal(x[0]), url_list):
                     self._pool.add_a_task(TPEnum.URL_FETCH, (_priority, self._pool.get_number_dict(TPEnum.URL_COUNTER), _url, _keys, deep+1, 0))
-                for item in save_list:
+                if item:
                     self._pool.add_a_task(TPEnum.ITEM_SAVE, (priority, counter, url, keys, deep, item))
             else:
                 self._pool.update_number_dict(TPEnum.HTM_PARSE_FAIL, +1)

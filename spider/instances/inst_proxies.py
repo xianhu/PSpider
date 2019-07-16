@@ -24,16 +24,16 @@ class Proxieser(object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return proxies_state: can be -1(get failed), 1(get success)
-        :return proxies_result: [{"http(s)": "http(s)://auth@ip:port", ...], or exception information[class_name, excep]
+        :return proxies_list: [{"http(s)": "http(s)://auth@ip:port", ...], or exception information[class_name, excep]
         """
         time.sleep(self._sleep_time)
 
         try:
-            proxies_state, proxies_result = self.proxies_get()
+            proxies_state, proxies_list = self.proxies_get()
         except Exception as excep:
-            proxies_state, proxies_result = -1, [self.__class__.__name__, str(excep)]
+            proxies_state, proxies_list = -1, [self.__class__.__name__, str(excep)]
 
-        return proxies_state, proxies_result
+        return proxies_state, proxies_list
 
     def proxies_get(self) -> (int, list):
         """
