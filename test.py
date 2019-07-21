@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 """
-test.py by xianhu
+test.py
 """
 
 import re

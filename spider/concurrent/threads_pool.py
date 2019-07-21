@@ -70,10 +70,31 @@ class ThreadPool(object):
 
     def set_start_url(self, url, priority=0, keys=None, deep=0):
         """
-        set start url based on "priority", "keys" and "deep", keys must be a dictionary, and repeat must be 0
+        set start url based on "priority", "keys" and "deep"
         """
-        assert check_url_legal(url), "set_start_url error, please pass legal url to this function"
-        self.add_a_task(TPEnum.URL_FETCH, (priority, self.get_number_dict(TPEnum.URL_COUNTER), url, keys or {}, deep, 0))
+        self.put_item_to_queue_fetch(url, priority=priority, keys=keys, deep=deep)
+        return
+
+    def put_item_to_queue_fetch(self, url, priority=0, keys=None, deep=0, repeat=0):
+        """
+        put item to self._queue_fetch, keys can be a dictionary, and repeat must be 0
+        """
+        assert check_url_legal(url), "set_item_to_queue_fetch error, please pass legal url to this function"
+        self.add_a_task(TPEnum.URL_FETCH, (priority, self.get_number_dict(TPEnum.URL_COUNTER), url, keys or {}, deep, repeat))
+        return
+
+    def put_item_to_queue_parse(self, content, priority=0, url=None, keys=None, deep=0):
+        """
+        put item to self._queue_parse, keys can be a dictionary, and url can be None
+        """
+        self.add_a_task(TPEnum.HTM_PARSE, (priority, self.get_number_dict(TPEnum.URL_COUNTER), url, keys or {}, deep, content))
+        return
+
+    def put_item_to_queue_save(self, item, priority=0, url=None, keys=None, deep=0):
+        """
+        put item to self._queue_save, keys can be a dictionary, and url can be None
+        """
+        self.add_a_task(TPEnum.ITEM_SAVE, (priority, self.get_number_dict(TPEnum.URL_COUNTER), url, keys or {}, deep, item))
         return
 
     def start_working(self, fetcher_num=10):
