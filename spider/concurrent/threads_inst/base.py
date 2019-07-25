@@ -15,7 +15,8 @@ class TPEnum(enum.Enum):
     """
     enum of TPEnum, to mark the status of the threads_pool
     """
-    URL_COUNTER = "url_counter"             # flag of url_counter, for priority_queue
+    SPIDER_TYPE_NORMAL = "normal"           # flag of spider_type_normal
+    SPIDER_TYPE_MONITOR = "monitor"         # flag of spider_type_monitor
 
     URL_FETCH = "url_fetch"                 # flag of url_fetch **
     URL_FETCH_RUN = "url_fetch_run"         # flag of url_fetch_run

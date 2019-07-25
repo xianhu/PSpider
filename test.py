@@ -7,7 +7,6 @@ test.py
 import re
 import sys
 import spider
-import random
 import logging
 import datetime
 import requests
@@ -17,35 +16,35 @@ requests.packages.urllib3.disable_warnings()
 
 class MyFetcher(spider.Fetcher):
     """
-    fetcher module, rewrite url_fetch()
+    重写spider.Fetcher类，可自定义初始化函数，这里必须重写父类中的url_fetch函数
     """
 
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
-        # test error-logging
-        assert random.randint(0, 100) != 8, "error-in-fetcher"
-
-        response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, verify=False, allow_redirects=True, timeout=(3.05, 10))
+        """
+        定义抓取函数，注意参见父类中对应函数的参数和返回值说明
+        """
+        response = requests.get(url, proxies=proxies, verify=False, allow_redirects=True, timeout=(3.05, 10))
         response.raise_for_status()
         return 1, (response.status_code, response.url, response.text), 1
 
 
 class MyParser(spider.Parser):
     """
-    parser module, rewrite htm_parse()
+    重写spider.Parser类，可自定义初始化函数，这里必须重写父类中的htm_parse函数
     """
 
     def __init__(self, max_deep=0):
         """
-        constructor
+        初始化函数
         """
         spider.Parser.__init__(self)
         self._max_deep = max_deep
         return
 
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object):
-        # test error-logging
-        assert random.randint(0, 100) != 8, "error-in-parser"
-
+        """
+        定义解析函数，解析抓取到的content，生成待抓取的url和待保存的item
+        """
         status_code, url_now, html_text = content
 
         url_list = []
@@ -53,7 +52,6 @@ class MyParser(spider.Parser):
             re_group = re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)
             url_list = [(spider.get_url_legal(_url, base_url=url), keys, priority+1) for _url in re_group]
 
-        # save_list can be list / tuple / dict
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         # item = (url, title.group("title").strip(), datetime.datetime.now()) if title else []
         item = {"url": url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()} if title else {}
@@ -65,21 +63,21 @@ class MyParser(spider.Parser):
 
 class MySaver(spider.Saver):
     """
-    saver module, rewrite item_save()
+    重写spider.Saver类，可自定义初始化函数，这里必须重写父类中的item_save函数
     """
+
     def __init__(self, save_pipe=sys.stdout):
         """
-        constructor
+        初始化函数
         """
         spider.Saver.__init__(self)
         self._save_pipe = save_pipe
         return
 
     def item_save(self, priority: int, url: str, keys: dict, deep: int, item: object):
-        # test error-logging
-        assert random.randint(0, 100) != 8, "error-in-saver"
-
-        # item can be list / tuple / dict
+        """
+        定义保存函数，将item保存到本地文件或者数据库
+        """
         # self._save_pipe.write("\t".join([str(col) for col in item]) + "\n")
         self._save_pipe.write("\t".join([item["url"], item["title"], str(item["datetime"])]) + "\n")
         self._save_pipe.flush()
@@ -88,9 +86,13 @@ class MySaver(spider.Saver):
 
 class MyProxies(spider.Proxieser):
     """
-    proxies module, only rewrite proxies_get()
+    重写spider.Proxieser类，可自定义初始化函数，这里必须重写父类中的proxies_get函数
     """
+
     def proxies_get(self):
+        """
+        获取代理，并返回给线程池
+        """
         response = requests.get("http://xxxx.com/proxies")
         proxies_list = [{"http": "http://%s" % ipport, "https": "https://%s" % ipport} for ipport in response.text.split("\n")]
         return 1, proxies_list
@@ -98,28 +100,28 @@ class MyProxies(spider.Proxieser):
 
 def test_spider():
     """
-    test spider
+    测试函数
     """
-    # initial fetcher / parser / saver / proxieser
+    # 初始化 fetcher / parser / saver / proxieser
     fetcher = MyFetcher(sleep_time=0, max_repeat=1)
     parser = MyParser(max_deep=1)
     saver = MySaver(save_pipe=open("out.txt", "w"))
     # proxieser = MyProxies(sleep_time=5)
 
-    # define url_filter
+    # 定义url_filter
     url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://(www\.)?appinn\.com"), ), capacity=None)
 
-    # initial web_spider
+    # 定义爬虫web_spider
     web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1, queue_save_size=-1)
     # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
-    # add start url
+    # 添加起始的url
     web_spider.set_start_url("https://www.appinn.com/", priority=0, keys={"type": "index"}, deep=0)
 
-    # start web_spider
+    # 开启爬虫web_spider
     web_spider.start_working(fetcher_num=20)
 
-    # wait for finished
+    # 等待爬虫结束
     web_spider.wait_for_finished()
     return
 

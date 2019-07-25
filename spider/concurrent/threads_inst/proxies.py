@@ -21,11 +21,13 @@ class ProxiesThread(BaseThread):
         proxies_state, proxies_list = self._worker.working()
 
         # ----3----
-        if proxies_state > 0:
-            for proxies in proxies_list:
-                self._pool.add_a_task(TPEnum.PROXIES, proxies)
-        else:
+        self._pool.accept_state_from_task(TPEnum.PROXIES, proxies_state, None)
+
+        # ----4----
+        for proxies in proxies_list:
+            self._pool.add_a_task(TPEnum.PROXIES, proxies)
+        if proxies_state <= 0:
             logging.warning("%s warning: %s", proxies_list[0], proxies_list[1])
 
-        # ----5----
+        # ----6----
         return not (self._pool.is_all_tasks_done() and self._pool.get_thread_stop_flag())

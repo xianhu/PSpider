@@ -17,7 +17,7 @@ class ThreadPool(object):
     class of ThreadPool
     """
 
-    def __init__(self, fetcher, parser=None, saver=None, proxieser=None, url_filter=None, queue_parse_size=-1, queue_save_size=-1, queue_proxies_size=-1):
+    def __init__(self, fetcher, parser=None, saver=None, proxieser=None, url_filter=None, queue_parse_size=-1, queue_save_size=-1, queue_proxies_size=-1, spider_type=TPEnum.SPIDER_TYPE_NORMAL):
         """
         constructor
         """
@@ -31,17 +31,14 @@ class ThreadPool(object):
         self._thread_parser = None                                          # parser thread, be None if not parser
         self._thread_saver = None                                           # saver thread, be None if not saver
         self._thread_proxieser = None                                       # proxieser thread, be None if not proxieser
-
         self._thread_stop_flag = False                                      # default: False, stop flag of threads
 
-        self._queue_fetch = queue.PriorityQueue(-1)                         # (priority, counter, url, keys, deep, repeat)
-        self._queue_parse = queue.PriorityQueue(queue_parse_size)           # (priority, counter, url, keys, deep, content)
-        self._queue_save = queue.PriorityQueue(queue_save_size)             # (priority, counter, url, keys, deep, item)
+        self._queue_fetch = queue.PriorityQueue(-1)                         # (priority, url, keys, deep, repeat)
+        self._queue_parse = queue.PriorityQueue(queue_parse_size)           # (priority, url, keys, deep, content)
+        self._queue_save = queue.PriorityQueue(queue_save_size)             # (priority, url, keys, deep, item)
         self._queue_proxies = queue.Queue(queue_proxies_size)               # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
 
         self._number_dict = {
-            TPEnum.URL_COUNTER: 0,                                          # the count of urls which appeared in self._queue_fetch
-
             TPEnum.URL_FETCH_RUN: 0,                                        # the count of fetch tasks which are running
             TPEnum.URL_FETCH_NOT: 0,                                        # the count of urls which haven't been fetched
             TPEnum.URL_FETCH_SUCC: 0,                                       # the count of urls which have been fetched successfully
@@ -62,6 +59,9 @@ class ThreadPool(object):
         }
         self._lock = threading.Lock()                                       # the lock which self._number_dict needs
 
+        self._spider_type = spider_type                                     # spider type, can be SPIDER_TYPE_NORMAL or SPIDER_TYPE_MONITOR
+        self._url_in_queue_fetch_set = set()                                # the url set, used when self._spider_type = SPIDER_TYPE_MONITOR
+
         self._thread_monitor = MonitorThread("monitor", self)
         self._thread_monitor.setDaemon(True)
         self._thread_monitor.start()
@@ -70,31 +70,31 @@ class ThreadPool(object):
 
     def set_start_url(self, url, priority=0, keys=None, deep=0):
         """
-        set start url based on "priority", "keys" and "deep"
+        set start url based on "priority", "keys" and "deep", repeat must be 0
         """
-        self.put_item_to_queue_fetch(url, priority=priority, keys=keys, deep=deep)
+        self.put_item_to_queue_fetch(priority=priority, url=url, keys=keys, deep=deep)
         return
 
-    def put_item_to_queue_fetch(self, url, priority=0, keys=None, deep=0, repeat=0):
+    def put_item_to_queue_fetch(self, priority, url, keys, deep, repeat=0):
         """
-        put item to self._queue_fetch, keys can be a dictionary, and repeat must be 0
+        put url to self._queue_fetch, keys can be a dictionary, repeat must be 0
         """
         assert check_url_legal(url), "set_item_to_queue_fetch error, please pass legal url to this function"
-        self.add_a_task(TPEnum.URL_FETCH, (priority, self.get_number_dict(TPEnum.URL_COUNTER), url, keys or {}, deep, repeat))
+        self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys or {}, deep, repeat))
         return
 
-    def put_item_to_queue_parse(self, content, priority=0, url=None, keys=None, deep=0):
+    def put_item_to_queue_parse(self, priority, url, keys, deep, content):
         """
-        put item to self._queue_parse, keys can be a dictionary, and url can be None
+        put content to self._queue_parse, keys can be a dictionary
         """
-        self.add_a_task(TPEnum.HTM_PARSE, (priority, self.get_number_dict(TPEnum.URL_COUNTER), url, keys or {}, deep, content))
+        self.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys or {}, deep, content))
         return
 
-    def put_item_to_queue_save(self, item, priority=0, url=None, keys=None, deep=0):
+    def put_item_to_queue_save(self, priority, url, keys, deep, item):
         """
-        put item to self._queue_save, keys can be a dictionary, and url can be None
+        put item to self._queue_save, keys can be a dictionary
         """
-        self.add_a_task(TPEnum.ITEM_SAVE, (priority, self.get_number_dict(TPEnum.URL_COUNTER), url, keys or {}, deep, item))
+        self.add_a_task(TPEnum.ITEM_SAVE, (priority, url, keys or {}, deep, item))
         return
 
     def start_working(self, fetcher_num=10):
@@ -150,12 +150,6 @@ class ThreadPool(object):
         logging.warning("ThreadPool has finished")
         return self._number_dict
 
-    def get_fetcher_number(self):
-        """
-        get fetcher number of this thread pool
-        """
-        return len(self._thread_fetcher_list)
-
     def get_proxies_flag(self):
         """
         get proxies flag of this thread pool
@@ -191,14 +185,24 @@ class ThreadPool(object):
                         self._number_dict[TPEnum.HTM_PARSE_RUN] or self._number_dict[TPEnum.HTM_PARSE_NOT] or \
                         self._number_dict[TPEnum.ITEM_SAVE_RUN] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
 
+    def accept_state_from_task(self, task_name, task_state, task):
+        """
+        accept state from each task based on task_name
+        """
+        if task_name == TPEnum.URL_FETCH:
+            if self._spider_type == TPEnum.SPIDER_TYPE_MONITOR:
+                self._url_in_queue_fetch_set.remove(task[1])
+        return
+
     def add_a_task(self, task_name, task):
         """
         add a task based on task_name, also for proxies
         """
-        if (task_name == TPEnum.URL_FETCH) and ((task[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task[2])):
-            self._queue_fetch.put(task, block=False)
+        if (task_name == TPEnum.URL_FETCH) and ((task[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task[1])):
+            if self._spider_type == TPEnum.SPIDER_TYPE_MONITOR:
+                self._url_in_queue_fetch_set.add(task[1])
+            self._queue_fetch.put(task, block=False, timeout=None)
             self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
-            self.update_number_dict(TPEnum.URL_COUNTER, +1)
         elif (task_name == TPEnum.HTM_PARSE) and self._thread_parser:
             self._queue_parse.put(task, block=True, timeout=None)
             self.update_number_dict(TPEnum.HTM_PARSE_NOT, +1)
