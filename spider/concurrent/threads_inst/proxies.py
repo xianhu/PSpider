@@ -30,4 +30,4 @@ class ProxiesThread(BaseThread):
             logging.warning("%s warning: %s", proxies_list[0], proxies_list[1])
 
         # ----6----
-        return not (self._pool.is_all_tasks_done() and self._pool.get_thread_stop_flag())
+        return not (self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done())

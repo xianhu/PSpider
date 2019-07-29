@@ -59,8 +59,8 @@ class ThreadPool(object):
         }
         self._lock = threading.Lock()                                       # the lock which self._number_dict needs
 
-        self._spider_type = spider_type                                     # spider type, can be SPIDER_TYPE_NORMAL or SPIDER_TYPE_MONITOR
-        self._url_in_queue_fetch_set = set()                                # the url set, used when self._spider_type = SPIDER_TYPE_MONITOR
+        self._spider_type = spider_type                                     # spider type, can be TPEnum.SPIDER_TYPE_NORMAL or TPEnum.SPIDER_TYPE_MONITOR
+        self._url_in_queue_fetch_set = set()                                # the url set, used when self._spider_type = TPEnum.SPIDER_TYPE_MONITOR
 
         self._thread_monitor = MonitorThread("monitor", self)
         self._thread_monitor.setDaemon(True)
@@ -72,10 +72,10 @@ class ThreadPool(object):
         """
         set start url based on "priority", "keys" and "deep", repeat must be 0
         """
-        self.put_item_to_queue_fetch(priority=priority, url=url, keys=keys, deep=deep)
+        self.put_item_to_queue_fetch(priority=priority, url=url, keys=keys, deep=deep, repeat=0)
         return
 
-    def put_item_to_queue_fetch(self, priority, url, keys, deep, repeat=0):
+    def put_item_to_queue_fetch(self, priority, url, keys, deep, repeat):
         """
         put url to self._queue_fetch, keys can be a dictionary, repeat must be 0
         """
@@ -99,7 +99,7 @@ class ThreadPool(object):
 
     def start_working(self, fetcher_num=10):
         """
-        start this thread pool
+        start this thread pool based on fetcher_num
         """
         logging.warning("ThreadPool starts working: urls_count=%s, fetcher_num=%s", self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
         self._thread_stop_flag = False
@@ -200,6 +200,8 @@ class ThreadPool(object):
         """
         if (task_name == TPEnum.URL_FETCH) and ((task[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task[1])):
             if self._spider_type == TPEnum.SPIDER_TYPE_MONITOR:
+                if task[1] in self._url_in_queue_fetch_set:
+                    return
                 self._url_in_queue_fetch_set.add(task[1])
             self._queue_fetch.put(task, block=False, timeout=None)
             self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
