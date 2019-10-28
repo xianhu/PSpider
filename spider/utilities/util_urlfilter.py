@@ -46,13 +46,10 @@ class UrlFilter(object):
 
     def check_and_add(self, url):
         """
-        check the url to make sure it hasn't been fetched, and add url to this urlfilter
+        check whether url in this urlfilter(False) or not(True), and add url to this urlfilter
         """
         result = False
         if self.check(url):
-            if isinstance(self._urlfilter, set):
-                result = (url not in self._urlfilter)
-                self._urlfilter.add(url)
-            else:
-                result = (not self._urlfilter.add(url))
+            result = (url not in self._urlfilter)
+            self._urlfilter.add(url)
         return result

@@ -15,9 +15,6 @@ class TPEnum(enum.Enum):
     """
     enum of TPEnum, to mark the status of the threads_pool
     """
-    SPIDER_TYPE_NORMAL = "normal"           # flag of spider_type_normal
-    SPIDER_TYPE_MONITOR = "monitor"         # flag of spider_type_monitor
-
     URL_FETCH = "url_fetch"                 # flag of url_fetch **
     URL_FETCH_RUN = "url_fetch_run"         # flag of url_fetch_run
     URL_FETCH_NOT = "url_fetch_not"         # flag of url_fetch_not
@@ -37,8 +34,8 @@ class TPEnum(enum.Enum):
     ITEM_SAVE_FAIL = "item_save_fail"       # flag of item_save_fail
 
     PROXIES = "proxies"                     # flag of proxies **
-    PROXIES_LEFT = "proxies_left"           # flag of proxies_left --> URL_FETCH_NOT
-    PROXIES_FAIL = "proxies_fail"           # flag of proxies_fail --> URL_FETCH_FAIL
+    PROXIES_LEFT = "proxies_left"           # flag of proxies_left(not)
+    PROXIES_FAIL = "proxies_fail"           # flag of proxies_fail(fail)
 
 
 class BaseThread(threading.Thread):
@@ -99,7 +96,7 @@ def work_monitor(self):
     cur_fetch_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
     cur_fetch_fail = self._pool.get_number_dict(TPEnum.URL_FETCH_FAIL)
     cur_fetch_all = cur_fetch_succ + cur_fetch_fail
-    info = "fetch:[RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
+    info = "fetch: [RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
         self._pool.get_number_dict(TPEnum.URL_FETCH_RUN), cur_fetch_not, cur_fetch_succ, cur_fetch_fail, cur_fetch_all - self._last_fetch_num
     )
     self._last_fetch_num = cur_fetch_all
@@ -108,7 +105,7 @@ def work_monitor(self):
     cur_parse_succ = self._pool.get_number_dict(TPEnum.HTM_PARSE_SUCC)
     cur_parse_fail = self._pool.get_number_dict(TPEnum.HTM_PARSE_FAIL)
     cur_parse_all = cur_parse_succ + cur_parse_fail
-    info += " parse:[RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
+    info += " parse: [RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
         self._pool.get_number_dict(TPEnum.HTM_PARSE_RUN), cur_parse_not, cur_parse_succ, cur_parse_fail, cur_parse_all - self._last_parse_num
     )
     self._last_parse_num = cur_parse_all
@@ -117,13 +114,13 @@ def work_monitor(self):
     cur_save_succ = self._pool.get_number_dict(TPEnum.ITEM_SAVE_SUCC)
     cur_save_fail = self._pool.get_number_dict(TPEnum.ITEM_SAVE_FAIL)
     cur_save_all = cur_save_succ + cur_save_fail
-    info += " save:[RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
+    info += " save: [RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
         self._pool.get_number_dict(TPEnum.ITEM_SAVE_RUN), cur_save_not, cur_save_succ, cur_save_fail, cur_save_all - self._last_save_num
     )
     self._last_save_num = cur_save_all
 
     if self._pool.get_proxies_flag():
-        info += " proxies:[LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
+        info += " proxies: [LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
 
     logging.warning(info + " total_seconds=%d" % (time.time() - self._init_time))
     return not (self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done())

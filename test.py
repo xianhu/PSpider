@@ -53,7 +53,6 @@ class MyParser(spider.Parser):
             url_list = [(spider.get_url_legal(_url, base_url=url), keys, priority+1) for _url in re_group]
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
-        # item = (url, title.group("title").strip(), datetime.datetime.now()) if title else []
         item = {"url": url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()} if title else {}
 
         # test multi-processing(heavy time)
@@ -74,11 +73,10 @@ class MySaver(spider.Saver):
         self._save_pipe = save_pipe
         return
 
-    def item_save(self, priority: int, url: str, keys: dict, deep: int, item: object):
+    def item_save(self, priority: int, url: str, keys: dict, deep: int, item: dict):
         """
         定义保存函数，将item保存到本地文件或者数据库
         """
-        # self._save_pipe.write("\t".join([str(col) for col in item]) + "\n")
         self._save_pipe.write("\t".join([item["url"], item["title"], str(item["datetime"])]) + "\n")
         self._save_pipe.flush()
         return 1, None
@@ -109,17 +107,17 @@ def test_spider():
     # proxieser = MyProxies(sleep_time=5)
 
     # 定义url_filter
-    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://(www\.)?appinn\.com"), ), capacity=None)
+    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://docs\.rsshub\.app"), ), capacity=None)
 
     # 定义爬虫web_spider
     web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1, queue_save_size=-1)
     # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
     # 添加起始的url
-    web_spider.set_start_url("https://www.appinn.com/", priority=0, keys={"type": "index"}, deep=0)
+    web_spider.set_start_url("https://docs.rsshub.app/", priority=0, keys={"type": "index"}, deep=0)
 
     # 开启爬虫web_spider
-    web_spider.start_working(fetcher_num=20)
+    web_spider.start_working(fetchers_num=20)
 
     # 等待爬虫结束
     web_spider.wait_for_finished()

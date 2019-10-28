@@ -16,14 +16,14 @@ __all__ = [
     "get_string_strip",
     "get_dict_buildin",
     "parse_error_message",
-    "parse_raw_form",
+    "parse_raw_forms",
     "parse_raw_request",
 ]
 
 
 def check_url_legal(url):
     """
-    check a url is legal or not
+    check a url is legal or not, return True or False
     """
     return True if CONFIG_URL_LEGAL_RE.match(url) else False
 
@@ -75,12 +75,12 @@ def parse_error_message(line):
     return int(regu.group("priority")), eval(regu.group("keys").strip()), int(regu.group("deep")), regu.group("url").strip()
 
 
-def parse_raw_form(raw_form_string, ignore_none=False):
+def parse_raw_forms(raw_forms_string, ignore_none=False):
     """
-    parse form from a raw string, which copied from charles or fiddler
+    parse forms from a raw string, which copied from charles or fiddler
     """
     forms = {}
-    for item in raw_form_string.strip().split("&"):
+    for item in raw_forms_string.strip().split("&"):
         frags = [i.strip() for i in item.strip().split("=")]
         assert len(frags) == 2
         if ignore_none and (not frags[1]):
