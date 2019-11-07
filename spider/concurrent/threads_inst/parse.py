@@ -45,7 +45,7 @@ class ParseThread(BaseThread):
                 self._pool.update_number_dict(TPEnum.HTM_PARSE_SUCC, +1)
                 for _url, _keys, _priority in filter(lambda x: check_url_legal(x[0]), url_list):
                     self._pool.add_a_task(TPEnum.URL_FETCH, (_priority, _url, _keys, deep+1, 0))
-                if item:
+                if item is not None:
                     self._pool.add_a_task(TPEnum.ITEM_SAVE, (priority, url, keys, deep, item))
             else:
                 self._pool.update_number_dict(TPEnum.HTM_PARSE_FAIL, +1)

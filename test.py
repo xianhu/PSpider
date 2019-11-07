@@ -35,7 +35,7 @@ class MyParser(spider.Parser):
 
     def __init__(self, max_deep=0):
         """
-        初始化函数
+        初始化函数，构建一个新变量_max_deep
         """
         spider.Parser.__init__(self)
         self._max_deep = max_deep

@@ -4,7 +4,7 @@
 define WebSpider, and also define utilities and instances for web_spider
 """
 
-__version__ = "2.5.2"
+__version__ = "2.5.3"
 
 from .utilities import *
 from .concurrent import TPEnum, WebSpider

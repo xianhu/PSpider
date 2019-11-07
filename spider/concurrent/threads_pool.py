@@ -74,7 +74,7 @@ class ThreadPool(object):
 
     def put_item_to_queue_fetch(self, priority, url, keys, deep, repeat):
         """
-        put url to self._queue_fetch, keys can be a dictionary, repeat must be 0
+        put url to self._queue_fetch, keys can be a dictionary
         """
         assert check_url_legal(url), "put_item_to_queue_fetch error, please pass legal url to this function"
         self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys or {}, deep, repeat))

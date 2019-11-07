@@ -26,7 +26,7 @@ class UrlFilter(object):
         """
         update this urlfilter using a url_list
         """
-        for url in url_list:
+        for url in filter(lambda x: CONFIG_URL_ILLEGAL_RE.match(x), url_list):
             self._urlfilter.add(url)
         return
 
