@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()
 
 class MyFetcher(spider.Fetcher):
     """
-    重写spider.Fetcher类，可自定义初始化函数，这里必须重写父类中的url_fetch函数
+    重写spider.Fetcher类，可自定义初始化函数，且必须重写父类中的url_fetch函数
     """
 
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
@@ -30,7 +30,7 @@ class MyFetcher(spider.Fetcher):
 
 class MyParser(spider.Parser):
     """
-    重写spider.Parser类，可自定义初始化函数，这里必须重写父类中的htm_parse函数
+    重写spider.Parser类，可自定义初始化函数，且必须重写父类中的htm_parse函数
     """
 
     def __init__(self, max_deep=0):
@@ -62,7 +62,7 @@ class MyParser(spider.Parser):
 
 class MySaver(spider.Saver):
     """
-    重写spider.Saver类，可自定义初始化函数，这里必须重写父类中的item_save函数
+    重写spider.Saver类，可自定义初始化函数，且必须重写父类中的item_save函数
     """
 
     def __init__(self, save_pipe=sys.stdout):
@@ -84,12 +84,12 @@ class MySaver(spider.Saver):
 
 class MyProxies(spider.Proxieser):
     """
-    重写spider.Proxieser类，可自定义初始化函数，这里必须重写父类中的proxies_get函数
+    重写spider.Proxieser类，可自定义初始化函数，且必须重写父类中的proxies_get函数
     """
 
     def proxies_get(self):
         """
-        获取代理，并返回给线程池
+        获取代理，并返回给线程池，推荐使用快代理
         """
         response = requests.get("http://xxxx.com/proxies")
         proxies_list = [{"http": "http://%s" % ipport, "https": "https://%s" % ipport} for ipport in response.text.split("\n")]
@@ -101,9 +101,7 @@ def test_spider():
     测试函数
     """
     # 初始化 fetcher / parser / saver / proxieser
-    fetcher = MyFetcher(sleep_time=0, max_repeat=1)
-    parser = MyParser(max_deep=1)
-    saver = MySaver(save_pipe=open("out.txt", "w"))
+    fetcher, parser, saver = MyFetcher(sleep_time=0, max_repeat=3), MyParser(max_deep=1), MySaver(save_pipe=open("out.txt", "w"))
     # proxieser = MyProxies(sleep_time=5)
 
     # 定义url_filter
@@ -117,7 +115,7 @@ def test_spider():
     web_spider.set_start_url("https://docs.rsshub.app/", priority=0, keys={"type": "index"}, deep=0)
 
     # 开启爬虫web_spider
-    web_spider.start_working(fetchers_num=20)
+    web_spider.start_working(fetchers_num=10)
 
     # 等待爬虫结束
     web_spider.wait_for_finished()

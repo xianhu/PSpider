@@ -69,7 +69,7 @@ class ThreadPool(object):
         """
         set start url based on "priority", "keys" and "deep", repeat must be 0
         """
-        self.put_item_to_queue_fetch(priority=priority, url=url, keys=keys, deep=deep, repeat=0)
+        self.put_item_to_queue_fetch(priority, url, keys, deep, 0)
         return
 
     def put_item_to_queue_fetch(self, priority, url, keys, deep, repeat):
@@ -155,7 +155,7 @@ class ThreadPool(object):
 
     def get_thread_stop_flag(self):
         """
-        get threads' stop flag of this thread pool
+        get threads stop flag of this thread pool
         """
         return self._thread_stop_flag
 

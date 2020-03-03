@@ -27,7 +27,7 @@ class Fetcher(object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return fetch_state: can be -1(fetch failed), 0(need repeat), 1(fetch success)
-        :return content: can be any object, or exception information[class_name, excep]
+        :return content: which waits for parsed, can be any object, or exception information[class_name, excep]
         :return proxies_state: can be -1(unavaiable), 0(return to queue), 1(avaiable)
         """
         time.sleep(random.randint(0, self._sleep_time))

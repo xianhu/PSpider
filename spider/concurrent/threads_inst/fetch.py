@@ -45,6 +45,7 @@ class FetchThread(BaseThread):
             self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
         elif fetch_state == 0:
             self._pool.add_a_task(TPEnum.URL_FETCH, (priority, url, keys, deep, repeat+1))
+            logging.warning("%s repeat: %s, %s", content[0], content[1], CONFIG_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
         else:
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
             logging.error("%s error: %s, %s", content[0], content[1], CONFIG_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
