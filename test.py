@@ -24,7 +24,6 @@ class MyFetcher(spider.Fetcher):
         定义抓取函数，注意参见父类中对应函数的参数和返回值说明
         """
         response = requests.get(url, proxies=proxies, verify=False, allow_redirects=True, timeout=(3.05, 10))
-        response.raise_for_status()
         return 1, (response.status_code, response.url, response.text), 1
 
 
@@ -101,18 +100,20 @@ def test_spider():
     测试函数
     """
     # 初始化 fetcher / parser / saver / proxieser
-    fetcher, parser, saver = MyFetcher(sleep_time=0, max_repeat=3), MyParser(max_deep=1), MySaver(save_pipe=open("out.txt", "w"))
+    fetcher = MyFetcher(sleep_time=0, max_repeat=3)
+    parser = MyParser(max_deep=1)
+    saver = MySaver(save_pipe=open("out.txt", "w"))
     # proxieser = MyProxies(sleep_time=5)
 
     # 定义url_filter
-    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://docs\.rsshub\.app"), ), capacity=None)
+    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://www\.appinn\.com"), ), capacity=None)
 
     # 定义爬虫web_spider
     web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1, queue_save_size=-1)
     # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
     # 添加起始的url
-    web_spider.set_start_url("https://docs.rsshub.app/", priority=0, keys={"type": "index"}, deep=0)
+    web_spider.set_start_url("https://www.appinn.com/", priority=0, keys={"type": "index"}, deep=0)
 
     # 开启爬虫web_spider
     web_spider.start_working(fetchers_num=10)

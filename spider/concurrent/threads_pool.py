@@ -192,9 +192,7 @@ class ThreadPool(object):
         """
         add a task based on task_type, also for proxies
         """
-        if (task_type == TPEnum.URL_FETCH) and (
-                (task[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task[1])
-        ):
+        if (task_type == TPEnum.URL_FETCH) and ((task[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task[1])):
             self._queue_fetch.put(task, block=False, timeout=None)
             self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
         elif (task_type == TPEnum.HTM_PARSE) and self._thread_parser:

@@ -20,7 +20,7 @@ class ParseThread(BaseThread):
         constructor
         """
         BaseThread.__init__(self, name, worker, pool)
-        self._pool_multiprocssing = multiprocessing.Pool()
+        self._pool_mp = multiprocessing.Pool()
         return
 
     def working(self):
@@ -31,7 +31,7 @@ class ParseThread(BaseThread):
         task_list = [self._pool.get_a_task(TPEnum.HTM_PARSE) for _ in range(max(1, self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT)))]
 
         # ----2----
-        result_list = [self._pool_multiprocssing.apply_async(self._worker.working, args=task) for task in task_list]
+        result_list = [self._pool_mp.apply_async(self._worker.working, args=task) for task in task_list]
 
         for index in range(len(task_list)):
             priority, url, keys, deep, content = task_list[index]

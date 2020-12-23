@@ -34,8 +34,8 @@ class TPEnum(enum.Enum):
     ITEM_SAVE_FAIL = "item_save_fail"       # flag of item_save_fail
 
     PROXIES = "proxies"                     # flag of proxies **
-    PROXIES_LEFT = "proxies_left"           # flag of proxies_left(not)
-    PROXIES_FAIL = "proxies_fail"           # flag of proxies_fail(fail)
+    PROXIES_LEFT = "proxies_left"           # flag of proxies_left
+    PROXIES_FAIL = "proxies_fail"           # flag of proxies_fail
 
 
 class BaseThread(threading.Thread):

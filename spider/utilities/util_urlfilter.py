@@ -46,7 +46,7 @@ class UrlFilter(object):
 
     def check_and_add(self, url):
         """
-        check whether url in this urlfilter, and add url to this urlfilter
+        check whether url not in this urlfilter, and add url to this urlfilter
         """
         result = False
         if self.check(url):
