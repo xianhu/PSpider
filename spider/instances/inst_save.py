@@ -14,17 +14,17 @@ class Saver(object):
         """
         working function, must "try, except" and don't change the parameters and returns
         :return save_state: can be -1(save failed), 1(save success)
-        :return save_result: can be any object, or exception information[class_name, excep]
+        :return save_result: can be any object, or exception[class_name, excep]
         """
         try:
             save_state, save_result = self.item_save(priority, url, keys, deep, item)
         except Exception as excep:
-            save_state, save_result = -1, [self.__class__.__name__, str(excep)]
+            save_state, save_result = -1, [self.__class__.__name__, excep]
 
         return save_state, save_result
 
     def item_save(self, priority: int, url: str, keys: dict, deep: int, item: object) -> (int, object):
         """
-        save the item of a url, you must overwrite this function, parameters and returns refer to self.working()
+        save the content of a url. You must overwrite this function, and parameters and returns refer to self.working()
         """
         raise NotImplementedError

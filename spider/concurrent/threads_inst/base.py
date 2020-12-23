@@ -92,35 +92,37 @@ def work_monitor(self):
     """
     time.sleep(5)
 
-    cur_fetch_not = self._pool.get_number_dict(TPEnum.URL_FETCH_NOT)
-    cur_fetch_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
-    cur_fetch_fail = self._pool.get_number_dict(TPEnum.URL_FETCH_FAIL)
-    cur_fetch_all = cur_fetch_succ + cur_fetch_fail
+    fetch_run = self._pool.get_number_dict(TPEnum.URL_FETCH_RUN)
+    fetch_not = self._pool.get_number_dict(TPEnum.URL_FETCH_NOT)
+    fetch_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
+    fetch_fail = self._pool.get_number_dict(TPEnum.URL_FETCH_FAIL)
     info = "fetch: [RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
-        self._pool.get_number_dict(TPEnum.URL_FETCH_RUN), cur_fetch_not, cur_fetch_succ, cur_fetch_fail, cur_fetch_all - self._last_fetch_num
+        fetch_run, fetch_not, fetch_succ, fetch_fail, (fetch_succ + fetch_fail) - self._last_fetch_num
     )
-    self._last_fetch_num = cur_fetch_all
+    self._last_fetch_num = fetch_succ + fetch_fail
 
-    cur_parse_not = self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT)
-    cur_parse_succ = self._pool.get_number_dict(TPEnum.HTM_PARSE_SUCC)
-    cur_parse_fail = self._pool.get_number_dict(TPEnum.HTM_PARSE_FAIL)
-    cur_parse_all = cur_parse_succ + cur_parse_fail
+    parse_run = self._pool.get_number_dict(TPEnum.HTM_PARSE_RUN)
+    parse_not = self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT)
+    parse_succ = self._pool.get_number_dict(TPEnum.HTM_PARSE_SUCC)
+    parse_fail = self._pool.get_number_dict(TPEnum.HTM_PARSE_FAIL)
     info += " parse: [RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
-        self._pool.get_number_dict(TPEnum.HTM_PARSE_RUN), cur_parse_not, cur_parse_succ, cur_parse_fail, cur_parse_all - self._last_parse_num
+        parse_run, parse_not, parse_succ, parse_fail, (parse_succ + parse_fail) - self._last_parse_num
     )
-    self._last_parse_num = cur_parse_all
+    self._last_parse_num = parse_succ + parse_fail
 
-    cur_save_not = self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT)
-    cur_save_succ = self._pool.get_number_dict(TPEnum.ITEM_SAVE_SUCC)
-    cur_save_fail = self._pool.get_number_dict(TPEnum.ITEM_SAVE_FAIL)
-    cur_save_all = cur_save_succ + cur_save_fail
+    save_run = self._pool.get_number_dict(TPEnum.ITEM_SAVE_RUN)
+    save_not = self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT)
+    save_succ = self._pool.get_number_dict(TPEnum.ITEM_SAVE_SUCC)
+    save_fail = self._pool.get_number_dict(TPEnum.ITEM_SAVE_FAIL)
     info += " save: [RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
-        self._pool.get_number_dict(TPEnum.ITEM_SAVE_RUN), cur_save_not, cur_save_succ, cur_save_fail, cur_save_all - self._last_save_num
+        save_run, save_not, save_succ, save_fail, (save_succ + save_fail) - self._last_save_num
     )
-    self._last_save_num = cur_save_all
+    self._last_save_num = save_succ + save_fail
 
+    proxies_left = self._pool.get_number_dict(TPEnum.PROXIES_LEFT)
+    proxies_fail = self._pool.get_number_dict(TPEnum.PROXIES_FAIL)
     if self._pool.get_proxies_flag():
-        info += " proxies: [LEFT=%d, FAIL=%d];" % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL))
+        info += " proxies: [LEFT=%d, FAIL=%d];" % (proxies_left, proxies_fail)
 
     logging.warning(info + " total_seconds=%d" % (time.time() - self._init_time))
     return not (self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done())

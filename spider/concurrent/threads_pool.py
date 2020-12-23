@@ -19,7 +19,7 @@ class ThreadPool(object):
 
     def __init__(self, fetcher, parser=None, saver=None, proxieser=None, url_filter=None, queue_parse_size=-1, queue_save_size=-1, queue_proxies_size=-1):
         """
-        constructor
+        constructor, queue_*_size is the maximum size of each queue, -1 to no limition
         """
         self._inst_fetcher = fetcher                                        # fetcher instance, subclass of Fetcher
         self._inst_parser = parser                                          # parser instance, subclass of Parser or None
@@ -27,7 +27,7 @@ class ThreadPool(object):
         self._inst_proxieser = proxieser                                    # proxieser instance, subclass of Proxieser or None
         self._url_filter = url_filter                                       # default: None, also can be UrlFilter()
 
-        self._thread_fetcher_list = []                                      # fetcher threads list
+        self._thread_fetcher_list = []                                      # fetcher threads list, define length in start_working()
         self._thread_parser = None                                          # parser thread, be None if no instance of parser
         self._thread_saver = None                                           # saver thread, be None if no instance of saver
         self._thread_proxieser = None                                       # proxieser thread, be None if no instance of proxieser
@@ -74,22 +74,22 @@ class ThreadPool(object):
 
     def put_item_to_queue_fetch(self, priority, url, keys, deep, repeat):
         """
-        put url to self._queue_fetch, keys can be a dictionary
+        put url to self._queue_fetch, keys can be a dictionary or None
         """
-        assert check_url_legal(url), "put_item_to_queue_fetch error, please pass legal url to this function"
+        assert check_url_legal(url), "put_item_to_queue_fetch error, please pass legal url"
         self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys or {}, deep, repeat))
         return
 
     def put_item_to_queue_parse(self, priority, url, keys, deep, content):
         """
-        put content to self._queue_parse, keys can be a dictionary
+        put content to self._queue_parse, keys can be a dictionary or None
         """
         self.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys or {}, deep, content))
         return
 
     def put_item_to_queue_save(self, priority, url, keys, deep, item):
         """
-        put item to self._queue_save, keys can be a dictionary
+        put item to self._queue_save, keys can be a dictionary or None
         """
         self.add_a_task(TPEnum.ITEM_SAVE, (priority, url, keys or {}, deep, item))
         return
@@ -192,7 +192,9 @@ class ThreadPool(object):
         """
         add a task based on task_type, also for proxies
         """
-        if (task_type == TPEnum.URL_FETCH) and ((task[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task[1])):
+        if (task_type == TPEnum.URL_FETCH) and (
+                (task[-1] > 0) or (not self._url_filter) or self._url_filter.check_and_add(task[1])
+        ):
             self._queue_fetch.put(task, block=False, timeout=None)
             self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
         elif (task_type == TPEnum.HTM_PARSE) and self._thread_parser:
