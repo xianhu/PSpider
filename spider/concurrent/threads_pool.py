@@ -55,7 +55,7 @@ class ThreadPool(object):
             TPEnum.ITEM_SAVE_FAIL: 0,                                       # the count of urls which have been saved failed
 
             TPEnum.PROXIES_LEFT: 0,                                         # the count of proxies which are avaliable
-            TPEnum.PROXIES_FAIL: 0,                                         # the count of proxies which are unavaliable
+            TPEnum.PROXIES_FAIL: 0,                                         # the count of proxies which are unavailable
         }
         self._lock = threading.Lock()                                       # the lock which self._number_dict needs
 
