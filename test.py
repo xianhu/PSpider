@@ -106,14 +106,14 @@ def test_spider():
     # proxieser = MyProxies(sleep_time=5)
 
     # 定义url_filter
-    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://www\.appinn\.com"), ), capacity=None)
+    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://www\.appinn\.com"), ))
 
     # 定义爬虫web_spider
     web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1, queue_save_size=-1)
     # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
     # 添加起始的url
-    web_spider.set_start_url("https://www.appinn.com/", priority=0, keys={"type": "index"}, deep=0)
+    web_spider.set_start_url("https://www.appinn.com/", priority=0, keys={"type": "index"}, deep=0, repeat=0)
 
     # 开启爬虫web_spider
     web_spider.start_working(fetchers_num=10)

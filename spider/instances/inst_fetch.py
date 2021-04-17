@@ -24,7 +24,7 @@ class Fetcher(object):
 
     def working(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, int):
         """
-        working function, must "try, except" and don't change the parameters and returns
+        working function, must "try-except" and don't change the parameters and returns
         :return fetch_state: can be -1(fetch failed), 0(need repeat), 1(fetch success)
         :return content: which waits to be parsed, can be any object, or exception[class_name, excep]
         :return proxies_state: can be -1(unavaiable), 0(return to queue), 1(avaiable)
@@ -40,6 +40,6 @@ class Fetcher(object):
 
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, int):
         """
-        fetch the content of a url. You must overwrite this function, and parameters and returns refer to self.working()
+        fetch the content of a url. You must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

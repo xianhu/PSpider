@@ -54,14 +54,14 @@ class BaseThread(threading.Thread):
 
     def run(self):
         """
-        rewrite run function, auto running and must call self.working()
+        rewrite auto-running function
         """
         while True:
             try:
                 if not self.working():
                     break
             except queue.Empty:
-                if self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done():
+                if self._pool.is_ready_to_finish():
                     break
         return
 
@@ -88,7 +88,7 @@ def init_monitor_thread(self, name, pool):
 
 def work_monitor(self):
     """
-    monitor the thread pool, auto running, and return False if you need stop thread
+    monitor of the thread pool, auto running and return False if you need stop thread
     """
     time.sleep(5)
 
@@ -125,7 +125,7 @@ def work_monitor(self):
         info += " proxies: [LEFT=%d, FAIL=%d];" % (proxies_left, proxies_fail)
 
     logging.warning(info + " total_seconds=%d" % (time.time() - self._init_time))
-    return not (self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done())
+    return not self._pool.is_ready_to_finish()
 
 
 MonitorThread = type("MonitorThread", (BaseThread, ), dict(__init__=init_monitor_thread, working=work_monitor))

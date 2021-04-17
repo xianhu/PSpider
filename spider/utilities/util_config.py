@@ -14,9 +14,9 @@ __all__ = [
     "CONFIG_HEADERS_SET",
 ]
 
-# define structure of error message (concurrent/threads_inst)
+# define structure of error message for threads_inst
 CONFIG_ERROR_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
-CONFIG_ERROR_MESSAGE_RE = re.compile(r"priority=(?P<priority>\d+),\s*keys=(?P<keys>.+?),\s*deep=(?P<deep>\d+),\s*url=(?P<url>.+)$", flags=re.IGNORECASE)
+CONFIG_ERROR_MESSAGE_RE = re.compile(r"priority=(?P<p>\d+),\s*keys=(?P<k>.+?),\s*deep=(?P<d>\d+),\s*url=(?P<u>.+)$", flags=re.IGNORECASE)
 
 # define the regex for urls
 CONFIG_URL_LEGAL_RE = re.compile(r"^https?:[^\s]+?\.[^\s]+?", flags=re.IGNORECASE)

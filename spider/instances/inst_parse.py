@@ -12,7 +12,7 @@ class Parser(object):
 
     def working(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, object):
         """
-        working function, must "try, except" and don't change the parameters and returns
+        working function, must "try-except" and don't change the parameters and returns
         :return parse_state: can be -1(parse failed), 1(parse success)
         :return url_list: can be [(url1, keys1, priority1), ...], or exception[class_name, excep]
         :return item: which waits to be saved, can be any object, or None for nothing
@@ -26,6 +26,6 @@ class Parser(object):
 
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, object):
         """
-        parse the content of a url. You must overwrite this function, and parameters and returns refer to self.working()
+        parse the content of a url. You must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

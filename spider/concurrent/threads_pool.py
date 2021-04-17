@@ -65,40 +65,19 @@ class ThreadPool(object):
         logging.warning("ThreadPool has been initialized")
         return
 
-    def set_start_url(self, url, priority=0, keys=None, deep=0):
+    def set_start_url(self, url, priority=0, keys=None, deep=0, repeat=0):
         """
-        set start url based on "priority", "keys" and "deep", repeat must be 0
+        set start url based on "priority", "keys", "deep" and "repeat"
         """
-        self.put_item_to_queue_fetch(priority, url, keys, deep, 0)
-        return
-
-    def put_item_to_queue_fetch(self, priority, url, keys, deep, repeat):
-        """
-        put url to self._queue_fetch, keys can be a dictionary or None
-        """
-        assert check_url_legal(url), "put_item_to_queue_fetch error, please pass legal url"
+        assert check_url_legal(url), "set_start_url error, please pass legal url"
         self.add_a_task(TPEnum.URL_FETCH, (priority, url, keys or {}, deep, repeat))
-        return
-
-    def put_item_to_queue_parse(self, priority, url, keys, deep, content):
-        """
-        put content to self._queue_parse, keys can be a dictionary or None
-        """
-        self.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys or {}, deep, content))
-        return
-
-    def put_item_to_queue_save(self, priority, url, keys, deep, item):
-        """
-        put item to self._queue_save, keys can be a dictionary or None
-        """
-        self.add_a_task(TPEnum.ITEM_SAVE, (priority, url, keys or {}, deep, item))
         return
 
     def start_working(self, fetchers_num=10):
         """
         start this thread pool based on fetchers_num
         """
-        logging.warning("ThreadPool starts working: urls_count=%s, fetchers_num=%s", self.get_number_dict(TPEnum.URL_FETCH_NOT), fetchers_num)
+        logging.warning("ThreadPool starts working: urls_num=%s, fetchers_num=%s", self.get_number_dict(TPEnum.URL_FETCH_NOT), fetchers_num)
         self._thread_stop_flag = False
 
         self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetchers_num)]
@@ -122,7 +101,7 @@ class ThreadPool(object):
             self._thread_proxieser.setDaemon(True)
             self._thread_proxieser.start()
 
-        logging.warning("ThreadPool starts working: success")
+        logging.warning("ThreadPool starts working successfully")
         return
 
     def wait_for_finished(self):
@@ -137,6 +116,7 @@ class ThreadPool(object):
 
         if self._thread_parser and self._thread_parser.is_alive():
             self._thread_parser.join()
+            del self._thread_parser
 
         if self._thread_saver and self._thread_saver.is_alive():
             self._thread_saver.join()
@@ -153,12 +133,6 @@ class ThreadPool(object):
         """
         return True if self._inst_proxieser else False
 
-    def get_thread_stop_flag(self):
-        """
-        get threads stop flag of this thread pool
-        """
-        return self._thread_stop_flag
-
     def get_number_dict(self, key=None):
         """
         get value of self._number_dict based on key
@@ -174,19 +148,14 @@ class ThreadPool(object):
         self._lock.release()
         return
 
-    def is_all_tasks_done(self):
+    def is_ready_to_finish(self):
         """
-        check if all tasks are done, according to self._number_dict
+        check state of this thread pool, return True if all tasks finished and self._thread_stop_flag is True
         """
         return False if self._number_dict[TPEnum.URL_FETCH_RUN] or self._number_dict[TPEnum.URL_FETCH_NOT] or \
                         self._number_dict[TPEnum.HTM_PARSE_RUN] or self._number_dict[TPEnum.HTM_PARSE_NOT] or \
-                        self._number_dict[TPEnum.ITEM_SAVE_RUN] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
-
-    def accept_state_from_task(self, task_type, task_state, task):
-        """
-        accept state from each task based on task_type
-        """
-        pass
+                        self._number_dict[TPEnum.ITEM_SAVE_RUN] or self._number_dict[TPEnum.ITEM_SAVE_NOT] or \
+                        (not self._thread_stop_flag) else True
 
     def add_a_task(self, task_type, task):
         """

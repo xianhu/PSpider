@@ -22,7 +22,7 @@ class Proxieser(object):
 
     def working(self) -> (int, list):
         """
-        working function, must "try, except" and don't change the parameters and returns
+        working function, must "try-except" and don't change the parameters and returns
         :return proxies_state: can be -1(get failed), 1(get success)
         :return proxies_list: can be [{"http(s)": "http(s)://auth@ip:port", ...], or exception[class_name, excep]
         """
@@ -37,6 +37,6 @@ class Proxieser(object):
 
     def proxies_get(self) -> (int, list):
         """
-        get proxies from web or database. You must overwrite this function, and parameters and returns refer to self.working()
+        get proxies from web or database. You must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

@@ -8,14 +8,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="spider",
-    version="2.5.5",
+    version="2.6.0",
     author="xianhu",
-    keywords=["spider", "crawler", "multi-threads", "multi-processes", "proxies"],
+    keywords=["spider", "crawler"],
     packages=find_packages(exclude=("test.*",)),
     package_data={
-        "": ["*.conf"],         # include all *.conf files
+        "config": ["*.conf"],  # include all *.conf files
     },
-    install_requires=[
-        "pybloom_live>=3.0.0",  # pybloom-live, fork from pybloom
-    ]
+    install_requires=[]
 )

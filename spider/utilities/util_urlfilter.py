@@ -4,22 +4,21 @@
 util_urlfilter.py by xianhu
 """
 
-from pybloom_live import ScalableBloomFilter
 from .util_config import CONFIG_URL_LEGAL_RE, CONFIG_URL_ILLEGAL_RE
 
 
 class UrlFilter(object):
     """
-    class of UrlFilter, to filter url by regexs and (bloomfilter or set)
+    class of UrlFilter, to filter url by regexs and set
     """
 
-    def __init__(self, black_patterns=(CONFIG_URL_ILLEGAL_RE,), white_patterns=(CONFIG_URL_LEGAL_RE,), capacity=None):
+    def __init__(self, black_patterns=(CONFIG_URL_ILLEGAL_RE,), white_patterns=(CONFIG_URL_LEGAL_RE,)):
         """
         constructor, use the instance of BloomFilter if capacity else the instance of set
         """
+        self._urlfilter = set()
         self._re_black_list = [item_re for item_re in black_patterns]
         self._re_white_list = [item_re for item_re in white_patterns]
-        self._urlfilter = set() if not capacity else ScalableBloomFilter(capacity, error_rate=0.001)
         return
 
     def update(self, url_list):
@@ -46,7 +45,7 @@ class UrlFilter(object):
 
     def check_and_add(self, url):
         """
-        check whether url not in this urlfilter, and add url to this urlfilter
+        check whether url is in this urlfilter, and add url to this urlfilter
         """
         result = False
         if self.check(url):

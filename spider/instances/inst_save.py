@@ -12,7 +12,7 @@ class Saver(object):
 
     def working(self, priority: int, url: str, keys: dict, deep: int, item: object) -> (int, object):
         """
-        working function, must "try, except" and don't change the parameters and returns
+        working function, must "try-except" and don't change the parameters and returns
         :return save_state: can be -1(save failed), 1(save success)
         :return save_result: can be any object, or exception[class_name, excep]
         """
@@ -25,6 +25,6 @@ class Saver(object):
 
     def item_save(self, priority: int, url: str, keys: dict, deep: int, item: object) -> (int, object):
         """
-        save the content of a url. You must overwrite this function, and parameters and returns refer to self.working()
+        save the content of a url. You must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

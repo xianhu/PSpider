@@ -24,7 +24,7 @@ class FetchThread(BaseThread):
 
     def working(self):
         """
-        procedure of fetching, auto running, and return True
+        procedure of fetching, auto running and return True
         """
         # ----*----
         if self._pool.get_proxies_flag() and (not self._proxies):
@@ -37,9 +37,6 @@ class FetchThread(BaseThread):
         fetch_state, content, proxies_state = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
 
         # ----3----
-        self._pool.accept_state_from_task(TPEnum.URL_FETCH, fetch_state, (priority, url, keys, deep, repeat))
-
-        # ----4----
         if fetch_state > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
             self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
@@ -59,8 +56,8 @@ class FetchThread(BaseThread):
             self._pool.finish_a_task(TPEnum.PROXIES)
             self._proxies = None
 
-        # ----5----
+        # ----4----
         self._pool.finish_a_task(TPEnum.URL_FETCH)
 
-        # ----6----
+        # ----5----
         return True

@@ -35,7 +35,7 @@ def get_url_legal(url, base_url, encoding=None):
 
 def get_url_params(url, encoding="utf-8"):
     """
-    get main_part(a string) and query_part(a dictionary) from a url
+    get the main_part and query_part from a url
     """
     frags = urllib.parse.urlparse(url, allow_fragments=True)
     components = (frags.scheme, frags.netloc, frags.path, frags.params, "", "")
@@ -46,8 +46,8 @@ def get_string_num(string, ignore_sign=False):
     """
     get a float number from a string
     """
-    string_re = re.search(r"(?P<sign>-?)(?P<num>\d+(\.\d+)?)", string.replace(",", ""), flags=re.IGNORECASE)
-    return float((string_re.group("sign") if not ignore_sign else "") + string_re.group("num")) if string_re else None
+    reg = re.search(r"(?P<sign>-?)(?P<num>\d+(\.\d+)?)", string.replace(",", ""), flags=re.IGNORECASE)
+    return float((reg.group("sign") if not ignore_sign else "") + reg.group("num")) if reg else None
 
 
 def get_string_strip(string, replace_char=" "):
@@ -66,7 +66,7 @@ def get_dict_buildin(dict_obj, _types=(int, float, bool, str, list, tuple, set, 
 
 def parse_error_message(line):
     """
-    parse error message based on CONFIG_ERROR_MESSAGE, return a tuple (priority, keys, deep, url)
+    parse error message, and return a tuple (priority, keys, deep, url)
     """
-    r = CONFIG_ERROR_MESSAGE_RE.search(line)
-    return int(r.group("priority")), eval(r.group("keys").strip()), int(r.group("deep")), r.group("url").strip()
+    reg = CONFIG_ERROR_MESSAGE_RE.search(line)
+    return int(reg.group("p")), eval(reg.group("k").strip()), int(reg.group("d")), reg.group("u").strip()

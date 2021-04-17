@@ -33,8 +33,8 @@ A simple web spider frame written by Python, which needs Python3.5+
 **See test.py**  
 
 ### TodoList
-1. Distribute Spider
-2. Execute JavaScript
-3. More Demos
+1. More Demos
+2. Distribute Spider
+3. Execute JavaScript
 
 ### If you have any questions or advices, you can commit "Issues" or "Pull requests"
