@@ -28,7 +28,7 @@ def check_url_legal(url):
 
 def get_url_legal(url, base_url, encoding=None):
     """
-    get a legal url from a url, based on base_url
+    get a legal url from a url string, based on base_url
     """
     return urllib.parse.urljoin(base_url, urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|", encoding=encoding))
 

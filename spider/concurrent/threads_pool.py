@@ -19,7 +19,7 @@ class ThreadPool(object):
 
     def __init__(self, fetcher, parser=None, saver=None, proxieser=None, url_filter=None, queue_parse_size=-1, queue_save_size=-1, queue_proxies_size=-1):
         """
-        constructor, queue_*_size is the maximum size of each queue, -1 to no limition
+        constructor, queue_parse_size/queue_save_size/queue_proxies_size are the maximum size of each queue, -1 to no limition
         """
         self._inst_fetcher = fetcher                                        # fetcher instance, subclass of Fetcher
         self._inst_parser = parser                                          # parser instance, subclass of Parser or None

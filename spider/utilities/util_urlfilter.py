@@ -14,19 +14,11 @@ class UrlFilter(object):
 
     def __init__(self, black_patterns=(CONFIG_URL_ILLEGAL_RE,), white_patterns=(CONFIG_URL_LEGAL_RE,)):
         """
-        constructor, use the instance of BloomFilter if capacity else the instance of set
+        constructor
         """
         self._urlfilter = set()
-        self._re_black_list = [item_re for item_re in black_patterns]
-        self._re_white_list = [item_re for item_re in white_patterns]
-        return
-
-    def update(self, url_list):
-        """
-        update this urlfilter using a url_list
-        """
-        for url in filter(lambda x: CONFIG_URL_ILLEGAL_RE.match(x), url_list):
-            self._urlfilter.add(url)
+        self._re_black_list = black_patterns
+        self._re_white_list = white_patterns
         return
 
     def check(self, url):
@@ -45,7 +37,7 @@ class UrlFilter(object):
 
     def check_and_add(self, url):
         """
-        check whether url is in this urlfilter, and add url to this urlfilter
+        check whether url is in this urlfilter, and add url to it
         """
         result = False
         if self.check(url):

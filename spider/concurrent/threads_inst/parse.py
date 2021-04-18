@@ -17,7 +17,7 @@ class ParseThread(BaseThread):
 
     def __init__(self, name, worker, pool):
         """
-        constructor
+        constructor, add pool_mp to this thread
         """
         BaseThread.__init__(self, name, worker, pool)
         self._pool_mp = multiprocessing.Pool()
@@ -25,7 +25,7 @@ class ParseThread(BaseThread):
 
     def __del__(self):
         """
-        terminate self._pool_mp
+        destructor, terminate self._pool_mp
         """
         self._pool_mp.terminate()
         return

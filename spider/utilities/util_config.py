@@ -14,11 +14,11 @@ __all__ = [
     "CONFIG_HEADERS_SET",
 ]
 
-# define structure of error message for threads_inst
+# define structure of error message for threads_inst/
 CONFIG_ERROR_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
 CONFIG_ERROR_MESSAGE_RE = re.compile(r"priority=(?P<p>\d+),\s*keys=(?P<k>.+?),\s*deep=(?P<d>\d+),\s*url=(?P<u>.+)$", flags=re.IGNORECASE)
 
-# define the regex for urls
+# define the regex for legal urls and illegal urls
 CONFIG_URL_LEGAL_RE = re.compile(r"^https?:[^\s]+?\.[^\s]+?", flags=re.IGNORECASE)
 CONFIG_URL_ILLEGAL_RE = re.compile(r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|"
                                    "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|csv|tsv|"

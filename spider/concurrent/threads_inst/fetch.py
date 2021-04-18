@@ -16,7 +16,7 @@ class FetchThread(BaseThread):
 
     def __init__(self, name, worker, pool):
         """
-        constructor
+        constructor, add proxies to this thread
         """
         BaseThread.__init__(self, name, worker, pool)
         self._proxies = None

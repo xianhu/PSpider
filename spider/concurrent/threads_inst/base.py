@@ -73,7 +73,7 @@ class BaseThread(threading.Thread):
 
 
 # ===============================================================================================================================
-def init_monitor_thread(self, name, pool):
+def init_monitor(self, name, pool):
     """
     constructor of MonitorThread
     """
@@ -88,7 +88,7 @@ def init_monitor_thread(self, name, pool):
 
 def work_monitor(self):
     """
-    monitor of the thread pool, auto running and return False if you need stop thread
+    procedure of MonitorThread, auto running and return False if you need stop thread
     """
     time.sleep(5)
 
@@ -128,4 +128,4 @@ def work_monitor(self):
     return not self._pool.is_ready_to_finish()
 
 
-MonitorThread = type("MonitorThread", (BaseThread, ), dict(__init__=init_monitor_thread, working=work_monitor))
+MonitorThread = type("MonitorThread", (BaseThread, ), dict(__init__=init_monitor, working=work_monitor))
