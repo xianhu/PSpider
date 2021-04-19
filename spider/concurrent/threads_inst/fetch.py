@@ -48,7 +48,7 @@ class FetchThread(BaseThread):
             logging.error("%s error: %s, %s", content[0], content[1], CONFIG_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
 
         # ----*----
-        if self._proxies and (proxies_state <= 0):
+        if self._pool.get_proxies_flag() and self._proxies and (proxies_state <= 0):
             if proxies_state == 0:
                 self._pool.add_a_task(TPEnum.PROXIES, self._proxies)
             else:

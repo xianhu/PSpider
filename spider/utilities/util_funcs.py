@@ -64,9 +64,9 @@ def get_dict_buildin(dict_obj, _types=(int, float, bool, str, list, tuple, set, 
     return {key: dict_obj[key] for key in dict_obj if isinstance(dict_obj[key], _types)}
 
 
-def parse_error_message(line):
+def parse_error_message(error_message):
     """
     parse error message, and return a tuple (priority, keys, deep, url)
     """
-    reg = CONFIG_ERROR_MESSAGE_RE.search(line)
+    reg = CONFIG_ERROR_MESSAGE_RE.search(error_message)
     return int(reg.group("p")), eval(reg.group("k").strip()), int(reg.group("d")), reg.group("u").strip()

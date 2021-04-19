@@ -21,43 +21,30 @@ class ThreadPool(object):
         """
         constructor, queue_parse_size/queue_save_size/queue_proxies_size are the maximum size of each queue, -1 to no limition
         """
-        self._inst_fetcher = fetcher                                        # fetcher instance, subclass of Fetcher
-        self._inst_parser = parser                                          # parser instance, subclass of Parser or None
-        self._inst_saver = saver                                            # saver instance, subclass of Saver or None
-        self._inst_proxieser = proxieser                                    # proxieser instance, subclass of Proxieser or None
-        self._url_filter = url_filter                                       # default: None, also can be UrlFilter()
+        self._inst_fetcher = fetcher        # fetcher instance, subclass of Fetcher
+        self._inst_parser = parser          # parser instance, subclass of Parser or None
+        self._inst_saver = saver            # saver instance, subclass of Saver or None
+        self._inst_proxieser = proxieser    # proxieser instance, subclass of Proxieser or None
+        self._url_filter = url_filter       # default: None, also can be UrlFilter()
 
-        self._thread_fetcher_list = []                                      # fetcher threads list, define length in start_working()
-        self._thread_parser = None                                          # parser thread, be None if no instance of parser
-        self._thread_saver = None                                           # saver thread, be None if no instance of saver
-        self._thread_proxieser = None                                       # proxieser thread, be None if no instance of proxieser
-        self._thread_stop_flag = False                                      # default: False, stop flag of threads
+        self._thread_fetcher_list = []      # fetcher threads list, define length in start_working()
+        self._thread_parser = None          # parser thread, be None if no instance of parser
+        self._thread_saver = None           # saver thread, be None if no instance of saver
+        self._thread_proxieser = None       # proxieser thread, be None if no instance of proxieser
+        self._thread_stop_flag = False      # default: False, stop flag of threads
 
-        self._queue_fetch = queue.PriorityQueue(-1)                         # (priority, url, keys, deep, repeat)
-        self._queue_parse = queue.PriorityQueue(queue_parse_size)           # (priority, url, keys, deep, content)
-        self._queue_save = queue.PriorityQueue(queue_save_size)             # (priority, url, keys, deep, item)
-        self._queue_proxies = queue.Queue(queue_proxies_size)               # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
+        self._queue_fetch = queue.PriorityQueue(-1)                 # (priority, url, keys, deep, repeat)
+        self._queue_parse = queue.PriorityQueue(queue_parse_size)   # (priority, url, keys, deep, content)
+        self._queue_save = queue.PriorityQueue(queue_save_size)     # (priority, url, keys, deep, item)
+        self._queue_proxies = queue.Queue(queue_proxies_size)       # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
 
         self._number_dict = {
-            TPEnum.URL_FETCH_RUN: 0,                                        # the count of fetch tasks which are running
-            TPEnum.URL_FETCH_NOT: 0,                                        # the count of urls which haven't been fetched
-            TPEnum.URL_FETCH_SUCC: 0,                                       # the count of urls which have been fetched successfully
-            TPEnum.URL_FETCH_FAIL: 0,                                       # the count of urls which have been fetched failed
-
-            TPEnum.HTM_PARSE_RUN: 0,                                        # the count of parse tasks which are running
-            TPEnum.HTM_PARSE_NOT: 0,                                        # the count of urls which haven't been parsed
-            TPEnum.HTM_PARSE_SUCC: 0,                                       # the count of urls which have been parsed successfully
-            TPEnum.HTM_PARSE_FAIL: 0,                                       # the count of urls which have been parsed failed
-
-            TPEnum.ITEM_SAVE_RUN: 0,                                        # the count of save tasks which are running
-            TPEnum.ITEM_SAVE_NOT: 0,                                        # the count of urls which haven't been saved
-            TPEnum.ITEM_SAVE_SUCC: 0,                                       # the count of urls which have been saved successfully
-            TPEnum.ITEM_SAVE_FAIL: 0,                                       # the count of urls which have been saved failed
-
-            TPEnum.PROXIES_LEFT: 0,                                         # the count of proxies which are avaliable
-            TPEnum.PROXIES_FAIL: 0,                                         # the count of proxies which are unavaliable
+            TPEnum.URL_FETCH_RUN: 0, TPEnum.URL_FETCH_NOT: 0, TPEnum.URL_FETCH_SUCC: 0, TPEnum.URL_FETCH_FAIL: 0,
+            TPEnum.HTM_PARSE_RUN: 0, TPEnum.HTM_PARSE_NOT: 0, TPEnum.HTM_PARSE_SUCC: 0, TPEnum.HTM_PARSE_FAIL: 0,
+            TPEnum.ITEM_SAVE_RUN: 0, TPEnum.ITEM_SAVE_NOT: 0, TPEnum.ITEM_SAVE_SUCC: 0, TPEnum.ITEM_SAVE_FAIL: 0,
+            TPEnum.PROXIES_LEFT: 0, TPEnum.PROXIES_FAIL: 0,
         }
-        self._lock = threading.Lock()                                       # the lock which self._number_dict needs
+        self._lock = threading.Lock()
 
         self._thread_monitor = MonitorThread("monitor", self)
         self._thread_monitor.setDaemon(True)
@@ -80,7 +67,7 @@ class ThreadPool(object):
         logging.warning("ThreadPool starts working: urls_num=%s, fetchers_num=%s", self.get_number_dict(TPEnum.URL_FETCH_NOT), fetchers_num)
         self._thread_stop_flag = False
 
-        self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetchers_num)]
+        self._thread_fetcher_list = [FetchThread("fetcher-%d" % (i + 1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetchers_num)]
         self._thread_parser = ParseThread("parser", self._inst_parser, self) if self._inst_parser else None
         self._thread_saver = SaveThread("saver", self._inst_saver, self) if self._inst_saver else None
         self._thread_proxieser = ProxiesThread("proxieser", self._inst_proxieser, self) if self._inst_proxieser else None

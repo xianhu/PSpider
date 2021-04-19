@@ -14,7 +14,7 @@ __all__ = [
     "CONFIG_HEADERS_SET",
 ]
 
-# define structure of error message for threads_inst/
+# define the structure of error message for threads_inst/
 CONFIG_ERROR_MESSAGE = "priority=%s, keys=%s, deep=%s, url=%s"
 CONFIG_ERROR_MESSAGE_RE = re.compile(r"priority=(?P<p>\d+),\s*keys=(?P<k>.+?),\s*deep=(?P<d>\d+),\s*url=(?P<u>.+)$", flags=re.IGNORECASE)
 

@@ -15,7 +15,7 @@ class ProxiesThread(BaseThread):
 
     def working(self):
         """
-        procedure of proxies, auto running and return False if you need stop thread
+        procedure of proxies, auto running, return False if you need stop thread
         """
         # ----2----
         proxies_state, proxies_list = self._worker.working()

@@ -88,7 +88,7 @@ def init_monitor(self, name, pool):
 
 def work_monitor(self):
     """
-    procedure of MonitorThread, auto running and return False if you need stop thread
+    procedure of MonitorThread, auto running, return False if you need stop thread
     """
     time.sleep(5)
 
