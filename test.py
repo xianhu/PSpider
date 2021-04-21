@@ -10,7 +10,7 @@ import spider
 import logging
 import datetime
 import requests
-from bs4 import BeautifulSoup
+
 requests.packages.urllib3.disable_warnings()
 
 
@@ -49,13 +49,11 @@ class MyParser(spider.Parser):
         url_list = []
         if (self._max_deep < 0) or (deep < self._max_deep):
             re_group = re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)
-            url_list = [(spider.get_url_legal(_url, base_url=url), keys, priority+1) for _url in re_group]
+            url_list = [(spider.get_url_legal(_url, base_url=url), keys, priority + 1) for _url in re_group]
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         item = {"url": url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()} if title else {}
 
-        # test multi-processing(heavy time)
-        [BeautifulSoup(html_text, "lxml") for _ in range(10)]
         return 1, url_list, item
 
 
@@ -106,7 +104,7 @@ def test_spider():
     # proxieser = MyProxies(sleep_time=5)
 
     # 定义url_filter
-    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://www\.appinn\.com"), ))
+    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://www\.appinn\.com"),))
 
     # 定义爬虫web_spider
     web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1, queue_save_size=-1)

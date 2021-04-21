@@ -93,7 +93,7 @@ class ThreadPool(object):
 
     def wait_for_finished(self):
         """
-        wait for the finished of this thread pool
+        wait for finishing this thread pool
         """
         logging.warning("ThreadPool waits for finishing")
         self._thread_stop_flag = True
@@ -103,7 +103,6 @@ class ThreadPool(object):
 
         if self._thread_parser and self._thread_parser.is_alive():
             self._thread_parser.join()
-            del self._thread_parser
 
         if self._thread_saver and self._thread_saver.is_alive():
             self._thread_saver.join()
