@@ -3,7 +3,7 @@
 A simple web spider frame written by Python, which needs Python3.5+
 
 ### Features of PSpider
-1. Support multi-threading crawling mode (using threading and requests)
+1. Support multi-threading crawling mode (using threading)
 2. Support using proxies for crawling (using threading and queue)
 3. Define some utility functions and classes, for example: UrlFilter, get_string_num, etc
 4. Fewer lines of code, easyer to read, understand and expand

@@ -15,27 +15,27 @@ class TPEnum(enum.Enum):
     """
     enum of TPEnum, to mark the status of the threads_pool
     """
-    URL_FETCH = "url_fetch"             # flag of url_fetch **
-    URL_FETCH_RUN = "url_fetch_run"     # flag of url_fetch_run
-    URL_FETCH_NOT = "url_fetch_not"     # flag of url_fetch_not
-    URL_FETCH_SUCC = "url_fetch_succ"   # flag of url_fetch_succ
-    URL_FETCH_FAIL = "url_fetch_fail"   # flag of url_fetch_fail
+    URL_FETCH = "url_fetch"
+    URL_FETCH_RUN = "url_fetch_run"
+    URL_FETCH_NOT = "url_fetch_not"
+    URL_FETCH_SUCC = "url_fetch_succ"
+    URL_FETCH_FAIL = "url_fetch_fail"
 
-    HTM_PARSE = "htm_parse"             # flag of htm_parse **
-    HTM_PARSE_RUN = "htm_parse_run"     # flag of htm_parse_run
-    HTM_PARSE_NOT = "htm_parse_not"     # flag of htm_parse_not
-    HTM_PARSE_SUCC = "htm_parse_succ"   # flag of htm_parse_succ
-    HTM_PARSE_FAIL = "htm_parse_fail"   # flag of htm_parse_fail
+    HTM_PARSE = "htm_parse"
+    HTM_PARSE_RUN = "htm_parse_run"
+    HTM_PARSE_NOT = "htm_parse_not"
+    HTM_PARSE_SUCC = "htm_parse_succ"
+    HTM_PARSE_FAIL = "htm_parse_fail"
 
-    ITEM_SAVE = "item_save"             # flag of item_save **
-    ITEM_SAVE_RUN = "item_save_run"     # flag of item_save_run
-    ITEM_SAVE_NOT = "item_save_not"     # flag of item_save_not
-    ITEM_SAVE_SUCC = "item_save_succ"   # flag of item_save_succ
-    ITEM_SAVE_FAIL = "item_save_fail"   # flag of item_save_fail
+    ITEM_SAVE = "item_save"
+    ITEM_SAVE_RUN = "item_save_run"
+    ITEM_SAVE_NOT = "item_save_not"
+    ITEM_SAVE_SUCC = "item_save_succ"
+    ITEM_SAVE_FAIL = "item_save_fail"
 
-    PROXIES = "proxies"                 # flag of proxies **
-    PROXIES_LEFT = "proxies_left"       # flag of proxies_left
-    PROXIES_FAIL = "proxies_fail"       # flag of proxies_fail
+    PROXIES = "proxies"
+    PROXIES_LEFT = "proxies_left"
+    PROXIES_FAIL = "proxies_fail"
 
 
 class BaseThread(threading.Thread):
