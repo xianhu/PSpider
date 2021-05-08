@@ -6,7 +6,7 @@ util_funcs.py by xianhu
 
 import re
 import urllib.parse
-from .util_config import CONFIG_URL_LEGAL_RE, CONFIG_ERROR_MESSAGE_RE
+from .util_config import CONFIG_URL_RE_LEGAL, CONFIG_ERROR_MESSAGE_RE
 
 __all__ = [
     "check_url_legal",
@@ -23,7 +23,7 @@ def check_url_legal(url):
     """
     check a url is legal or not, return True or False
     """
-    return True if CONFIG_URL_LEGAL_RE.match(url) else False
+    return True if CONFIG_URL_RE_LEGAL.match(url) else False
 
 
 def get_url_legal(url, base_url, encoding=None):

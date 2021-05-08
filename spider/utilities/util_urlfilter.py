@@ -4,7 +4,7 @@
 util_urlfilter.py by xianhu
 """
 
-from .util_config import CONFIG_URL_LEGAL_RE, CONFIG_URL_ILLEGAL_RE
+from .util_config import CONFIG_URL_RE_LEGAL, CONFIG_URL_RE_ILLEGAL
 
 
 class UrlFilter(object):
@@ -12,7 +12,7 @@ class UrlFilter(object):
     class of UrlFilter, to filter urls by regexs and set
     """
 
-    def __init__(self, black_patterns=(CONFIG_URL_ILLEGAL_RE,), white_patterns=(CONFIG_URL_LEGAL_RE,)):
+    def __init__(self, black_patterns=(CONFIG_URL_RE_ILLEGAL,), white_patterns=(CONFIG_URL_RE_LEGAL,)):
         """
         constructor
         """

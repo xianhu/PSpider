@@ -6,7 +6,7 @@ parse.py by xianhu
 
 import logging
 from .base import TPEnum, BaseThread
-from ...utilities import CONFIG_ERROR_MESSAGE, check_url_legal, get_dict_buildin
+from ...utilities import CONFIG_ERROR_MESSAGE, get_dict_buildin, check_url_legal
 
 
 class ParseThread(BaseThread):
