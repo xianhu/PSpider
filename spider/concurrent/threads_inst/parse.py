@@ -6,7 +6,7 @@ parse.py by xianhu
 
 import logging
 from .base import TPEnum, BaseThread
-from ...utilities import CONFIG_ERROR_MESSAGE, get_dict_buildin, check_url_legal
+from ...utilities import CONFIG_ERROR_MESSAGE_TM, get_dict_buildin, check_url_legal
 
 
 class ParseThread(BaseThread):
@@ -33,7 +33,7 @@ class ParseThread(BaseThread):
                 self._pool.add_a_task(TPEnum.ITEM_SAVE, (priority, url, keys, deep, item))
         else:
             self._pool.update_number_dict(TPEnum.HTM_PARSE_FAIL, +1)
-            logging.error("%s error: %s, %s", url_list[0], url_list[1], CONFIG_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
+            logging.error("%s error: %s, %s", url_list[0], url_list[1], CONFIG_ERROR_MESSAGE_TM % (priority, get_dict_buildin(keys), deep, url))
 
         # ----4----
         self._pool.finish_a_task(TPEnum.HTM_PARSE)

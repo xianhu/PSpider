@@ -10,6 +10,7 @@ import spider
 import logging
 import datetime
 import requests
+import requests.packages.urllib3
 
 requests.packages.urllib3.disable_warnings()
 
