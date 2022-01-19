@@ -25,6 +25,6 @@ class Saver(object):
 
     def item_save(self, priority: int, url: str, keys: dict, deep: int, item: object) -> (int, object):
         """
-        save the content of a url. You must overwrite this function, parameters and returns refer to self.working()
+        save the content of an url. You must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

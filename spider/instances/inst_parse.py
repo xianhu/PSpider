@@ -26,6 +26,6 @@ class Parser(object):
 
     def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, object):
         """
-        parse the content of a url. You must overwrite this function, parameters and returns refer to self.working()
+        parse the content of an url. You must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

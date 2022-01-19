@@ -40,6 +40,6 @@ class Fetcher(object):
 
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, int):
         """
-        fetch the content of a url. You must overwrite this function, parameters and returns refer to self.working()
+        fetch the content of an url. You must overwrite this function, parameters and returns refer to self.working()
         """
         raise NotImplementedError

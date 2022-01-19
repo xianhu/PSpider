@@ -89,8 +89,8 @@ class MyProxies(spider.Proxieser):
         """
         获取代理，并返回给线程池，推荐使用快代理
         """
-        response = requests.get("http://xxxx.com/proxies")
-        proxies_list = [{"http": "http://%s" % ipport, "https": "https://%s" % ipport} for ipport in response.text.split("\n")]
+        response = requests.get("https://xxxx.com/proxies")
+        proxies_list = [{"https": "https://%s" % ipport} for ipport in response.text.split("\n")]
         return 1, proxies_list
 
 
