@@ -6,7 +6,7 @@ util_funcs.py by xianhu
 
 import re
 import urllib.parse
-from .util_config import CONFIG_URL_RE_LEGAL, CONFIG_ERROR_MESSAGE_RE
+from .util_config import CONFIG_RE_URL_LEGAL, CONFIG_RE_ERROR_MESSAGE
 
 __all__ = [
     "check_url_legal",
@@ -21,9 +21,9 @@ __all__ = [
 
 def check_url_legal(url):
     """
-    check a url is legal or not, return True or False
+    check an url is legal or not, return True or False
     """
-    return True if CONFIG_URL_RE_LEGAL.match(url) else False
+    return True if CONFIG_RE_URL_LEGAL.match(url) else False
 
 
 def get_url_legal(url, base_url, encoding=None):
@@ -35,7 +35,7 @@ def get_url_legal(url, base_url, encoding=None):
 
 def get_url_params(url, encoding="utf-8"):
     """
-    get the main_part and query_part from a url
+    get the main_part and query_part from an url
     """
     frags = urllib.parse.urlparse(url, allow_fragments=True)
     components = (frags.scheme, frags.netloc, frags.path, frags.params, "", "")
@@ -68,5 +68,5 @@ def parse_error_message(error_message):
     """
     parse error message, and return a tuple (priority, keys, deep, url)
     """
-    reg = CONFIG_ERROR_MESSAGE_RE.search(error_message)
-    return int(reg.group("p")), eval(reg.group("k").strip()), int(reg.group("d")), reg.group("u").strip()
+    reg = CONFIG_RE_ERROR_MESSAGE.search(error_message)
+    return int(reg.group("p")), eval(reg.group("k")), int(reg.group("d")), reg.group("u").strip()
