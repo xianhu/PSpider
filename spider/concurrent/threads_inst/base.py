@@ -122,7 +122,7 @@ def work_monitor(self):
         proxies_fail = self._pool.get_number_dict(TPEnum.PROXIES_FAIL)
         info_list.append(f"proxies: [LEFT={proxies_left}, FAIL={proxies_fail}];")
 
-    info_list.append(f"total_seconds={time.time() - self._init_time}")
+    info_list.append(f"total_seconds={int(time.time() - self._init_time)}")
 
     logging.warning(" ".join(info_list))
     return not self._pool.is_ready_to_finish()
