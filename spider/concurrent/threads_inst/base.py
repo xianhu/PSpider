@@ -91,40 +91,40 @@ def work_monitor(self):
     procedure of MonitorThread, auto running, return False if you need stop thread
     """
     time.sleep(5)
+    info_list = []
 
     fetch_run = self._pool.get_number_dict(TPEnum.URL_FETCH_RUN)
     fetch_not = self._pool.get_number_dict(TPEnum.URL_FETCH_NOT)
     fetch_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
     fetch_fail = self._pool.get_number_dict(TPEnum.URL_FETCH_FAIL)
-    info = "fetch: [RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
-        fetch_run, fetch_not, fetch_succ, fetch_fail, (fetch_succ + fetch_fail) - self._last_fetch_num
-    )
+    fetch_temp = (fetch_succ + fetch_fail) - self._last_fetch_num
     self._last_fetch_num = fetch_succ + fetch_fail
+    info_list.append(f"fetch: [RUN={fetch_run}, NOT={fetch_not}, SUCC={fetch_succ}, FAIL={fetch_fail}, {fetch_temp}/5s];")
 
     parse_run = self._pool.get_number_dict(TPEnum.HTM_PARSE_RUN)
     parse_not = self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT)
     parse_succ = self._pool.get_number_dict(TPEnum.HTM_PARSE_SUCC)
     parse_fail = self._pool.get_number_dict(TPEnum.HTM_PARSE_FAIL)
-    info += " parse: [RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
-        parse_run, parse_not, parse_succ, parse_fail, (parse_succ + parse_fail) - self._last_parse_num
-    )
+    parse_temp = (parse_succ + parse_fail) - self._last_parse_num
     self._last_parse_num = parse_succ + parse_fail
+    info_list.append(f"parse: [RUN={parse_run}, NOT={parse_not}, SUCC={parse_succ}, FAIL={parse_fail}, {parse_temp}/5s];")
 
     save_run = self._pool.get_number_dict(TPEnum.ITEM_SAVE_RUN)
     save_not = self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT)
     save_succ = self._pool.get_number_dict(TPEnum.ITEM_SAVE_SUCC)
     save_fail = self._pool.get_number_dict(TPEnum.ITEM_SAVE_FAIL)
-    info += " save: [RUN=%d, NOT=%d, SUCC=%d, FAIL=%d, %d/5s];" % (
-        save_run, save_not, save_succ, save_fail, (save_succ + save_fail) - self._last_save_num
-    )
+    save_temp = (save_succ + save_fail) - self._last_save_num
     self._last_save_num = save_succ + save_fail
+    info_list.append(f"save: [RUN={save_run}, NOT={save_not}, SUCC={save_succ}, FAIL={save_fail}, {save_temp}/5s];")
 
-    proxies_left = self._pool.get_number_dict(TPEnum.PROXIES_LEFT)
-    proxies_fail = self._pool.get_number_dict(TPEnum.PROXIES_FAIL)
     if self._pool.get_proxies_flag():
-        info += " proxies: [LEFT=%d, FAIL=%d];" % (proxies_left, proxies_fail)
+        proxies_left = self._pool.get_number_dict(TPEnum.PROXIES_LEFT)
+        proxies_fail = self._pool.get_number_dict(TPEnum.PROXIES_FAIL)
+        info_list.append(f"proxies: [LEFT={proxies_left}, FAIL={proxies_fail}];")
 
-    logging.warning(info + " total_seconds=%d" % (time.time() - self._init_time))
+    info_list.append(f"total_seconds={time.time() - self._init_time}")
+
+    logging.warning(" ".join(info_list))
     return not self._pool.is_ready_to_finish()
 
 

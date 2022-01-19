@@ -8,8 +8,9 @@ import copy
 import queue
 import logging
 import threading
+
 from .threads_inst import *
-from ..utilities import check_url_legal
+from ..utilities.util_funcs import check_url_legal
 
 
 class ThreadPool(object):

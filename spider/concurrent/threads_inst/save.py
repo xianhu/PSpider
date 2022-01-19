@@ -5,8 +5,10 @@ save.py by xianhu
 """
 
 import logging
+
 from .base import TPEnum, BaseThread
-from ...utilities import CONFIG_ERROR_MESSAGE_TM, get_dict_buildin
+from ...utilities.util_funcs import get_dict_buildin
+from ...utilities.util_config import CONFIG_TM_ERROR_MESSAGE
 
 
 class SaveThread(BaseThread):
@@ -29,7 +31,7 @@ class SaveThread(BaseThread):
             self._pool.update_number_dict(TPEnum.ITEM_SAVE_SUCC, +1)
         else:
             self._pool.update_number_dict(TPEnum.ITEM_SAVE_FAIL, +1)
-            logging.error("%s error: %s, %s", save_result[0], save_result[1], CONFIG_ERROR_MESSAGE_TM % (priority, get_dict_buildin(keys), deep, url))
+            logging.error("%s error: %s, %s", save_result[0], save_result[1], CONFIG_TM_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
 
         # ----4----
         self._pool.finish_a_task(TPEnum.ITEM_SAVE)
