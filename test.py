@@ -10,9 +10,6 @@ import spider
 import logging
 import datetime
 import requests
-import requests.packages.urllib3
-
-requests.packages.urllib3.disable_warnings()
 
 
 class MyFetcher(spider.Fetcher):
@@ -24,7 +21,7 @@ class MyFetcher(spider.Fetcher):
         """
         定义抓取函数，注意参见父类中对应函数的参数和返回值说明
         """
-        response = requests.get(url, proxies=proxies, verify=False, allow_redirects=True, timeout=(3.05, 10))
+        response = requests.get(url, proxies=proxies, allow_redirects=True, timeout=(3.05, 10))
         return 1, (response.status_code, response.url, response.text), 1
 
 
