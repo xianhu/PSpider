@@ -7,7 +7,6 @@ parse.py by xianhu
 import logging
 
 from .base import TPEnum, BaseThread
-from ...utilities.util_config import CONFIG_TM_ERROR_MESSAGE
 from ...utilities.util_funcs import get_dict_buildin, check_url_legal
 
 

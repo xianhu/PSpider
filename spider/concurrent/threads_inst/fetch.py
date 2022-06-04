@@ -7,8 +7,7 @@ fetch.py by xianhu
 import logging
 
 from .base import TPEnum, BaseThread
-from ...utilities.util_funcs import get_dict_buildin
-from ...utilities.util_config import CONFIG_TM_ERROR_MESSAGE
+from ...utilities.util_task import TaskF, TaskP
 
 
 class FetchThread(BaseThread):
@@ -33,21 +32,21 @@ class FetchThread(BaseThread):
             self._proxies = self._pool.get_a_task(TPEnum.PROXIES)
 
         # ----1----
-        priority, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
+        task = self._pool.get_a_task(TPEnum.URL_FETCH)
 
         # ----2----
-        fetch_state, content, proxies_state = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
+        result = self._worker.working(task, proxies=self._proxies)
 
         # ----3----
-        if fetch_state > 0:
+        if result.state_code > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
-            self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, url, keys, deep, content))
-        elif fetch_state == 0:
-            self._pool.add_a_task(TPEnum.URL_FETCH, (priority, url, keys, deep, repeat + 1))
-            logging.warning("%s repeat: %s, %s", content[0], content[1], CONFIG_TM_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
+            self._pool.add_a_task(TPEnum.HTM_PARSE, TaskP(task.url, task.priority, task.keys, task.deep, result.html))
+        elif result.state_code == 0:
+            self._pool.add_a_task(TPEnum.URL_FETCH, TaskF(task.url, task.priority, task.keys, task.deep, task.repeat + 1))
+            logging.warning("%s repeat: %s, %s", result.class_name, result.excep, task)
         else:
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
-            logging.error("%s error: %s, %s", content[0], content[1], CONFIG_TM_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
+            logging.warning("%s repeat: %s, %s", result.class_name, result.excep, task)
 
         # ----*----
         if self._pool.get_proxies_flag() and self._proxies and (proxies_state <= 0):
