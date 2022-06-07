@@ -17,12 +17,14 @@ class MyFetcher(spider.Fetcher):
     重写spider.Fetcher类，可自定义初始化函数，且必须重写父类中的url_fetch函数
     """
 
-    def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None):
+    def url_fetch(self, task, proxies=None) -> spider.ResultFetch:
         """
         定义抓取函数，注意参见父类中对应函数的参数和返回值说明
         """
-        response = requests.get(url, proxies=proxies, allow_redirects=True, timeout=(3.05, 10))
-        return 1, (response.status_code, response.url, response.text), 1
+        response = requests.get(task.url, proxies=proxies, allow_redirects=True, timeout=(3.05, 10))
+        return_list = (response.status_code, response.url, response.text)
+        task_parse = spider.TaskParse(task.url, task.priority, task.keys, task.deep, return_list)
+        return spider.ResultFetch(1, task_parse, 1)
 
 
 class MyParser(spider.Parser):
@@ -62,7 +64,7 @@ class MySaver(spider.Saver):
 
     def __init__(self, save_pipe=sys.stdout):
         """
-        初始化函数
+        初始化函数，构建一个新变量_save_pipe
         """
         spider.Saver.__init__(self)
         self._save_pipe = save_pipe
@@ -102,14 +104,15 @@ def test_spider():
     # proxieser = MyProxies(sleep_time=5)
 
     # 定义url_filter
-    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^http[s]?://www\.appinn\.com"),))
+    url_filter = spider.UrlFilter(white_patterns=(re.compile(r"^https?://www\.appinn\.com"),))
 
     # 定义爬虫web_spider
     web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=None, url_filter=url_filter, queue_parse_size=-1, queue_save_size=-1)
     # web_spider = spider.WebSpider(fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, queue_parse_size=100, queue_proxies_size=100)
 
     # 添加起始的url
-    web_spider.set_start_url("https://www.appinn.com/", priority=0, keys={"type": "index"}, deep=0, repeat=0)
+    url = "https://www.appinn.com/"
+    web_spider.set_start_task(spider.TaskFetch(url, priority=0, keys={"type": "index"}, deep=0))
 
     # 开启爬虫web_spider
     web_spider.start_working(fetchers_num=10)

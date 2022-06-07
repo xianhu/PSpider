@@ -4,7 +4,7 @@
 cresult.py by xianhu
 """
 
-from .ctask import TaskSave
+from .ctask import TaskParse, TaskSave
 
 
 class Result(object):
@@ -30,7 +30,7 @@ class ResultFetch(Result):
     result of Fetcher
     """
 
-    def __init__(self, state_code: int, task_parse: str = None, state_proxies: int = 0, excep_class=None, excep_string=None):
+    def __init__(self, state_code: int, task_parse: TaskParse = None, state_proxies: int = 0, excep_class=None, excep_string=None):
         """
         constructor
         :param state_code: can be -1(fetch failed), 0(need repeat), 1(fetch success)
@@ -56,8 +56,6 @@ class ResultParse(Result):
         self.task_fetch_list = task_fetch_list
         self.task_save = task_save
         return
-
-
 
 
 class ResultProxies(Result):

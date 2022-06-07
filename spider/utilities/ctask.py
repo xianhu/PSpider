@@ -41,19 +41,6 @@ class Task(object):
             u=self.url,
         )
 
-    @staticmethod
-    def from_str(error_message):
-        """
-        initial a task from error_message
-        """
-        reg = Task.re_obj.search(error_message)
-        return Task(
-            url=reg.group("u").strip(),
-            priority=int(reg.group("p")),
-            keys=eval(reg.group("k")),
-            deep=int(reg.group("d")),
-        )
-
 
 class TaskFetch(Task):
     """
@@ -68,18 +55,31 @@ class TaskFetch(Task):
         self.repeat = repeat
         return
 
+    @staticmethod
+    def from_str(error_message):
+        """
+        initial a task from error_message
+        """
+        reg = Task.re_obj.search(error_message)
+        return TaskFetch(
+            url=reg.group("u").strip(),
+            priority=int(reg.group("p")),
+            keys=eval(reg.group("k")),
+            deep=int(reg.group("d")),
+        )
+
 
 class TaskParse(Task):
     """
     task of Parser
     """
 
-    def __init__(self, url: str, priority: int = 0, keys: dict = None, deep: int = 0, html: str = None):
+    def __init__(self, url: str, priority: int = 0, keys: dict = None, deep: int = 0, content: object = None):
         """
         constructor
         """
         super().__init__(url, priority, keys, deep)
-        self.html = html
+        self.content = content
         return
 
 
