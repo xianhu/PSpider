@@ -4,27 +4,28 @@
 inst_save.py by xianhu
 """
 
+from ..utilities import TaskSave, ResultSave
+
 
 class Saver(object):
     """
     class of Saver, must include function working()
     """
 
-    def working(self, priority: int, url: str, keys: dict, deep: int, item: object) -> (int, object):
+    def working(self, task_save: TaskSave) -> ResultSave:
         """
-        working function, must "try-except" and don't change the parameters and returns
-        :return save_state: can be -1(save failed), 1(save success)
-        :return save_result: can be any object, or exception[class_name, excep]
+        working function, must "try-except"
         """
         try:
-            save_state, save_result = self.item_save(priority, url, keys, deep, item)
+            result_save = self.item_save(task_save)
         except Exception as excep:
-            save_state, save_result = -1, [self.__class__.__name__, excep]
+            kwargs = dict(excep_class=self.__class__.__name__, excep_string=str(excep))
+            result_save = ResultSave(state_code=-1, **kwargs)
 
-        return save_state, save_result
+        return result_save
 
-    def item_save(self, priority: int, url: str, keys: dict, deep: int, item: object) -> (int, object):
+    def item_save(self, task_save: TaskSave) -> ResultSave:
         """
-        save the content of an url. You must overwrite this function, parameters and returns refer to self.working()
+        save the content of an url. Parameters and returns refer to self.working()
         """
         raise NotImplementedError

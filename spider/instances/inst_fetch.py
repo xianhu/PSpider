@@ -5,7 +5,7 @@ inst_fetch.py by xianhu
 """
 
 import time
-from ..utilities import ResultFetch
+from ..utilities import TaskFetch, ResultFetch
 
 
 class Fetcher(object):
@@ -23,25 +23,23 @@ class Fetcher(object):
         self._max_repeat = max_repeat
         return
 
-    def working(self, task, proxies=None) -> ResultFetch:
+    def working(self, task_fetch: TaskFetch, proxies=None) -> ResultFetch:
         """
-        working function, must "try-except" and don't change the parameters and returns
+        working function, must "try-except"
         """
         time.sleep(self._sleep_time)
 
         try:
-            result = self.url_fetch(task, proxies=proxies)
+            result_fetch = self.url_fetch(task_fetch, proxies=proxies)
         except Exception as excep:
-            result = ResultFetch(
-                state_code=(-1 if task.repeat >= self._max_repeat else 0),
-                excep_class=self.__class__.__name__,
-                excep_string=str(excep),
-            )
+            state_code = -1 if task_fetch.repeat >= self._max_repeat else 0
+            kwargs = dict(excep_class=self.__class__.__name__, excep_string=str(excep))
+            result_fetch = ResultFetch(state_code=state_code, state_proxies=-1, **kwargs)
 
-        return result
+        return result_fetch
 
-    def url_fetch(self, task, proxies=None) -> ResultFetch:
+    def url_fetch(self, task_fetch: TaskFetch, proxies=None) -> ResultFetch:
         """
-        fetch the content of an url. You must overwrite this function
+        fetch the content of an url. Parameters and returns refer to self.working()
         """
         raise NotImplementedError

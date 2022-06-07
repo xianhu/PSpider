@@ -4,28 +4,28 @@
 inst_parse.py by xianhu
 """
 
+from ..utilities import TaskParse, ResultParse
+
 
 class Parser(object):
     """
     class of Parser, must include function working()
     """
 
-    def working(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, object):
+    def working(self, task_parse: TaskParse) -> ResultParse:
         """
-        working function, must "try-except" and don't change the parameters and returns
-        :return parse_state: can be -1(parse failed), 1(parse success)
-        :return url_list: can be [(url1, keys1, priority1), ...], or exception[class_name, excep]
-        :return item: which waits to be saved, can be any object, or None for nothing
+        working function, must "try-except"
         """
         try:
-            parse_state, url_list, item = self.htm_parse(priority, url, keys, deep, content)
+            result_parse = self.htm_parse(task_parse)
         except Exception as excep:
-            parse_state, url_list, item = -1, [self.__class__.__name__, excep], None
+            kwargs = dict(excep_class=self.__class__.__name__, excep_string=str(excep))
+            result_parse = ResultParse(state_code=-1, **kwargs)
 
-        return parse_state, url_list, item
+        return result_parse
 
-    def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object) -> (int, list, object):
+    def htm_parse(self, task_parse: TaskParse) -> ResultParse:
         """
-        parse the content of an url. You must overwrite this function, parameters and returns refer to self.working()
+        parse the content of an url. Parameters and returns refer to self.working()
         """
         raise NotImplementedError

@@ -30,15 +30,15 @@ class ResultFetch(Result):
     result of Fetcher
     """
 
-    def __init__(self, state_code: int, task_parse: TaskParse = None, state_proxies: int = 0, excep_class=None, excep_string=None):
+    def __init__(self, state_code: int, state_proxies: int = 1, task_parse: TaskParse = None, excep_class=None, excep_string=None):
         """
         constructor
         :param state_code: can be -1(fetch failed), 0(need repeat), 1(fetch success)
         :param state_proxies: can be -1(unavaiable), 0(return to queue), 1(avaiable)
         """
         super().__init__(state_code, excep_class, excep_string)
-        self.task_parse = task_parse
         self.state_proxies = state_proxies
+        self.task_parse = task_parse
         return
 
 
@@ -67,7 +67,6 @@ class ResultProxies(Result):
         """
         constructor
         :param state_code: can be -1(save failed), 1(save success)
-        :param result: can be any object, or exception[class_name, excep]
         """
         super().__init__(state_code, excep_class, excep_string)
         self.proxies_list = proxies_list
