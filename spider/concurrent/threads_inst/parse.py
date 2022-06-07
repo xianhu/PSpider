@@ -7,7 +7,7 @@ parse.py by xianhu
 import logging
 
 from .base import TPEnum, BaseThread
-from ...utilities.util_funcs import get_dict_buildin, check_url_legal
+from ...utilities import TaskSave
 
 
 class ParseThread(BaseThread):
@@ -20,21 +20,21 @@ class ParseThread(BaseThread):
         procedure of parsing, auto running and return True
         """
         # ----1----
-        priority, url, keys, deep, content = self._pool.get_a_task(TPEnum.HTM_PARSE)
+        task = self._pool.get_a_task(TPEnum.HTM_PARSE)
 
         # ----2----
-        parse_state, url_list, item = self._worker.working(priority, url, keys, deep, content)
+        result = self._worker.working(task)
 
         # ----3----
-        if parse_state > 0:
+        if result.state_code > 0:
             self._pool.update_number_dict(TPEnum.HTM_PARSE_SUCC, +1)
-            for _url, _keys, _priority in filter(lambda x: check_url_legal(x[0]), url_list):
-                self._pool.add_a_task(TPEnum.URL_FETCH, (_priority, _url, _keys, deep + 1, 0))
-            if item is not None:
-                self._pool.add_a_task(TPEnum.ITEM_SAVE, (priority, url, keys, deep, item))
+            for task_fetch in result.task_fetch_list:
+                self._pool.add_a_task(TPEnum.URL_FETCH, task_fetch)
+            if result.task_save is not None:
+                self._pool.add_a_task(TPEnum.ITEM_SAVE, result.task_save)
         else:
             self._pool.update_number_dict(TPEnum.HTM_PARSE_FAIL, +1)
-            logging.error("%s error: %s, %s", url_list[0], url_list[1], CONFIG_TM_ERROR_MESSAGE % (priority, get_dict_buildin(keys), deep, url))
+            logging.error("%s error: %s, %s", result.excep_class, result.excep_string, str(result))
 
         # ----4----
         self._pool.finish_a_task(TPEnum.HTM_PARSE)

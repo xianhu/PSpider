@@ -1,23 +1,14 @@
 # _*_ coding: utf-8 _*_
 
 """
-util_urlfilter.py by xianhu
+cfilter.py by xianhu
 """
-
-import re
 
 
 class UrlFilter(object):
     """
     class of UrlFilter, to filter urls by regexs and set
     """
-    re_url_legal = re.compile(r"^https?:\S+?\.\S+?", flags=re.IGNORECASE)
-    re_url_illegal = re.compile(
-        r"\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|"
-        "pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|csv|tsv|"
-        "jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|"
-        "mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$", flags=re.IGNORECASE
-    )
 
     def __init__(self, black_patterns=tuple(), white_patterns=tuple()):
         """

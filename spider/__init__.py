@@ -4,7 +4,7 @@
 import WebSpider, and utilities、instances for web_spider
 """
 
-__version__ = "3.1.0"
+__version__ = "4.0.0"
 
 from .utilities import *
 from .concurrent import TPEnum, WebSpider

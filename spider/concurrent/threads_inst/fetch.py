@@ -7,7 +7,6 @@ fetch.py by xianhu
 import logging
 
 from .base import TPEnum, BaseThread
-from ...utilities.util_task import TaskF, TaskP
 
 
 class FetchThread(BaseThread):
@@ -40,17 +39,18 @@ class FetchThread(BaseThread):
         # ----3----
         if result.state_code > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
-            self._pool.add_a_task(TPEnum.HTM_PARSE, TaskP(task.url, task.priority, task.keys, task.deep, result.html))
+            self._pool.add_a_task(TPEnum.HTM_PARSE, result.task_parse)
         elif result.state_code == 0:
-            self._pool.add_a_task(TPEnum.URL_FETCH, TaskF(task.url, task.priority, task.keys, task.deep, task.repeat + 1))
-            logging.warning("%s repeat: %s, %s", result.class_name, result.excep, task)
+            task.repeat += 1
+            self._pool.add_a_task(TPEnum.URL_FETCH, task)
+            logging.warning("%s repeat: %s, %s", result.excep_class, result.excep_string, str(task))
         else:
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
-            logging.warning("%s repeat: %s, %s", result.class_name, result.excep, task)
+            logging.warning("%s repeat: %s, %s", result.excep_class, result.excep_string, str(task))
 
         # ----*----
-        if self._pool.get_proxies_flag() and self._proxies and (proxies_state <= 0):
-            if proxies_state == 0:
+        if self._pool.get_proxies_flag() and self._proxies and (result.state_proxies <= 0):
+            if result.state_proxies == 0:
                 self._pool.add_a_task(TPEnum.PROXIES, self._proxies)
             else:
                 self._pool.update_number_dict(TPEnum.PROXIES_FAIL, +1)

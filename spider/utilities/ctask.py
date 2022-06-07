@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 """
-util_class.py by xianhu
+util_task.py by xianhu
 """
 
 import re
@@ -11,10 +11,8 @@ class Task(object):
     """
     class of Task, to define task
     """
-    reobj = re.compile(
-        r"priority=(?P<p>\d+),\s*keys=(?P<k>.+?),\s*deep=(?P<d>\d+),\s*url=(?P<u>.+)$",
-        flags=re.IGNORECASE,
-    )
+    # class variable, which to parse error message to get a task
+    re_obj = re.compile(r"priority=(?P<p>\d+),\s*keys=(?P<k>.+?),\s*deep=(?P<d>\d+),\s*url=(?P<u>.+)$", flags=re.IGNORECASE)
 
     def __init__(self, url: str, priority: int = 0, keys: dict = None, deep: int = 0):
         """
@@ -48,7 +46,7 @@ class Task(object):
         """
         initial a task from error_message
         """
-        reg = Task.reobj.search(error_message)
+        reg = Task.re_obj.search(error_message)
         return Task(
             url=reg.group("u").strip(),
             priority=int(reg.group("p")),
@@ -57,7 +55,7 @@ class Task(object):
         )
 
 
-class TaskF(Task):
+class TaskFetch(Task):
     """
     task of Fetcher
     """
@@ -71,7 +69,7 @@ class TaskF(Task):
         return
 
 
-class TaskP(Task):
+class TaskParse(Task):
     """
     task of Parser
     """
@@ -85,7 +83,7 @@ class TaskP(Task):
         return
 
 
-class TaskS(Task):
+class TaskSave(Task):
     """
     task of Saver
     """

@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 """
-util_funcs.py by xianhu
+functions.py by xianhu
 """
 
 import re

@@ -18,14 +18,13 @@ class ProxiesThread(BaseThread):
         procedure of proxies, auto running, return False if you need stop thread
         """
         # ----2----
-        proxies_state, proxies_list = self._worker.working()
+        result = self._worker.working()
 
         # ----3----
-        if proxies_state > 0:
-            for proxies in proxies_list:
-                self._pool.add_a_task(TPEnum.PROXIES, proxies)
+        if result.state_code > 0:
+            [self._pool.add_a_task(TPEnum.PROXIES, proxies) for proxies in result.proxies_list]
         else:
-            logging.warning("%s warning: %s", proxies_list[0], proxies_list[1])
+            logging.warning("%s warning: %s", result.excep_class, result.excep_string)
 
         # ----5----
         return not self._pool.is_ready_to_finish()
