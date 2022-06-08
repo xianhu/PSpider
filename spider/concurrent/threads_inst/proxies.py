@@ -5,6 +5,7 @@ proxies.py by xianhu
 """
 
 import logging
+
 from .base import TPEnum, BaseThread
 from ...utilities import ResultProxies
 
@@ -23,7 +24,8 @@ class ProxiesThread(BaseThread):
 
         # ----3----
         if result.state_code > 0:
-            [self._pool.add_a_task(TPEnum.PROXIES, proxies) for proxies in result.proxies_list]
+            for proxies in result.proxies_list:
+                self._pool.add_a_task(TPEnum.PROXIES, proxies)
         else:
             logging.warning("%s warning: %s", result.excep_class, result.excep_string)
 

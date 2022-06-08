@@ -34,7 +34,7 @@ class Fetcher(object):
         except Exception as excep:
             state_code = -1 if task_fetch.repeat >= self._max_repeat else 0
             kwargs = dict(excep_class=self.__class__.__name__, excep_string=str(excep))
-            result_fetch = ResultFetch(state_code=state_code, state_proxies=-1, **kwargs)
+            result_fetch = ResultFetch(state_code=state_code, state_proxies=-1, task_parse=None, **kwargs)
 
         return result_fetch
 

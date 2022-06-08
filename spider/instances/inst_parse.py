@@ -20,7 +20,7 @@ class Parser(object):
             result_parse = self.htm_parse(task_parse)
         except Exception as excep:
             kwargs = dict(excep_class=self.__class__.__name__, excep_string=str(excep))
-            result_parse = ResultParse(state_code=-1, **kwargs)
+            result_parse = ResultParse(state_code=-1, task_fetch_list=None, task_save=None, **kwargs)
 
         return result_parse
 
