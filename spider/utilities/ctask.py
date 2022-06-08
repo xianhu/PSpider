@@ -51,7 +51,15 @@ class TaskFetch(Task):
         return
 
     @staticmethod
-    def from_task(task_parse: Task, url: str = None):
+    def from_task_fetch(task_fetch):
+        """
+        initial a TaskFetch() from task_fetch, repeat += 1
+        """
+        priority, keys, deep, url = task_fetch.priority, task_fetch.keys, task_fetch.deep, task_fetch.url
+        return TaskFetch(priority=priority, keys=keys, deep=deep, url=url, repeat=task_fetch.repeat + 1)
+
+    @staticmethod
+    def from_task_parse(task_parse: Task, url: str = None):
         """
         initial a TaskFetch() from task_parse and url
         """
@@ -82,7 +90,7 @@ class TaskParse(Task):
         return
 
     @staticmethod
-    def from_task(task_fetch: Task, content: object = None):
+    def from_task_fetch(task_fetch: Task, content: object = None):
         """
         initial a TaskParse() from task_fetch and content
         """
@@ -104,7 +112,7 @@ class TaskSave(Task):
         return
 
     @staticmethod
-    def from_task(task_parse: Task, item: object = None):
+    def from_task_parse(task_parse: Task, item: object = None):
         """
         initial a TaskSave() from task_parse and item
         """
