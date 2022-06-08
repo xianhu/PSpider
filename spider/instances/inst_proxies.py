@@ -31,7 +31,7 @@ class Proxieser(object):
             result_proxies = self.proxies_get()
         except Exception as excep:
             kwargs = dict(excep_class=self.__class__.__name__, excep_string=str(excep))
-            result_proxies = ResultProxies(state_code=-1, **kwargs)
+            result_proxies = ResultProxies(state_code=-1, proxies_list=None, **kwargs)
 
         return result_proxies
 

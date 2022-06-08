@@ -10,7 +10,7 @@ import logging
 import threading
 
 from .threads_inst import *
-from ..utilities import TaskFetch
+from ..utilities import UrlFilter, TaskFetch
 
 
 class ThreadPool(object):
@@ -26,7 +26,7 @@ class ThreadPool(object):
         self._inst_parser = parser  # parser instance, subclass of Parser or None
         self._inst_saver = saver  # saver instance, subclass of Saver or None
         self._inst_proxieser = proxieser  # proxieser instance, subclass of Proxieser or None
-        self._url_filter = url_filter  # default: None, also can be UrlFilter()
+        self._url_filter: UrlFilter = url_filter  # default: None, also can be UrlFilter()
 
         self._thread_fetcher_list = []  # fetcher threads list, define length in start_working()
         self._thread_parser = None  # parser thread, be None if no instance of parser
@@ -34,9 +34,9 @@ class ThreadPool(object):
         self._thread_proxieser = None  # proxieser thread, be None if no instance of proxieser
         self._thread_stop_flag = False  # default: False, stop flag of threads
 
-        self._queue_fetch = queue.PriorityQueue(-1)  # TaskFetch(priority, url, keys, deep, repeat)
-        self._queue_parse = queue.PriorityQueue(queue_parse_size)  # TaskParse(priority, url, keys, deep, content)
-        self._queue_save = queue.PriorityQueue(queue_save_size)  # TaskSave(priority, url, keys, deep, item)
+        self._queue_fetch = queue.PriorityQueue(-1)  # TaskFetch(priority, keys, deep, url, repeat)
+        self._queue_parse = queue.PriorityQueue(queue_parse_size)  # TaskParse(priority, keys, deep, url, content)
+        self._queue_save = queue.PriorityQueue(queue_save_size)  # TaskSave(priority, keys, deep, url, item)
         self._queue_proxies = queue.Queue(queue_proxies_size)  # {"http": "http://auth@ip:port", "https": "https://auth@ip:port"}
 
         self._number_dict = {
@@ -55,7 +55,7 @@ class ThreadPool(object):
 
     def set_start_task(self, task_fetch: TaskFetch):
         """
-        set start task
+        set start task, according to a TaskFetch()
         """
         self.add_a_task(TPEnum.URL_FETCH, task_fetch)
         return
