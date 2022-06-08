@@ -59,21 +59,21 @@ class TaskFetch(Task):
         return TaskFetch(priority=priority, keys=keys, deep=deep, url=url, repeat=task_fetch.repeat + 1)
 
     @staticmethod
-    def from_task_parse(task_parse: Task, url: str = None):
+    def from_task_parse(task_parse, url_new: str = None):
         """
-        initial a TaskFetch() from task_parse and url
+        initial a TaskFetch() from task_parse and url_new, priority += 1, deep += 1
         """
-        priority, keys, deep = task_parse.priority + 1, task_parse.keys, task_parse.deep + 1
-        return TaskFetch(priority=priority, keys=keys, deep=deep, url=url, repeat=0)
+        priority, keys, deep, url = task_parse.priority, task_parse.keys, task_parse.deep, task_parse.url
+        return TaskFetch(priority=priority + 1, keys=keys, deep=deep + 1, url=url_new, repeat=0)
 
     @staticmethod
-    def from_string(error_message):
+    def from_error_message(error_message):
         """
         initial a TaskFetch() from error_message
         """
         reg = Task.re_obj.search(error_message)
         priority, keys, deep, url = [reg.group(i) for i in ["p", "k", "d", "u"]]
-        return TaskFetch(priority=int(priority), keys=eval(keys), deep=int(deep), url=url.strip())
+        return TaskFetch(priority=int(priority), keys=eval(keys), deep=int(deep), url=url.strip(), repeat=0)
 
 
 class TaskParse(Task):
