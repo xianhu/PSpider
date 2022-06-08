@@ -5,6 +5,7 @@ inst_fetch.py by xianhu
 """
 
 import time
+
 from ..utilities import TaskFetch, ResultFetch
 
 
