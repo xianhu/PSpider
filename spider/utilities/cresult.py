@@ -4,12 +4,10 @@
 cresult.py by xianhu
 """
 
-from .ctask import TaskParse, TaskSave
-
 
 class Result(object):
     """
-    class of Result, to define result
+    class of Result, to define result of fetcher, parser and saver
     """
 
     def __init__(self, state_code, excep_class=None, excep_string=None):
@@ -27,10 +25,10 @@ class Result(object):
 
 class ResultFetch(Result):
     """
-    result of Fetcher
+    class of ResultFetch, to define result of fetcher
     """
 
-    def __init__(self, state_code: int, state_proxies: int = 1, task_parse: TaskParse = None, excep_class=None, excep_string=None):
+    def __init__(self, state_code, state_proxies=1, task_parse=None, excep_class=None, excep_string=None):
         """
         constructor
         :param state_code: can be -1(fetch failed), 0(need repeat), 1(fetch success)
@@ -44,30 +42,30 @@ class ResultFetch(Result):
 
 class ResultParse(Result):
     """
-    result of Parser
+    class of ResultParse, to define result of parser
     """
 
-    def __init__(self, state_code: int, task_fetch_list: list = None, task_save: TaskSave = None, excep_class=None, excep_string=None):
+    def __init__(self, state_code, task_fetch_list=None, task_save=None, excep_class=None, excep_string=None):
         """
         constructor
         :param state_code: can be -1(parse failed), 1(parse success)
         """
         super().__init__(state_code, excep_class, excep_string)
-        self.task_fetch_list = task_fetch_list
+        self.task_fetch_list = task_fetch_list or []
         self.task_save = task_save
         return
 
 
 class ResultProxies(Result):
     """
-    result of Proxies
+    class of ResultProxies, to define result of proxieser
     """
 
-    def __init__(self, state_code: int, proxies_list: list, excep_class=None, excep_string=None):
+    def __init__(self, state_code, proxies_list=None, excep_class=None, excep_string=None):
         """
         constructor
         :param state_code: can be -1(save failed), 1(save success)
         """
         super().__init__(state_code, excep_class, excep_string)
-        self.proxies_list = proxies_list
+        self.proxies_list = proxies_list or []
         return

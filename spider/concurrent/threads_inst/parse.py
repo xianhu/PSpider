@@ -34,7 +34,7 @@ class ParseThread(BaseThread):
                 self._pool.add_a_task(TPEnum.ITEM_SAVE, result.task_save)
         else:
             self._pool.update_number_dict(TPEnum.HTM_PARSE_FAIL, +1)
-            logging.error("%s error: %s, %s", result.excep_class, result.excep_string, str(result))
+            logging.error("%s error: %s, %s", result.excep_class, result.excep_string, str(task))
 
         # ----4----
         self._pool.finish_a_task(TPEnum.HTM_PARSE)

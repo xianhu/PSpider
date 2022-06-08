@@ -9,7 +9,7 @@ import re
 
 class Task(object):
     """
-    class of Task, to define task
+    class of Task, to define task of fetcher, parser and saver
     """
     # class variable, which to parse error message to get a TaskFetch()
     re_obj = re.compile(r"priority=(?P<p>\d+),\s*keys=(?P<k>.+?),\s*deep=(?P<d>\d+),\s*url=(?P<u>.+)$", flags=re.IGNORECASE)
@@ -21,7 +21,7 @@ class Task(object):
         self.priority = priority
         self.keys = keys or {}
         self.deep = deep
-        self.url = url
+        self.url = url or ""
         return
 
     def __lt__(self, other):
@@ -39,7 +39,7 @@ class Task(object):
 
 class TaskFetch(Task):
     """
-    task of Fetcher
+    class of TaskFetch, to define task of fetcher
     """
 
     def __init__(self, priority: int = 0, keys: dict = None, deep: int = 0, url: str = None, repeat: int = 0):
@@ -53,7 +53,7 @@ class TaskFetch(Task):
     @staticmethod
     def from_string(error_message):
         """
-        initial a task from error_message
+        initial a TaskFetch() from error_message
         """
         reg = Task.re_obj.search(error_message)
         return TaskFetch(
@@ -66,33 +66,37 @@ class TaskFetch(Task):
 
 class TaskParse(Task):
     """
-    task of Parser
+    class of TaskParse, to define task of parser
     """
 
-    def __init__(self, priority: int = 0, keys: dict = None, deep: int = 0, url: str = None, content: object = None, task_fetch=None):
+    def __init__(
+            self, priority: int = 0, keys: dict = None, deep: int = 0, url: str = None,
+            content: object = None, task_fetch: TaskFetch = None,
+    ):
         """
         constructor
         """
         if task_fetch:
-            super().__init__(task_fetch.priority, task_fetch.keys, task_fetch.deep, task_fetch.url)
-        else:
-            super().__init__(priority, keys, deep, url)
+            priority, keys, deep, url = task_fetch.priority, task_fetch.keys, task_fetch.deep, task_fetch.url
+        super().__init__(priority, keys, deep, url)
         self.content = content
         return
 
 
 class TaskSave(Task):
     """
-    task of Saver
+    class of TaskSave, to define task of saver
     """
 
-    def __init__(self, priority: int = 0, keys: dict = None, deep: int = 0, url: str = None, item: object = None, task_parse=None):
+    def __init__(
+            self, priority: int = 0, keys: dict = None, deep: int = 0, url: str = None,
+            item: object = None, task_parse: TaskParse = None,
+    ):
         """
         constructor
         """
         if task_parse:
-            super().__init__(task_parse.priority, task_parse.keys, task_parse.deep, task_parse.url)
-        else:
-            super().__init__(priority, keys, deep, url)
+            priority, keys, deep, url = task_parse.priority, task_parse.keys, task_parse.deep, task_parse.url
+        super().__init__(priority, keys, deep, url)
         self.item = item
         return
