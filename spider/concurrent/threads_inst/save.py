@@ -7,6 +7,7 @@ save.py by xianhu
 import logging
 
 from .base import TPEnum, BaseThread
+from ...utilities import TaskSave, ResultSave
 
 
 class SaveThread(BaseThread):
@@ -19,10 +20,10 @@ class SaveThread(BaseThread):
         procedure of saving, auto running and return True
         """
         # ----1----
-        task = self._pool.get_a_task(TPEnum.ITEM_SAVE)
+        task: TaskSave = self._pool.get_a_task(TPEnum.ITEM_SAVE)
 
         # ----2----
-        result = self._worker.working(task)
+        result: ResultSave = self._worker.working(task)
 
         # ----3----
         if result.state_code > 0:

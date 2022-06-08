@@ -23,7 +23,7 @@ class MyFetcher(spider.Fetcher):
         """
         response = requests.get(task_fetch.url, proxies=proxies, allow_redirects=True, timeout=(3.05, 10))
         content = (response.status_code, response.url, response.text)
-        task_parse = spider.TaskParse(content=content, task_fetch=task_fetch)
+        task_parse = spider.TaskParse.from_task_fetch(task_fetch=task_fetch, content=content)
         return spider.ResultFetch(state_code=1, state_proxies=1, task_parse=task_parse)
 
 
@@ -55,7 +55,7 @@ class MyParser(spider.Parser):
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
         item = {"url": task_parse.url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()} if title else {}
 
-        return spider.ResultParse(state_code=1, task_fetch_list=task_fetch_list, task_save=spider.TaskSave(item=item, task_parse=task_parse))
+        return spider.ResultParse(state_code=1, task_fetch_list=task_fetch_list, task_save=spider.TaskSave.from_task_parse(task_parse=task_parse, item=item))
 
 
 class MySaver(spider.Saver):

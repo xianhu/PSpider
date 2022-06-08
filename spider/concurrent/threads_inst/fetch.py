@@ -7,7 +7,7 @@ fetch.py by xianhu
 import logging
 
 from .base import TPEnum, BaseThread
-from ...utilities import TaskFetch
+from ...utilities import TaskFetch, ResultFetch
 
 
 class FetchThread(BaseThread):
@@ -32,25 +32,25 @@ class FetchThread(BaseThread):
             self._proxies = self._pool.get_a_task(TPEnum.PROXIES)
 
         # ----1----
-        task_fetch = self._pool.get_a_task(TPEnum.URL_FETCH)
+        task: TaskFetch = self._pool.get_a_task(TPEnum.URL_FETCH)
 
         # ----2----
-        result_fetch = self._worker.working(task_fetch, proxies=self._proxies)
+        result: ResultFetch = self._worker.working(task, proxies=self._proxies)
 
         # ----3----
-        if result_fetch.state_code > 0:
+        if result.state_code > 0:
             self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
-            self._pool.add_a_task(TPEnum.HTM_PARSE, result_fetch.task_parse)
-        elif result_fetch.state_code == 0:
-            self._pool.add_a_task(TPEnum.URL_FETCH, TaskFetch.from_task_fetch(task_fetch))
-            logging.warning("%s repeat: %s, %s", result_fetch.excep_class, result_fetch.excep_string, str(task_fetch))
+            self._pool.add_a_task(TPEnum.HTM_PARSE, result.task_parse)
+        elif result.state_code == 0:
+            self._pool.add_a_task(TPEnum.URL_FETCH, TaskFetch.from_task_fetch(task))
+            logging.warning("%s repeat: %s, %s", result.excep_class, result.excep_string, str(task))
         else:
             self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
-            logging.warning("%s repeat: %s, %s", result_fetch.excep_class, result_fetch.excep_string, str(task_fetch))
+            logging.error("%s error: %s, %s", result.excep_class, result.excep_string, str(task))
 
         # ----*----
-        if self._pool.get_proxies_flag() and self._proxies and (result_fetch.state_proxies <= 0):
-            if result_fetch.state_proxies == 0:
+        if self._pool.get_proxies_flag() and self._proxies and (result.state_proxies <= 0):
+            if result.state_proxies == 0:
                 self._pool.add_a_task(TPEnum.PROXIES, self._proxies)
             else:
                 self._pool.update_number_dict(TPEnum.PROXIES_FAIL, +1)

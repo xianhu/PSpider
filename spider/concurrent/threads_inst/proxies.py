@@ -6,6 +6,7 @@ proxies.py by xianhu
 
 import logging
 from .base import TPEnum, BaseThread
+from ...utilities import ResultProxies
 
 
 class ProxiesThread(BaseThread):
@@ -18,7 +19,7 @@ class ProxiesThread(BaseThread):
         procedure of proxies, auto running, return False if you need stop thread
         """
         # ----2----
-        result = self._worker.working()
+        result: ResultProxies = self._worker.working()
 
         # ----3----
         if result.state_code > 0:
