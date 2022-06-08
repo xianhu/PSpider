@@ -4,6 +4,7 @@
 define utilities for web_spider
 """
 
-from .util_config import *
-from .util_funcs import *
-from .util_urlfilter import UrlFilter
+from .functions import *
+from .cfilter import UrlFilter
+from .ctask import TaskFetch, TaskParse, TaskSave
+from .cresult import ResultFetch, ResultParse, Result as ResultSave, ResultProxies

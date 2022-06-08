@@ -6,6 +6,8 @@ inst_fetch.py by xianhu
 
 import time
 
+from ..utilities import TaskFetch, ResultFetch
+
 
 class Fetcher(object):
     """
@@ -22,24 +24,23 @@ class Fetcher(object):
         self._max_repeat = max_repeat
         return
 
-    def working(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, int):
+    def working(self, task_fetch: TaskFetch, proxies=None) -> ResultFetch:
         """
-        working function, must "try-except" and don't change the parameters and returns
-        :return fetch_state: can be -1(fetch failed), 0(need repeat), 1(fetch success)
-        :return content: which waits to be parsed, can be any object, or exception[class_name, excep]
-        :return proxies_state: can be -1(unavaiable), 0(return to queue), 1(avaiable)
+        working function, must "try-except"
         """
         time.sleep(self._sleep_time)
 
         try:
-            fetch_state, content, proxies_state = self.url_fetch(priority, url, keys, deep, repeat, proxies=proxies)
+            result_fetch = self.url_fetch(task_fetch, proxies=proxies)
         except Exception as excep:
-            fetch_state, content, proxies_state = (-1 if repeat >= self._max_repeat else 0), [self.__class__.__name__, excep], -1
+            state_code = -1 if task_fetch.repeat >= self._max_repeat else 0
+            kwargs = dict(excep_class=self.__class__.__name__, excep_string=str(excep))
+            result_fetch = ResultFetch(state_code=state_code, state_proxies=-1, task_parse=None, **kwargs)
 
-        return fetch_state, content, proxies_state
+        return result_fetch
 
-    def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -> (int, object, int):
+    def url_fetch(self, task_fetch: TaskFetch, proxies=None) -> ResultFetch:
         """
-        fetch the content of an url. You must overwrite this function, parameters and returns refer to self.working()
+        fetch the content of an url. Parameters and returns refer to self.working()
         """
         raise NotImplementedError

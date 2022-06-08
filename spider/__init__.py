@@ -1,10 +1,10 @@
 # _*_ coding: utf-8 _*_
 
 """
-import WebSpider, and utilities、instances for web_spider
+import WebSpider, instances and utilities for web_spider
 """
 
-__version__ = "3.0.4"
+__version__ = "4.0.0"
 
 from .utilities import *
 from .concurrent import TPEnum, WebSpider

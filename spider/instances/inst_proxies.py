@@ -6,6 +6,8 @@ inst_proxies.py by xianhu
 
 import time
 
+from ..utilities import ResultProxies
+
 
 class Proxieser(object):
     """
@@ -20,23 +22,22 @@ class Proxieser(object):
         self._sleep_time = sleep_time
         return
 
-    def working(self) -> (int, list):
+    def working(self) -> ResultProxies:
         """
-        working function, must "try-except" and don't change the parameters and returns
-        :return proxies_state: can be -1(get failed), 1(get success)
-        :return proxies_list: can be [{"http(s)": "http(s)://auth@ip:port"}, ...], or exception[class_name, excep]
+        working function, must "try-except"
         """
         time.sleep(self._sleep_time)
 
         try:
-            proxies_state, proxies_list = self.proxies_get()
+            result_proxies = self.proxies_get()
         except Exception as excep:
-            proxies_state, proxies_list = -1, [self.__class__.__name__, excep]
+            kwargs = dict(excep_class=self.__class__.__name__, excep_string=str(excep))
+            result_proxies = ResultProxies(state_code=-1, proxies_list=None, **kwargs)
 
-        return proxies_state, proxies_list
+        return result_proxies
 
-    def proxies_get(self) -> (int, list):
+    def proxies_get(self) -> ResultProxies:
         """
-        get proxies from web or database. You must overwrite this function, parameters and returns refer to self.working()
+        get proxies from web or database. Parameters and returns refer to self.working()
         """
         raise NotImplementedError

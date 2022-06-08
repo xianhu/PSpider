@@ -5,7 +5,9 @@ proxies.py by xianhu
 """
 
 import logging
+
 from .base import TPEnum, BaseThread
+from ...utilities import ResultProxies
 
 
 class ProxiesThread(BaseThread):
@@ -18,14 +20,14 @@ class ProxiesThread(BaseThread):
         procedure of proxies, auto running, return False if you need stop thread
         """
         # ----2----
-        proxies_state, proxies_list = self._worker.working()
+        result: ResultProxies = self._worker.working()
 
         # ----3----
-        if proxies_state > 0:
-            for proxies in proxies_list:
+        if result.state_code > 0:
+            for proxies in result.proxies_list:
                 self._pool.add_a_task(TPEnum.PROXIES, proxies)
         else:
-            logging.warning("%s warning: %s", proxies_list[0], proxies_list[1])
+            logging.warning("%s warning: %s", result.excep_class, result.excep_string)
 
         # ----5----
         return not self._pool.is_ready_to_finish()

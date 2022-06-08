@@ -1,10 +1,8 @@
 # _*_ coding: utf-8 _*_
 
 """
-util_urlfilter.py by xianhu
+cfilter.py by xianhu
 """
-
-from .util_config import CONFIG_RE_URL_LEGAL, CONFIG_RE_URL_ILLEGAL
 
 
 class UrlFilter(object):
@@ -12,7 +10,7 @@ class UrlFilter(object):
     class of UrlFilter, to filter urls by regexs and set
     """
 
-    def __init__(self, black_patterns=(CONFIG_RE_URL_ILLEGAL,), white_patterns=(CONFIG_RE_URL_LEGAL,)):
+    def __init__(self, black_patterns=tuple(), white_patterns=tuple()):
         """
         constructor
         """
