@@ -26,7 +26,7 @@ class Fetcher(object):
 
     def working(self, task_fetch: TaskFetch, proxies=None) -> ResultFetch:
         """
-        working function, must "try-except"
+        working function, must "try-except" and return ResultFetch()
         """
         time.sleep(self._sleep_time)
 

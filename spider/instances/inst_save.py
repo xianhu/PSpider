@@ -14,7 +14,7 @@ class Saver(object):
 
     def working(self, task_save: TaskSave) -> ResultSave:
         """
-        working function, must "try-except"
+        working function, must "try-except" and return ResultSave()
         """
         try:
             result_save = self.item_save(task_save)
