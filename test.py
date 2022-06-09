@@ -6,10 +6,10 @@ test.py
 
 import re
 import sys
-import spider
 import logging
-import datetime
 import requests
+
+import spider
 
 
 class MyFetcher(spider.Fetcher):
@@ -24,7 +24,7 @@ class MyFetcher(spider.Fetcher):
         response = requests.get(task_fetch.url, proxies=proxies, allow_redirects=True, timeout=(3.05, 10))
 
         content = (response.status_code, response.url, response.text)
-        task_parse = spider.TaskParse.from_task_fetch(task_fetch=task_fetch, content=content)
+        task_parse = spider.TaskParse.from_task_fetch(task_fetch, content=content)
 
         return spider.ResultFetch(state_code=1, state_proxies=1, task_parse=task_parse)
 
@@ -38,13 +38,13 @@ class MyParser(spider.Parser):
         """
         初始化函数，构建一个新变量_max_deep
         """
-        spider.Parser.__init__(self)
         self._max_deep = max_deep
+        super().__init__()
         return
 
     def htm_parse(self, task_parse: spider.TaskParse) -> spider.ResultParse:
         """
-        定义解析函数，解析抓取到的content，生成待抓取的url和待保存的item
+        定义解析函数，解析抓取到的content，生成待抓取的url列表和待保存的item
         """
         status_code, url_now, html_text = task_parse.content
 
@@ -52,11 +52,11 @@ class MyParser(spider.Parser):
         if (self._max_deep < 0) or (task_parse.deep < self._max_deep):
             re_group = re.findall(r"<a.+?href=\"(?P<url>.{5,}?)\".*?>", html_text, flags=re.IGNORECASE)
             url_list = [spider.get_url_legal(_url, base_url=task_parse.url) for _url in re_group]
-            task_fetch_list = [spider.TaskFetch.from_task_parse(task_parse=task_parse, url_new=url) for url in url_list]
+            task_fetch_list = [spider.TaskFetch.from_task_parse(task_parse, url_new=url) for url in url_list]
 
         title = re.search(r"<title>(?P<title>.+?)</title>", html_text, flags=re.IGNORECASE)
-        item = {"url": task_parse.url, "title": title.group("title").strip(), "datetime": datetime.datetime.now()} if title else {}
-        task_save = spider.TaskSave.from_task_parse(task_parse=task_parse, item=item)
+        item = {"url": url_now, "title": title.group("title")} if title else {}
+        task_save = spider.TaskSave.from_task_parse(task_parse, item=item)
 
         return spider.ResultParse(state_code=1, task_fetch_list=task_fetch_list, task_save=task_save)
 
@@ -70,15 +70,15 @@ class MySaver(spider.Saver):
         """
         初始化函数，构建一个新变量_save_pipe
         """
-        spider.Saver.__init__(self)
         self._save_pipe = save_pipe
+        super().__init__()
         return
 
     def item_save(self, task_save: spider.TaskSave) -> spider.ResultSave:
         """
         定义保存函数，将item保存到本地文件或者数据库
         """
-        self._save_pipe.write("\t".join([task_save.item["url"], task_save.item["title"], str(task_save.item["datetime"])]) + "\n")
+        self._save_pipe.write("\t".join([task_save.item["url"], task_save.item["title"]]) + "\n")
         self._save_pipe.flush()
 
         return spider.ResultSave(state_code=1)

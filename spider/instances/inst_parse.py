@@ -14,7 +14,7 @@ class Parser(object):
 
     def working(self, task_parse: TaskParse) -> ResultParse:
         """
-        working function, must "try-except"
+        working function, must "try-except" and return ResultParse()
         """
         try:
             result_parse = self.htm_parse(task_parse)

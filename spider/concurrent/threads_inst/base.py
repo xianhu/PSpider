@@ -13,7 +13,7 @@ import threading
 
 class TPEnum(enum.Enum):
     """
-    enum of TPEnum, to mark the status of the threads_pool
+    enum of TPEnum, define status of threads_pool
     """
     URL_FETCH = "url_fetch"
     URL_FETCH_RUN = "url_fetch_run"
@@ -127,4 +127,5 @@ def work_monitor(self):
     return not self._pool.is_ready_to_finish()
 
 
+# define class of MonitorThread
 MonitorThread = type("MonitorThread", (BaseThread,), dict(__init__=init_monitor, working=work_monitor))

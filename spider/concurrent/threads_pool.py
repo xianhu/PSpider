@@ -10,6 +10,7 @@ import logging
 import threading
 
 from .threads_inst import *
+from ..instances import Fetcher, Parser, Saver, Proxieser
 from ..utilities import UrlFilter, TaskFetch
 
 
@@ -18,7 +19,10 @@ class ThreadPool(object):
     class of ThreadPool
     """
 
-    def __init__(self, fetcher, parser=None, saver=None, proxieser=None, url_filter=None, queue_parse_size=-1, queue_save_size=-1, queue_proxies_size=-1):
+    def __init__(
+            self, fetcher: Fetcher, parser: Parser = None, saver: Saver = None, proxieser: Proxieser = None,
+            url_filter: UrlFilter = None, queue_parse_size=-1, queue_save_size=-1, queue_proxies_size=-1,
+    ):
         """
         constructor, queue_parse_size/queue_save_size/queue_proxies_size are the maximum size of each queue, -1 to no limition
         """
