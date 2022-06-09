@@ -10,16 +10,15 @@ class Result(object):
     class of Result, to define result of fetcher, parser and saver
     """
 
-    def __init__(self, state_code, excep_class=None, excep_string=None):
+    def __init__(self, state_code: int, excep_class: str = None, excep_string: str = None):
         """
         constructor
-        :param state_code: can be -1, 0 or 1
         :param excep_class: name of class which raised exception
         :param excep_string: string of exception, error message
         """
         self.state_code = state_code
-        self.excep_class = excep_class
-        self.excep_string = excep_string
+        self.excep_class = excep_class or ""
+        self.excep_string = excep_string or ""
         return
 
 
