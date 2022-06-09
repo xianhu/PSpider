@@ -29,5 +29,5 @@ class ProxiesThread(BaseThread):
         else:
             logging.warning("%s warning: %s", result.excep_class, result.excep_string)
 
-        # ----5----
+        # return
         return not self._pool.is_ready_to_finish()

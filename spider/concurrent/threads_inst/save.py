@@ -35,5 +35,5 @@ class SaveThread(BaseThread):
         # ----4----
         self._pool.finish_a_task(TPEnum.ITEM_SAVE)
 
-        # ----5----
+        # return
         return True
