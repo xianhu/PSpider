@@ -1,6 +1,6 @@
 # PSpider
 
-A simple web spider frame written by Python, which needs Python3.6+
+A simple web spider frame written by Python, which needs Python3.8+
 
 ### Features of PSpider
 
@@ -18,14 +18,14 @@ A simple web spider frame written by Python, which needs Python3.6+
 ### Procedure of PSpider
 
 ![](procedure.png)
-①: Fetchers get url from UrlQueue, and make requests based on this url  
-②: Put the result(content) of ① to HtmlQueue, and so Parser can get it  
-③: Parser gets content from HtmlQueue, and parses it to get new urls and item  
-④: Put the new urls to UrlQueue, and so Fetchers can get it  
-⑤: Put the item to ItemQueue, and so Saver can get it  
-⑥: Saver gets item from ItemQueue, and saves it to filesystem or database  
-⑦: Proxieser gets proxies from web or database, and puts proxies to ProxiesQueue  
-⑧: Fetcher gets proxies from ProxiesQueue if needed, and makes requests based on this proxies
+①: Fetchers get TaskFetch from QueueFetch, and make requests based on this task  
+②: Put the result(TaskParse) of ① to QueueParse, and so Parser can get task from it  
+③: Parser gets task from QueueParse, and parses content to get new TaskFetchs and TaskSave  
+④: Put the new TaskFetchs to QueueFetch, and so Fetchers can get task from it again  
+⑤: Put the TaskSave to QueueSave, and so Saver can get task from it  
+⑥: Saver gets TaskSave from QueueSave, and saves items to filesystem or database  
+⑦: Proxieser gets proxies from web or database, and puts proxies to QueueProxies  
+⑧: Fetcher gets proxies from QueueProxies if needed, and makes requests based on this proxies
 
 ### Tutorials of PSpider
 

@@ -1,7 +1,0 @@
-.*
-*.txt
-*.png
-*.pyc
-*.pyo
-venv
-test_*
